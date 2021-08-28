@@ -26,6 +26,7 @@ ruleTester.run("effector/no-getState.ts.test", rule, {
   invalid: [
     "incorrect-with-convential-name.ts",
     "incorrect-with-random-name.ts",
+    "incorrect-with-nested-object.ts",
   ]
     .map(readExampleForTheRule)
     .map((result) => ({

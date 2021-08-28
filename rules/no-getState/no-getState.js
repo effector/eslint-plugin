@@ -22,18 +22,21 @@ module.exports = {
     return {
       CallExpression(node) {
         const methodName = node.callee?.property?.name;
-        const objectName = node.callee?.object?.name;
+        if (methodName !== "getState") {
+          return;
+        }
 
-        if (methodName !== "getState" || !objectName) {
+        const object = traverseNestedObject(node.callee?.object);
+        const objectName = object?.name;
+
+        if (!objectName) {
           return;
         }
 
         // TypeScript-way
         if (parserServices.hasFullTypeInformation) {
           const checker = parserServices.program.getTypeChecker();
-          const originalNode = parserServices.esTreeNodeToTSNodeMap.get(
-            node.callee?.object
-          );
+          const originalNode = parserServices.esTreeNodeToTSNodeMap.get(object);
           const type = checker.getTypeAtLocation(originalNode);
 
           const isEffectorStore =
@@ -68,4 +71,12 @@ function reportGetStateCall({ context, node, storeName }) {
       storeName,
     },
   });
+}
+
+function traverseNestedObject(node) {
+  if (node.type === "MemberExpression") {
+    return traverseNestedObject(node.property);
+  }
+
+  return node;
 }
