@@ -27,6 +27,8 @@ jobs:
   reports:
     runs-on: ubuntu-latest
 
+    if: ${{ github.event_name == 'pull_request' && github.event.action == 'unassigned' }}
+
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
