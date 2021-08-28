@@ -6,13 +6,22 @@
   "author": "Igor Kamyshev <igor@kamyshev.me>",
   "license": "MIT",
   "scripts": {
-    "test": "yarn node ./scripts/test.js"
+    "test": "jest"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
+    "@typescript-eslint/experimental-utils": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
+    "effector": "^21.8.12",
     "eslint": "^7.32.0",
-    "glob": "^7.1.7"
+    "glob": "^7.1.7",
+    "jest": "^27.1.0",
+    "typescript": "^4.4.2"
   },
   "peerDependencies": {
+    "effector": "*",
     "eslint": "*"
   }
 }
