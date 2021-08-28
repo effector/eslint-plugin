@@ -7,7 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  checks:
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,6 +20,18 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+      - run: yarn install
+      - run: yarn test --coverage
+
+  reports:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
           cache: "yarn"
       - run: yarn install
       - run: yarn test --coverage
