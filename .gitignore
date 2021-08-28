@@ -1,2 +1,4 @@
 .yarn/install-state.gz
 node_modules
+coverage
+.DS_Store
