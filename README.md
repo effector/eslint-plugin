@@ -43,3 +43,4 @@ To configure individual rules:
 
 - [effector/enforce-store-naming-convention](/rules/enforce-store-naming-convention/enforce-store-naming-convention.md)
 - [effector/enforce-effect-naming-convention](/rules/enforce-effect-naming-convention/enforce-effect-naming-convention.md)
+- [effector/no-getState](/rules/no-getState/no-getState.md)
