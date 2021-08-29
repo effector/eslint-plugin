@@ -1,4 +1,4 @@
-# Forbids same `clock` and `source` inside method config (`effector/no-unnecessary-duplication`)
+# effector/no-unnecessary-duplication
 
 Same `clock`/`source` in `sample` and `guard` don't make sense, any of these fields can be omitted in this case.
 
@@ -6,7 +6,7 @@ Same `clock`/`source` in `sample` and `guard` don't make sense, any of these fie
 const $data = createStore(null);
 
 // 👎 can be simplified
-const target = sample({
+const target1 = sample({
   source: $data,
   clock: $data,
   fn(data) {
@@ -15,15 +15,15 @@ const target = sample({
 });
 
 // 👍 better
-const target = sample({
+const target2 = sample({
   source: $data,
   fn(data) {
     return data.length;
   },
 });
 
-// 👍 also possible
-const target = sample({
+// 👍 also nice solution
+const target3 = sample({
   clock: $data,
   fn(data) {
     return data.length;

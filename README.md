@@ -2,11 +2,11 @@
 
 Enforcing best practices for [Effector](http://effector.dev/)
 
-> This plugin can use TypeScript for more precise results, but JavaScript is supported too.
+> This plugin uses TypeScript for more precise results, but JavaScript is supported too.
 
 ## Installation
 
-You'll first need to install [ESLint](http://eslint.org):
+First, install [ESLint](http://eslint.org):
 
 ```
 $ yarn add -D eslint
