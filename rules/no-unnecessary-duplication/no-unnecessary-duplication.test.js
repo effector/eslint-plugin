@@ -1,6 +1,10 @@
 const { RuleTester } = require("eslint");
 
+const { readExample } = require("../../utils/read-example");
+
 const rule = require("./no-unnecessary-duplication");
+
+const readExampleForTheRule = (name) => readExample(__dirname, name);
 
 const ruleTester = new RuleTester({
   parserOptions: {
@@ -11,6 +15,7 @@ const ruleTester = new RuleTester({
 
 ruleTester.run("effector/no-unnecessary-duplication.test", rule, {
   valid: [
+    readExampleForTheRule("correct-examples-01.js"),
     `
 import { sample } from 'effector';
 sample({ source: event });
