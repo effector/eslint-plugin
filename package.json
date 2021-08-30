@@ -23,5 +23,8 @@
   "peerDependencies": {
     "effector": "*",
     "eslint": "*"
+  },
+  "dependencies": {
+    "prettier": "^2.3.2"
   }
 }
