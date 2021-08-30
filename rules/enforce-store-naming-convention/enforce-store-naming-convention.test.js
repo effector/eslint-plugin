@@ -18,6 +18,7 @@ ruleTester.run("effector/enforce-store-naming-convention.test", rule, {
     "correct-store-naming.js",
     "correct-store-naming-from-other-package.js",
     "correct-store-naming-in-domain.js",
+    "correct-examples-01.js",
   ]
     .map(readExampleForTheRule)
     .map((code) => ({ code })),
