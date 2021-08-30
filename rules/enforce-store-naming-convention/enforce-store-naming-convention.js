@@ -88,7 +88,8 @@ module.exports = {
 
         // Store creation with .map
         if (node.callee?.property?.name === "map") {
-          const objectIsEffectorStore = node.callee.object.name.startsWith("$");
+          const objectIsEffectorStore =
+            node.callee?.object?.name?.startsWith?.("$");
           if (!objectIsEffectorStore) {
             return;
           }
