@@ -1,6 +1,7 @@
 const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
+const { areNodesSameInText } = require("../../utils/are-nodes-same-in-text");
 
 module.exports = {
   meta: {
@@ -20,6 +21,8 @@ module.exports = {
   },
   create(context) {
     const importedFromEffector = new Map();
+    const sourceCode = context.getSourceCode();
+
     return {
       ImportDeclaration(node) {
         extractImportedFromEffector(importedFromEffector, node);
@@ -49,8 +52,10 @@ module.exports = {
             return;
           }
 
-          const sameSourceAndClock =
-            params?.source?.value?.name === params?.clock?.value?.name;
+          const sameSourceAndClock = areNodesSameInText({
+            context,
+            nodes: [params.source?.value, params.clock?.value],
+          });
           if (!sameSourceAndClock) {
             return;
           }
