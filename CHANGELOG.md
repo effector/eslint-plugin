@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.4
+
+- Exclude test-coverage report from npm-package
+- Fixed SyntaxError in `no-unnecessary-duplication` suggestions ([PR #28](https://github.com/igorkamyshev/eslint-plugin-effector/pull/28))
+
 ## v0.1.3
 
 - Fixed false-positive in `no-unnecessary-duplication` with composite `clock`/`source` ([PR #22](https://github.com/igorkamyshev/eslint-plugin-effector/pull/22))
