@@ -64,6 +64,21 @@ guard({ source: event, filter: (v) => v > 0 });
   ].map((code) => ({ code })),
 
   invalid: [
+    // cases with complex formatting
+    {
+      code: `
+import { sample } from 'effector';
+sample({ source: [$store], clock: [
+  $store
+] });
+`,
+      errors: [
+        {
+          messageId: "unnecessaryDuplication",
+          type: "CallExpression",
+        },
+      ],
+    },
     // source + clock in sample
     {
       code: `
