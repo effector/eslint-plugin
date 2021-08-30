@@ -1,6 +1,7 @@
 import { guard } from "effector";
 
 // Examples were found in production code-base with false-poitive detection on 0.1.2
+// https://github.com/igorkamyshev/eslint-plugin-effector/issues/21
 
 guard({
   source: someService.$aviaForm,

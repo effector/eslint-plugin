@@ -15,7 +15,7 @@ const ruleTester = new RuleTester({
 
 ruleTester.run("effector/no-unnecessary-duplication.test", rule, {
   valid: [
-    readExampleForTheRule("correct-examples-01.js"),
+    readExampleForTheRule("correct-examples-issue-21.js"),
     `
 import { sample } from 'effector';
 sample({ source: event });
