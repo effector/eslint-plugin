@@ -4,3 +4,4 @@ scripts
 *.test.*
 .pnp.cjs
 .yarnrc.yml
+coverage
