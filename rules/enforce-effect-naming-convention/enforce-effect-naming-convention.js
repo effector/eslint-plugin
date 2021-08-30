@@ -55,7 +55,7 @@ module.exports = {
       },
       CallExpression(node) {
         // Effect creation with method
-        const EFFECT_CREATION_METHODS = ["createEffect", "attach", "combine"];
+        const EFFECT_CREATION_METHODS = ["createEffect", "attach"];
         for (const method of EFFECT_CREATION_METHODS) {
           const localMethod = importedFromEffector.get(method);
           if (!localMethod) {

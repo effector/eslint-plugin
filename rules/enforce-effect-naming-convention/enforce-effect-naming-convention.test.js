@@ -18,6 +18,7 @@ ruleTester.run("effector/enforce-effect-naming-convention.test", rule, {
     "correct-effect-naming.js",
     "correct-effect-naming-from-other-package.js",
     "correct-effect-naming-in-domain.js",
+    "correct-examples-01.js",
   ]
     .map(readExampleForTheRule)
     .map((code) => ({ code })),
