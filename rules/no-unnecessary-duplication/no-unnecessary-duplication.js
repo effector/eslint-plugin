@@ -20,6 +20,8 @@ module.exports = {
   },
   create(context) {
     const importedFromEffector = new Map();
+    const sourceCode = context.getSourceCode();
+
     return {
       ImportDeclaration(node) {
         extractImportedFromEffector(importedFromEffector, node);
@@ -50,7 +52,8 @@ module.exports = {
           }
 
           const sameSourceAndClock =
-            params?.source?.value?.name === params?.clock?.value?.name;
+            sourceCode.getText(params.source?.value) ===
+            sourceCode.getText(params.clock?.value);
           if (!sameSourceAndClock) {
             return;
           }
