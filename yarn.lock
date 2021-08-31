@@ -1691,10 +1691,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effector@npm:^21.8.12":
-  version: 21.8.12
-  resolution: "effector@npm:21.8.12"
-  checksum: e0e17df2d2fd12bcc35c0994abb61e90009830336c665862fea2b5d7d262701c202cfe3d84b82eb753c11e4e9fca7de803ab1f2b5b96615f4018d4c07ba4bb0c
+"effector@npm:^22.0.0":
+  version: 22.0.0
+  resolution: "effector@npm:22.0.0"
+  checksum: 3e9398fba6a6dd83bb636c247c65d56073674b72825ac99d331dcd8f5fa00132eeafba9ad4ec5cb12a0d0ea2bdead3b728ac98be0c476cb7c6ad41b13e598043
   languageName: node
   linkType: hard
 
@@ -1804,7 +1804,7 @@ __metadata:
   dependencies:
     "@typescript-eslint/experimental-utils": ^4.29.3
     "@typescript-eslint/parser": ^4.29.3
-    effector: ^21.8.12
+    effector: ^22.0.0
     eslint: ^7.32.0
     glob: ^7.1.7
     jest: ^27.1.0

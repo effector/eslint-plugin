@@ -14,7 +14,7 @@
   "devDependencies": {
     "@typescript-eslint/experimental-utils": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",
-    "effector": "^21.8.12",
+    "effector": "^22.0.0",
     "eslint": "^7.32.0",
     "glob": "^7.1.7",
     "jest": "^27.1.0",
