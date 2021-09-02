@@ -52,5 +52,31 @@ forward({ from: eventOne, to: eventTwo.prepend((v) => v.length) });
         },
       ],
     },
+    {
+      code: `
+import { forward } from 'effector';
+forward({ from: eventOne, to: serviceOne.featureOne.eventTwo.prepend((v) => v.length) });
+`,
+      errors: [
+        {
+          messageId: "overPrepend",
+          type: "CallExpression",
+          data: { eventName: "eventTwo" },
+        },
+      ],
+    },
+    {
+      code: `
+import { forward } from 'effector';
+forward({ from: serviceOne.featureOne.eventOne.map((v) => v.length), to: eventTwo });
+`,
+      errors: [
+        {
+          messageId: "overMap",
+          type: "CallExpression",
+          data: { eventName: "eventOne" },
+        },
+      ],
+    },
   ],
 });
