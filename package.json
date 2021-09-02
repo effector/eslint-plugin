@@ -11,6 +11,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "engines": {
+    "node": "^14 || ^16"
+  },
   "devDependencies": {
     "@typescript-eslint/experimental-utils": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",
