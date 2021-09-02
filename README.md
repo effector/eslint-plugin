@@ -45,3 +45,4 @@ To configure individual rules:
 - [effector/enforce-effect-naming-convention](/rules/enforce-effect-naming-convention/enforce-effect-naming-convention.md)
 - [effector/no-getState](/rules/no-getState/no-getState.md)
 - [effector/no-unnecessary-duplication](/rules/no-unnecessary-duplication/no-unnecessary-duplication.md)
+- [effector/prefer-sample-over-forward-with-mapping](/rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
