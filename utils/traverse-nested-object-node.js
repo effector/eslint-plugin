@@ -1,6 +1,6 @@
 function traverseNestedObjectNode(node) {
   if (node.type === "MemberExpression") {
-    return traverseNestedObject(node.property);
+    return traverseNestedObjectNode(node.property);
   }
 
   return node;
