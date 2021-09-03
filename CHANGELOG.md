@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.0
+
+- Add tests against Effector 22
+- Specify supported Node.JS versions
+- Add new rule: `prefer-sample-over-forward-with-mapping` ([PR #34](https://github.com/igorkamyshev/eslint-plugin-effector/pull/34))
+
 ## v0.1.4
 
 - Exclude test-coverage report from npm-package
