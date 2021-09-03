@@ -4,5 +4,6 @@ module.exports = {
     "effector/enforce-effect-naming-convention": "error",
     "effector/no-getState": "error",
     "effector/no-unnecessary-duplication": "warn",
+    "effector/prefer-sample-over-forward-with-mapping": "warn",
   },
 };

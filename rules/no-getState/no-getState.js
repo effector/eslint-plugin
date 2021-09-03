@@ -1,6 +1,6 @@
 const {
-  extractImportedFromEffector,
-} = require("../../utils/extract-imported-from-effector");
+  traverseNestedObjectNode,
+} = require("../../utils/traverse-nested-object-node");
 
 module.exports = {
   meta: {
@@ -26,7 +26,7 @@ module.exports = {
           return;
         }
 
-        const object = traverseNestedObject(node.callee?.object);
+        const object = traverseNestedObjectNode(node.callee?.object);
         const objectName = object?.name;
 
         if (!objectName) {
@@ -71,12 +71,4 @@ function reportGetStateCall({ context, node, storeName }) {
       storeName,
     },
   });
-}
-
-function traverseNestedObject(node) {
-  if (node.type === "MemberExpression") {
-    return traverseNestedObject(node.property);
-  }
-
-  return node;
 }
