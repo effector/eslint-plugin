@@ -8,20 +8,20 @@ const eventTwo = createEvent();
 
 // 👎 looks weird
 forward({
-  from: eventOne.map((items) => item.length),
+  from: eventOne.map((items) => items.length),
   to: eventTwo,
 });
 
 // 👎 weird too
 forward({
   from: eventOne,
-  to: eventTwo.prepend((items) => item.length),
+  to: eventTwo.prepend((items) => items.length),
 });
 
 // 👍 better
 sample({
   source: eventOne,
-  fn: (items) => item.length,
+  fn: (items) => items.length,
   target: eventTwo,
 });
 ```
