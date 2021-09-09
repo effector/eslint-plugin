@@ -1,10 +1,38 @@
 # effector/enforce-store-naming-convention
 
-Enforcing naming conventions helps keep the codebase consistent, and reduces overhead when thinking about how to name a variable with store. Your stores should be distingueshed by a prefix $. For example, `$name` is a store,`name` is not.
+Enforcing naming conventions helps keep the codebase consistent, and reduces overhead when thinking about how to name a variable with store. Depending on the configuration your stores should be distinguished by a prefix or a postfix $. Enforces prefix convention by default.
 
+## Prefix convention
+When configured as:
+```js
+module.exports = {
+  rules: {
+    "effector/enforce-store-naming-convention": ["error", "prefix"],
+  },
+};
+```
+Prefix convention will be enforced:
 ```ts
 // 👍 nice name
 const $name = createStore(null);
+
+// 👎 bad name
+const name = createStrore(null);
+```
+## Postfix convention
+
+When configured as:
+```js
+module.exports = {
+  rules: {
+    "effector/enforce-store-naming-convention": ["error", "postfix"],
+  },
+};
+```
+Postfix convention will be enforced:
+```ts
+// 👍 nice name
+const name$ = createStore(null);
 
 // 👎 bad name
 const name = createStrore(null);
