@@ -1,8 +1,8 @@
 const { RuleTester } = require("eslint");
 
-const { readExample } = require("../../utils/read-example");
+const { readExample } = require("../../../utils/read-example");
 
-const rule = require("./enforce-store-naming-convention");
+const rule = require("../enforce-store-naming-convention");
 
 const ruleTester = new RuleTester({
   parserOptions: {
@@ -14,7 +14,7 @@ const ruleTester = new RuleTester({
 const readExampleForTheRule = (name) => readExample(__dirname, name);
 
 ruleTester.run("effector/enforce-store-naming-convention.test", rule, {
-  valid: [
+    valid: [
     "correct-store-naming.js",
     "correct-store-naming-from-other-package.js",
     "correct-store-naming-in-domain.js",
@@ -28,6 +28,7 @@ ruleTester.run("effector/enforce-store-naming-convention.test", rule, {
     ...[
       "incorrect-createStore.js",
       "incorrect-createStore-alias.js",
+      "incorrect-createStore-postfix.js",
       "incorrect-restore.js",
       "incorrect-restore-alias.js",
       "incorrect-combine.js",
