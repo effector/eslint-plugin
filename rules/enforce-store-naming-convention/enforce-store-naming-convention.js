@@ -7,19 +7,26 @@ module.exports = {
     type: "problem",
     docs: {
       description:
-        "Enforce $ as a prefix for any store created by Effector methods",
+        "Enforce $ as a prefix or postfix for any store created by Effector methods",
       category: "Naming",
       recommended: true,
     },
     messages: {
       invalidName:
-        'Store "{{ storeName }}" should be named with prefix, rename it to "${{ storeName }}"',
-      renameStore: 'Rename "{{ storeName }}" to "${{ storeName }}"',
+        'Store "{{ storeName }}" should be named with {{ mode }}, rename it to "{{ correctedStoreName }}"',
+      renameStore: 'Rename "{{ storeName }}" to "{{ correctedStoreName }}"',
     },
-    schema: [],
+    schema: [
+      {
+        "enum": ["prefix", "postfix"]
+      }
+    ],
   },
   create(context) {
-    const parserServices = context.parserServices;
+    const { parserServices, options } = context;
+    // prefix mode is a default option
+    const [mode = "prefix"] = options;
+
     // TypeScript-way
     if (parserServices.hasFullTypeInformation) {
       return {
@@ -38,11 +45,24 @@ module.exports = {
 
           const storeName = node.id.name;
 
-          if (storeName?.startsWith("$")) {
+          if (mode === "prefix" && storeName?.startsWith("$")) {
+            return;
+          }
+          if (mode === "postfix" && storeName?.endsWith("$")) {
             return;
           }
 
-          reportStoreNameConventionViolation({ context, node, storeName });
+          const correctedStoreName = mode === "prefix"
+          ? `$${storeName}`
+          : `${storeName}$`;
+
+          reportStoreNameConventionViolation({
+            context,
+            node,
+            storeName,
+            correctedStoreName,
+            mode
+          });
         },
       };
     }
@@ -74,22 +94,35 @@ module.exports = {
           }
 
           const storeName = node.parent.id.name;
-          if (storeName.startsWith("$")) {
+
+          if (mode === "prefix" && storeName.startsWith("$")) {
             continue;
           }
+
+          if (mode === "postfix" && storeName.endsWith("$")) {
+            continue;
+          }
+
+          const correctedStoreName = mode === "prefix"
+          ? `$${storeName}`
+          : `${storeName}$`;
 
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
             storeName,
+            correctedStoreName,
+            mode
           });
           return;
         }
 
         // Store creation with .map
         if (node.callee?.property?.name === "map") {
-          const objectIsEffectorStore =
-            node.callee?.object?.name?.startsWith?.("$");
+          const objectIsEffectorStore = mode === "prefix"
+              ? node.callee?.object?.name?.startsWith?.("$")
+              : node.callee?.object?.name?.endsWith?.("$");
+
           if (!objectIsEffectorStore) {
             return;
           }
@@ -101,14 +134,24 @@ module.exports = {
           }
 
           const storeName = node.parent.id.name;
-          if (storeName.startsWith("$")) {
+          if (mode === "prefix" && storeName.startsWith("$")) {
             return;
           }
+
+          if (mode === "postfix" && storeName.endsWith("$")) {
+            return;
+          }
+
+          const correctedStoreName = mode === "prefix"
+          ? `$${storeName}`
+          : `${storeName}$`;
 
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
             storeName,
+            correctedStoreName,
+            mode
           });
           return;
         }
@@ -125,14 +168,24 @@ module.exports = {
           }
 
           const storeName = node.parent.id.name;
-          if (storeName.startsWith("$")) {
+          if (mode === "prefix" && storeName.startsWith("$")) {
             return;
           }
+
+          if (mode === "postfix" && storeName.endsWith("$")) {
+            return;
+          }
+
+          const correctedStoreName = mode === "prefix"
+          ? `$${storeName}`
+          : `${storeName}$`;
 
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
             storeName,
+            correctedStoreName,
+            mode
           });
           return;
         }
@@ -141,19 +194,24 @@ module.exports = {
   },
 };
 
-function reportStoreNameConventionViolation({ context, node, storeName }) {
+function reportStoreNameConventionViolation({ context, node, storeName, correctedStoreName, mode }) {
   context.report({
     node,
     messageId: "invalidName",
     data: {
       storeName,
+      correctedStoreName,
+      mode
     },
     suggest: [
       {
         messageId: "renameStore",
         data: { storeName },
         fix(fixer) {
-          return fixer.insertTextBeforeRange(node.range, "$");
+          if (mode === "prefix") {
+            return fixer.insertTextBeforeRange(node.range, "$");
+          }
+          return fixer.insertTextAfterRange(node.range, "$");
         },
       },
     ],
