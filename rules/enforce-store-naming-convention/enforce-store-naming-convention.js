@@ -27,6 +27,7 @@ module.exports = {
     // prefix mode is a default option
     const [mode = "prefix"] = options;
     validateMode(mode);
+    console.log(context);
 
     // TypeScript-way
     if (parserServices.hasFullTypeInformation) {
@@ -206,7 +207,7 @@ function reportStoreNameConventionViolation({ context, node, storeName, mode }) 
 }
 
 function validateMode(mode) {
-  if (mode !== "prefix" || mode !== "postfix") {
+  if (mode !== "prefix" && mode !== "postfix") {
     throw new Error("Invalid Configuration. The value should be equal to prefix or postfix.");
   }
 }
