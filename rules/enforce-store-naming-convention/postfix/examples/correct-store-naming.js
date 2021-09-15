@@ -1,17 +1,16 @@
-"use strict";
-exports.__esModule = true;
-exports.mappedStore$ = exports.combinedStore$ = exports.restoredStore$ = exports.justStore$ = void 0;
-var effector_1 = require("effector");
+import { createStore, restore, createEvent, combine } from "effector";
+
 // Just createStore
-var justStore$ = (0, effector_1.createStore)(null);
-exports.justStore$ = justStore$;
+const justStore$ = createStore(null);
+
 // Restore
-var eventForRestore = (0, effector_1.createEvent)();
-var restoredStore$ = (0, effector_1.restore)(eventForRestore, null);
-exports.restoredStore$ = restoredStore$;
+const eventForRestore = createEvent();
+const restoredStore$ = restore(eventForRestore, null);
+
 // Combine
-var combinedStore$ = (0, effector_1.combine)(justStore$, restoredStore$);
-exports.combinedStore$ = combinedStore$;
+const combinedStore$ = combine($justStore, $restoredStore);
+
 // Map
-var mappedStore$ = combinedStore$.map(function (values) { return values.length; });
-exports.mappedStore$ = mappedStore$;
+const mappedStore$ = $combinedStore.map((values) => values.length);
+
+export { justStore$, restoredStore$, combinedStore$, mappedStore$ };

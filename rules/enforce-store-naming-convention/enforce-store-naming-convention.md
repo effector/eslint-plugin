@@ -7,7 +7,7 @@ When configured as:
 ```js
 module.exports = {
   rules: {
-    "effector/enforce-store-naming-convention": ["error", "prefix"],
+    "effector/enforce-store-naming-convention": ["error"],
   },
 };
 ```

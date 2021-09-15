@@ -26,6 +26,7 @@ module.exports = {
     const { parserServices, options } = context;
     // prefix mode is a default option
     const [mode = "prefix"] = options;
+    validateMode(mode);
 
     // TypeScript-way
     if (parserServices.hasFullTypeInformation) {
@@ -52,15 +53,10 @@ module.exports = {
             return;
           }
 
-          const correctedStoreName = mode === "prefix"
-          ? `$${storeName}`
-          : `${storeName}$`;
-
           reportStoreNameConventionViolation({
             context,
             node,
             storeName,
-            correctedStoreName,
             mode
           });
         },
@@ -103,15 +99,10 @@ module.exports = {
             continue;
           }
 
-          const correctedStoreName = mode === "prefix"
-          ? `$${storeName}`
-          : `${storeName}$`;
-
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
             storeName,
-            correctedStoreName,
             mode
           });
           return;
@@ -142,15 +133,11 @@ module.exports = {
             return;
           }
 
-          const correctedStoreName = mode === "prefix"
-          ? `$${storeName}`
-          : `${storeName}$`;
 
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
             storeName,
-            correctedStoreName,
             mode
           });
           return;
@@ -176,15 +163,10 @@ module.exports = {
             return;
           }
 
-          const correctedStoreName = mode === "prefix"
-          ? `$${storeName}`
-          : `${storeName}$`;
-
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
             storeName,
-            correctedStoreName,
             mode
           });
           return;
@@ -194,7 +176,12 @@ module.exports = {
   },
 };
 
-function reportStoreNameConventionViolation({ context, node, storeName, correctedStoreName, mode }) {
+function reportStoreNameConventionViolation({ context, node, storeName, mode }) {
+
+  const correctedStoreName = mode === "prefix"
+      ? `$${storeName}`
+      : `${storeName}$`
+
   context.report({
     node,
     messageId: "invalidName",
@@ -216,4 +203,10 @@ function reportStoreNameConventionViolation({ context, node, storeName, correcte
       },
     ],
   });
+}
+
+function validateMode(mode) {
+  if (mode !== "prefix" || mode !== "postfix") {
+    throw new Error("Invalid Configuration. The value should be equal to prefix or postfix.");
+  }
 }
