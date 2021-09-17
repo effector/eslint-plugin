@@ -19,10 +19,14 @@ const ruleTester = new RuleTester({
 const readExampleForTheRule = (name) => ({
   code: readExample(__dirname, name),
   filename: join(__dirname, "examples", name),
-  options: ["postfix"],
+  settings: {
+    effector: {
+      storeNameConvention: "postfix"
+    }
+  },
 });
 
-ruleTester.run("effector/enforce-store-naming-convention.ts.test", rule, {
+ruleTester.run("effector/enforce-store-naming-convention-postfix.ts.test", rule, {
   valid: ["correct-store-naming.ts"].map(readExampleForTheRule),
 
   invalid: [

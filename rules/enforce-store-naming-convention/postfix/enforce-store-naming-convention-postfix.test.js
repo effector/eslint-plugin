@@ -13,7 +13,7 @@ const ruleTester = new RuleTester({
 
 const readExampleForTheRule = (name) => readExample(__dirname, name);
 
-ruleTester.run("effector/enforce-store-naming-convention.test", rule, {
+ruleTester.run("effector/enforce-store-naming-convention-postfix.test", rule, {
     valid: [
     "correct-store-naming.js",
     "correct-store-naming-from-other-package.js",
@@ -21,7 +21,14 @@ ruleTester.run("effector/enforce-store-naming-convention.test", rule, {
     "correct-examples-issue-23.js",
   ]
     .map(readExampleForTheRule)
-    .map((code) => ({ code, options: ["postfix"] })),
+    .map((code) => ({
+        code,
+        settings: {
+          effector: {
+            storeNameConvention: "postfix"
+          }
+        },
+    })),
 
   invalid: [
     // Errors
@@ -39,7 +46,11 @@ ruleTester.run("effector/enforce-store-naming-convention.test", rule, {
       .map(readExampleForTheRule)
       .map((code) => ({
         code,
-        options: ["postfix"],
+        settings: {
+          effector: {
+            storeNameConvention: "postfix"
+          }
+        },
         errors: [
           {
             messageId: "invalidName",

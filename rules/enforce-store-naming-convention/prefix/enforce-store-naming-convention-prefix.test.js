@@ -13,7 +13,7 @@ const ruleTester = new RuleTester({
 
 const readExampleForTheRule = (name) => readExample(__dirname, name);
 
-ruleTester.run("effector/enforce-store-naming-convention.test", rule, {
+ruleTester.run("effector/enforce-store-naming-convention-prefix.test", rule, {
     valid: [
     "correct-store-naming.js",
     "correct-store-naming-from-other-package.js",
