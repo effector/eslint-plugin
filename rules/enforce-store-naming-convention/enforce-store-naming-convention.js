@@ -191,7 +191,9 @@ function reportStoreNameConventionViolation({ context, node, storeName, storeNam
 
 function validateStoreNameConvention(storeNameConvention) {
   if (storeNameConvention !== "prefix" && storeNameConvention !== "postfix") {
-    throw new Error("Invalid Configuration. The value should be equal to prefix or postfix.");
+    throw new Error(
+        "Invalid Configuration of effector-plugin-eslint/enforce-store-naming-convention. The value should be equal to prefix or postfix."
+    );
   }
 }
 
