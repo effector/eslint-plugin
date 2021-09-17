@@ -1,6 +1,7 @@
 const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
+const { isStoreNameValid } = require("../../utils/is-store-name-valid");
 
 module.exports = {
   meta: {
@@ -17,7 +18,9 @@ module.exports = {
     schema: [],
   },
   create(context) {
-    const parserServices = context.parserServices;
+    const { parserServices, settings } = context;
+
+    const storeNameConvention = settings.effector?.storeNameConvention || "prefix";
 
     return {
       CallExpression(node) {
@@ -51,7 +54,7 @@ module.exports = {
         }
         // JavaScript-way
         else {
-          const isEffectorStore = objectName.startsWith("$");
+          const isEffectorStore = isStoreNameValid(objectName, storeNameConvention);
           if (!isEffectorStore) {
             return;
           }
