@@ -8,10 +8,5 @@ module.exports = {
   },
   configs: {
     recommended: require("./config/recommended"),
-  },
-  settings: {
-    effector: {
-      storeNameConvention: "prefix"
-    }
   }
 };

@@ -7,7 +7,7 @@ When configured as:
 ```js
 module.exports = {
   rules: {
-    "effector/enforce-store-naming-convention": ["error"],
+    "effector/enforce-store-naming-convention": "error",
   },
 };
 ```
@@ -25,8 +25,13 @@ When configured as:
 ```js
 module.exports = {
   rules: {
-    "effector/enforce-store-naming-convention": ["error", "postfix"],
+    "effector/enforce-store-naming-convention": "error",
   },
+  settings: {
+    effector: {
+      storeNameConvention: "postfix"
+    }
+  }
 };
 ```
 Postfix convention will be enforced:
