@@ -46,4 +46,5 @@ To configure individual rules:
 - [effector/no-getState](/rules/no-getState/no-getState.md)
 - [effector/no-unnecessary-duplication](/rules/no-unnecessary-duplication/no-unnecessary-duplication.md)
 - [effector/no-useless-methods](/rules/no-useless-methods/no-useless-methods.md)
+- [effector/no-ambiguity-target](/rules/no-ambiguity-target/no-ambiguity-target.md)
 - [effector/prefer-sample-over-forward-with-mapping](/rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)

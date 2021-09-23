@@ -6,5 +6,6 @@ module.exports = {
     "effector/no-useless-methods": "error",
     "effector/no-unnecessary-duplication": "warn",
     "effector/prefer-sample-over-forward-with-mapping": "warn",
+    "effector/no-ambiguity-target": "warn",
   },
 };
