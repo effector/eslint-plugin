@@ -1,0 +1,74 @@
+const {
+  extractImportedFromEffector,
+} = require("../../utils/extract-imported-from-effector");
+const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
+
+module.exports = {
+  meta: {
+    type: "problem",
+    docs: {
+      description: "Forbids useless calls of `sample` and `guard`",
+      category: "Quality",
+      recommended: true,
+    },
+    messages: {
+      uselessMethod:
+        "Method `{{ methodName }}` does nothing in this case. You should assign the result to variable or pass `target` to it.",
+    },
+    schema: [],
+  },
+  create(context) {
+    const importedFromEffector = new Map();
+
+    return {
+      ImportDeclaration(node) {
+        extractImportedFromEffector(importedFromEffector, node);
+      },
+      CallExpression(node) {
+        const POSSIBLE_USELESS_METHODS = ["sample", "guard"];
+        for (const method of POSSIBLE_USELESS_METHODS) {
+          const localMethod = importedFromEffector.get(method);
+          if (!localMethod) {
+            continue;
+          }
+
+          const isEffectorMethod = node?.callee?.name === localMethod;
+          if (!isEffectorMethod) {
+            continue;
+          }
+
+          const resultAssignedInVariable = traverseParentByType(
+            node,
+            "VariableDeclarator"
+          );
+          if (resultAssignedInVariable) {
+            continue;
+          }
+
+          const resultReturnedFromFactory = traverseParentByType(
+            node,
+            "ReturnStatement"
+          );
+          if (resultReturnedFromFactory) {
+            continue;
+          }
+
+          const configHasTarget = node?.arguments?.[0]?.properties?.some(
+            (prop) => prop?.key.name === "target"
+          );
+          if (configHasTarget) {
+            continue;
+          }
+
+          context.report({
+            node,
+            messageId: "uselessMethod",
+            data: {
+              methodName: node?.callee?.name,
+            },
+          });
+        }
+      },
+    };
+  },
+};

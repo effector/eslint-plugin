@@ -5,6 +5,7 @@ module.exports = {
     "no-getState": require("./rules/no-getState/no-getState"),
     "no-unnecessary-duplication": require("./rules/no-unnecessary-duplication/no-unnecessary-duplication"),
     "prefer-sample-over-forward-with-mapping": require("./rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping"),
+    "no-useless-methods": require("./rules/no-useless-methods/no-useless-methods"),
   },
   configs: {
     recommended: require("./config/recommended"),
