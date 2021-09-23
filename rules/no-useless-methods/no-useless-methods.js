@@ -53,6 +53,14 @@ module.exports = {
             continue;
           }
 
+          const resultPartOfChain = traverseParentByType(
+            node,
+            "ObjectExpression"
+          );
+          if (resultPartOfChain) {
+            continue;
+          }
+
           const configHasTarget = node?.arguments?.[0]?.properties?.some(
             (prop) => prop?.key.name === "target"
           );

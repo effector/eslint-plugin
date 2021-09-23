@@ -21,7 +21,7 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run("effector/no-useless-methods.ts.test", rule, {
-  valid: ["correct.ts"].map(readExampleForTheRule),
+  valid: ["correct.ts", "correct-nested.ts"].map(readExampleForTheRule),
 
   invalid: [
     ...["incorrect-sample-clock.ts", "incorrect-sample-source.ts"]
