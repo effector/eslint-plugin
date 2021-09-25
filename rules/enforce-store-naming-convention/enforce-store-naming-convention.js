@@ -2,28 +2,30 @@ const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
 const { isStoreNameValid } = require("../../utils/is-store-name-valid");
+const { validateStoreNameConvention } = require("../../utils/validate-store-name-convention");
+const { getStoreNameConvention } = require("../../utils/get-store-name-convention");
+const { getCorrectedStoreName } = require("../../utils/get-corrected-store-name");
 
 module.exports = {
   meta: {
     type: "problem",
     docs: {
       description:
-        "Enforce $ as a prefix or postfix for any store created by Effector methods",
+          "Enforce $ as a prefix or postfix for any store created by Effector methods",
       category: "Naming",
       recommended: true,
     },
     messages: {
       invalidName:
-        'Store "{{ storeName }}" should be named with {{ storeNameConvention }}, rename it to "{{ correctedStoreName }}"',
+          'Store "{{ storeName }}" should be named with {{ storeNameConvention }}, rename it to "{{ correctedStoreName }}"',
       renameStore: 'Rename "{{ storeName }}" to "{{ correctedStoreName }}"',
     },
     schema: [],
   },
   create(context) {
-    const { parserServices, settings } = context;
-    // prefix convention is default
-    const storeNameConvention = settings.effector?.storeNameConvention || "prefix";
-    validateStoreNameConvention(storeNameConvention);
+    const { parserServices } = context;
+
+    validateStoreNameConvention(context);
 
     // TypeScript-way
     if (parserServices.hasFullTypeInformation) {
@@ -34,8 +36,8 @@ module.exports = {
           const type = checker.getTypeAtLocation(originalNode.initializer);
 
           const isEffectorStore =
-            type?.symbol?.escapedName === "Store" &&
-            type?.symbol?.parent?.escapedName?.includes("effector");
+              type?.symbol?.escapedName === "Store" &&
+              type?.symbol?.parent?.escapedName?.includes("effector");
 
           if (!isEffectorStore) {
             return;
@@ -43,15 +45,14 @@ module.exports = {
 
           const storeName = node.id.name;
 
-          if (isStoreNameValid(storeName, storeNameConvention)) {
+          if (isStoreNameValid(storeName, context)) {
             return;
           }
 
           reportStoreNameConventionViolation({
             context,
             node,
-            storeName,
-            storeNameConvention
+            storeName
           });
         },
       };
@@ -78,45 +79,42 @@ module.exports = {
           }
 
           const resultSavedInVariable =
-            node.parent.type === "VariableDeclarator";
+              node.parent.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             continue;
           }
 
           const storeName = node.parent.id.name;
 
-          if (isStoreNameValid(storeName, storeNameConvention)) {
+          if (isStoreNameValid(storeName, context)) {
             continue;
           }
 
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
-            storeName,
-            storeNameConvention
+            storeName
           });
           return;
         }
 
         // Store creation with .map
         if (node.callee?.property?.name === "map") {
-          const objectIsEffectorStore = storeNameConvention === "prefix"
-              ? node.callee?.object?.name?.startsWith?.("$")
-              : node.callee?.object?.name?.endsWith?.("$");
+          const storeNameCreatedFromMap = node.callee?.object?.name;
 
-          if (!objectIsEffectorStore) {
+          if (!isStoreNameValid(storeNameCreatedFromMap, context)) {
             return;
           }
 
           const resultSavedInVariable =
-            node.parent.type === "VariableDeclarator";
+              node.parent.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             return;
           }
 
           const storeName = node.parent.id.name;
 
-          if (isStoreNameValid(storeName, storeNameConvention)) {
+          if (isStoreNameValid(storeName, context)) {
             return;
           }
 
@@ -124,8 +122,7 @@ module.exports = {
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
-            storeName,
-            storeNameConvention
+            storeName
           });
           return;
         }
@@ -133,25 +130,24 @@ module.exports = {
         // Store creation in domain
         const STORE_IN_DOMAIN_CREATION_METHODS = ["createStore", "store"];
         if (
-          STORE_IN_DOMAIN_CREATION_METHODS.includes(node.callee?.property?.name)
+            STORE_IN_DOMAIN_CREATION_METHODS.includes(node.callee?.property?.name)
         ) {
           const resultSavedInVariable =
-            node.parent.type === "VariableDeclarator";
+              node.parent.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             return;
           }
 
           const storeName = node.parent.id.name;
 
-          if (isStoreNameValid(storeName, storeNameConvention)) {
+          if (isStoreNameValid(storeName, context)) {
             return;
           }
 
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
-            storeName,
-            storeNameConvention
+            storeName
           });
           return;
         }
@@ -160,11 +156,10 @@ module.exports = {
   },
 };
 
-function reportStoreNameConventionViolation({ context, node, storeName, storeNameConvention }) {
+function reportStoreNameConventionViolation({ context, node, storeName }) {
 
-  const correctedStoreName = storeNameConvention === "prefix"
-      ? `$${storeName}`
-      : `${storeName}$`
+  const storeNameConvention = getStoreNameConvention(context);
+  const correctedStoreName = getCorrectedStoreName(storeName, context);
 
   context.report({
     node,
@@ -179,21 +174,10 @@ function reportStoreNameConventionViolation({ context, node, storeName, storeNam
         messageId: "renameStore",
         data: { storeName },
         fix(fixer) {
-          if (storeNameConvention === "prefix") {
-            return fixer.insertTextBeforeRange(node.range, "$");
-          }
-          return fixer.insertTextAfterRange(node.range, "$");
+          return fixer.replaceTextRange(node.id.range, correctedStoreName);
         },
       },
     ],
   });
-}
-
-function validateStoreNameConvention(storeNameConvention) {
-  if (storeNameConvention !== "prefix" && storeNameConvention !== "postfix") {
-    throw new Error(
-        "Invalid Configuration of effector-plugin-eslint/enforce-store-naming-convention. The value should be equal to prefix or postfix."
-    );
-  }
 }
 
