@@ -18,9 +18,7 @@ module.exports = {
     schema: [],
   },
   create(context) {
-    const { parserServices, settings } = context;
-
-    const storeNameConvention = settings.effector?.storeNameConvention || "prefix";
+    const { parserServices } = context;
 
     return {
       CallExpression(node) {
@@ -54,7 +52,7 @@ module.exports = {
         }
         // JavaScript-way
         else {
-          const isEffectorStore = isStoreNameValid(objectName, storeNameConvention);
+          const isEffectorStore = isStoreNameValid(objectName, context);
           if (!isEffectorStore) {
             return;
           }
