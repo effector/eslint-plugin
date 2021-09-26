@@ -1,25 +1,32 @@
 const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
+const { isStoreNameValid } = require("../../utils/is-store-name-valid");
+const { validateStoreNameConvention } = require("../../utils/validate-store-name-convention");
+const { getStoreNameConvention } = require("../../utils/get-store-name-convention");
+const { getCorrectedStoreName } = require("../../utils/get-corrected-store-name");
 
 module.exports = {
   meta: {
     type: "problem",
     docs: {
       description:
-        "Enforce $ as a prefix for any store created by Effector methods",
+          "Enforce $ as a prefix or postfix for any store created by Effector methods",
       category: "Naming",
       recommended: true,
     },
     messages: {
       invalidName:
-        'Store "{{ storeName }}" should be named with prefix, rename it to "${{ storeName }}"',
-      renameStore: 'Rename "{{ storeName }}" to "${{ storeName }}"',
+          'Store "{{ storeName }}" should be named with {{ storeNameConvention }}, rename it to "{{ correctedStoreName }}"',
+      renameStore: 'Rename "{{ storeName }}" to "{{ correctedStoreName }}"',
     },
     schema: [],
   },
   create(context) {
-    const parserServices = context.parserServices;
+    const { parserServices } = context;
+
+    validateStoreNameConvention(context);
+
     // TypeScript-way
     if (parserServices.hasFullTypeInformation) {
       return {
@@ -29,8 +36,8 @@ module.exports = {
           const type = checker.getTypeAtLocation(originalNode.initializer);
 
           const isEffectorStore =
-            type?.symbol?.escapedName === "Store" &&
-            type?.symbol?.parent?.escapedName?.includes("effector");
+              type?.symbol?.escapedName === "Store" &&
+              type?.symbol?.parent?.escapedName?.includes("effector");
 
           if (!isEffectorStore) {
             return;
@@ -38,11 +45,15 @@ module.exports = {
 
           const storeName = node.id.name;
 
-          if (storeName?.startsWith("$")) {
+          if (isStoreNameValid(storeName, context)) {
             return;
           }
 
-          reportStoreNameConventionViolation({ context, node, storeName });
+          reportStoreNameConventionViolation({
+            context,
+            node,
+            storeName
+          });
         },
       };
     }
@@ -68,47 +79,50 @@ module.exports = {
           }
 
           const resultSavedInVariable =
-            node.parent.type === "VariableDeclarator";
+              node.parent.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             continue;
           }
 
           const storeName = node.parent.id.name;
-          if (storeName.startsWith("$")) {
+
+          if (isStoreNameValid(storeName, context)) {
             continue;
           }
 
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
-            storeName,
+            storeName
           });
           return;
         }
 
         // Store creation with .map
         if (node.callee?.property?.name === "map") {
-          const objectIsEffectorStore =
-            node.callee?.object?.name?.startsWith?.("$");
-          if (!objectIsEffectorStore) {
+          const storeNameCreatedFromMap = node.callee?.object?.name;
+
+          if (!isStoreNameValid(storeNameCreatedFromMap, context)) {
             return;
           }
 
           const resultSavedInVariable =
-            node.parent.type === "VariableDeclarator";
+              node.parent.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             return;
           }
 
           const storeName = node.parent.id.name;
-          if (storeName.startsWith("$")) {
+
+          if (isStoreNameValid(storeName, context)) {
             return;
           }
+
 
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
-            storeName,
+            storeName
           });
           return;
         }
@@ -116,23 +130,24 @@ module.exports = {
         // Store creation in domain
         const STORE_IN_DOMAIN_CREATION_METHODS = ["createStore", "store"];
         if (
-          STORE_IN_DOMAIN_CREATION_METHODS.includes(node.callee?.property?.name)
+            STORE_IN_DOMAIN_CREATION_METHODS.includes(node.callee?.property?.name)
         ) {
           const resultSavedInVariable =
-            node.parent.type === "VariableDeclarator";
+              node.parent.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             return;
           }
 
           const storeName = node.parent.id.name;
-          if (storeName.startsWith("$")) {
+
+          if (isStoreNameValid(storeName, context)) {
             return;
           }
 
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
-            storeName,
+            storeName
           });
           return;
         }
@@ -142,20 +157,27 @@ module.exports = {
 };
 
 function reportStoreNameConventionViolation({ context, node, storeName }) {
+
+  const storeNameConvention = getStoreNameConvention(context);
+  const correctedStoreName = getCorrectedStoreName(storeName, context);
+
   context.report({
     node,
     messageId: "invalidName",
     data: {
       storeName,
+      correctedStoreName,
+      storeNameConvention
     },
     suggest: [
       {
         messageId: "renameStore",
         data: { storeName },
         fix(fixer) {
-          return fixer.insertTextBeforeRange(node.range, "$");
+          return fixer.replaceTextRange(node.id.range, correctedStoreName);
         },
       },
     ],
   });
 }
+
