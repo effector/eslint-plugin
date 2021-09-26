@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-effector",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Enforcing best practices for Effector",
   "main": "index.js",
   "author": "Igor Kamyshev <igor@kamyshev.me>",
