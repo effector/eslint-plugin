@@ -46,7 +46,8 @@ module.exports = {
 
           const resultAssignedInVariable = traverseParentByType(
             node,
-            "VariableDeclarator"
+            "VariableDeclarator",
+            { stopOnTypes: ["BlockStatement"] }
           );
           const resultPartOfChain = traverseParentByType(
             node,
