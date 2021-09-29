@@ -21,7 +21,9 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run("effector/no-ambiguity-target.ts.test", rule, {
-  valid: ["correct.ts"].map(readExampleForTheRule),
+  valid: ["correct.ts", "correct-examples-issue-49.ts"].map(
+    readExampleForTheRule
+  ),
 
   invalid: [
     ...["incorrect-sample.ts"].map(readExampleForTheRule).map((result) => ({
