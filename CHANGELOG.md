@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.1
+
+- Fixed false-positive in `no-ambiguity-target` with factories ([PR #50](https://github.com/effector/eslint-plugin/pull/50))
+
 ## v0.3.0
 
 - Add new rule: `no-useless-methods` ([PR #41](https://github.com/effector/eslint-plugin/pull/41))
