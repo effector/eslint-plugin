@@ -49,23 +49,20 @@ module.exports = {
             return;
           }
 
-          reportGetStateCall({ context, node, unitName: objectName });
+          reportGetStateCall({ context, node });
         }
         // JavaScript-way
         else {
-          reportGetStateCall({ context, node, unitName: objectName });
+          reportGetStateCall({ context, node });
         }
       },
     };
   },
 };
 
-function reportGetStateCall({ context, node, unitName }) {
+function reportGetStateCall({ context, node }) {
   context.report({
     node,
     messageId: "abusiveCall",
-    data: {
-      unitName,
-    },
   });
 }
