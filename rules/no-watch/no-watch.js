@@ -11,10 +11,10 @@ module.exports = {
       recommended: true,
     },
     messages: {
-      // fixme: add description
       // fixme: add js test
       // fixme: try to avoid watch always error on js files
-      abusiveCall: "Write some description",
+      abusiveCall:
+        "Method `.watch` leads to imperative code. Try to replace it with operators (`sample`, `guard`, etc).",
     },
     schema: [],
   },
