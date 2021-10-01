@@ -6,15 +6,13 @@ module.exports = {
   meta: {
     type: "suggestion",
     docs: {
-      description: "Avoid `.watch` calls on any Effector unit",
+      description: "Avoid `.watch` calls on any Effector unit or operator",
       category: "Quality",
       recommended: true,
     },
     messages: {
-      // fixme: add js test
-      // fixme: try to avoid watch always error on js files
       abusiveCall:
-        "Method `.watch` leads to imperative code. Try to replace it with operators (`sample`, `guard`, etc).",
+        "Method `.watch` leads to imperative code. Try to replace it with operators (`sample`, `guard`, etc) or use the `target` parameter of the operators.",
     },
     schema: [],
   },
@@ -24,14 +22,16 @@ module.exports = {
     return {
       CallExpression(node) {
         const methodName = node.callee?.property?.name;
+
         if (methodName !== "watch") {
           return;
         }
 
         const object = traverseNestedObjectNode(node.callee?.object);
         const objectName = object?.name;
+        const calleeName = object?.callee?.name;
 
-        if (!objectName) {
+        if (!objectName && !["sample", "guard"].includes(calleeName)) {
           return;
         }
 
@@ -49,10 +49,6 @@ module.exports = {
             return;
           }
 
-          reportGetStateCall({ context, node });
-        }
-        // JavaScript-way
-        else {
           reportGetStateCall({ context, node });
         }
       },

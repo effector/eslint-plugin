@@ -3,7 +3,7 @@ const { RuleTester } =
 const { join } = require("path");
 
 const { readExample } = require("../../utils/read-example");
-const rule = require("./no-watch");
+const rule = require("./@typescript-no-watch");
 
 const ruleTester = new RuleTester({
   parser: "@typescript-eslint/parser",
@@ -24,7 +24,7 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
   valid: ["correct.ts"].map(readExampleForTheRule),
 
   invalid: [
-    ...["incorrect-with-effect-watch.ts"]
+    ...["incorrect-with-effect.ts"]
       .map(readExampleForTheRule)
       .map((result) => ({
         ...result,
@@ -55,7 +55,25 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
           },
         ],
       })),
-    ...["incorrect-with-event-watch.ts"]
+    ...["incorrect-with-event.ts"].map(readExampleForTheRule).map((result) => ({
+      ...result,
+      errors: [
+        {
+          messageId: "abusiveCall",
+          type: "CallExpression",
+        },
+      ],
+    })),
+    ...["incorrect-with-guard.ts"].map(readExampleForTheRule).map((result) => ({
+      ...result,
+      errors: [
+        {
+          messageId: "abusiveCall",
+          type: "CallExpression",
+        },
+      ],
+    })),
+    ...["incorrect-with-sample.ts"]
       .map(readExampleForTheRule)
       .map((result) => ({
         ...result,
@@ -66,20 +84,18 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
           },
         ],
       })),
-    ...["incorrect-with-store-watch.ts"]
-      .map(readExampleForTheRule)
-      .map((result) => ({
-        ...result,
-        errors: [
-          {
-            messageId: "abusiveCall",
-            type: "CallExpression",
-          },
-          {
-            messageId: "abusiveCall",
-            type: "CallExpression",
-          },
-        ],
-      })),
+    ...["incorrect-with-store.ts"].map(readExampleForTheRule).map((result) => ({
+      ...result,
+      errors: [
+        {
+          messageId: "abusiveCall",
+          type: "CallExpression",
+        },
+        {
+          messageId: "abusiveCall",
+          type: "CallExpression",
+        },
+      ],
+    })),
   ],
 });

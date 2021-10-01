@@ -7,6 +7,6 @@ module.exports = {
     "effector/no-unnecessary-duplication": "warn",
     "effector/prefer-sample-over-forward-with-mapping": "warn",
     "effector/no-ambiguity-target": "warn",
-    "effector/no-watch": "warn",
+    "effector/@typescript-no-watch": "warn",
   },
 };
