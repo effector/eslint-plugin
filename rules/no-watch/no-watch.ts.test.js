@@ -3,7 +3,7 @@ const { RuleTester } =
 const { join } = require("path");
 
 const { readExample } = require("../../utils/read-example");
-const rule = require("./@typescript-no-watch");
+const rule = require("./no-watch");
 
 const ruleTester = new RuleTester({
   parser: "@typescript-eslint/parser",

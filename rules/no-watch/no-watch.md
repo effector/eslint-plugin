@@ -1,4 +1,4 @@
-# effector/@typescript-no-watch
+# effector/no-watch
 
 Method `.watch` leads to imperative code. Try replacing it with operators (`forward`, `sample`, etc) or use the `target` parameter of the operators.
 

@@ -1,6 +1,6 @@
 const { RuleTester } = require("eslint");
 
-const rule = require("./@typescript-no-watch.js");
+const rule = require("./no-watch.js");
 
 const ruleTester = new RuleTester({
   parserOptions: {
@@ -9,7 +9,7 @@ const ruleTester = new RuleTester({
   },
 });
 
-ruleTester.run("effector/@typescript-no-watch.test", rule, {
+ruleTester.run("effector/no-watch.test", rule, {
   valid: [
     "myFx.finally.watch(myEvent);",
     "myEvent.watch((payload) => {if (Boolean(payload)) {myFx(payload);}});",

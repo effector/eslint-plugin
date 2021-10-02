@@ -7,7 +7,7 @@ module.exports = {
     "prefer-sample-over-forward-with-mapping": require("./rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping"),
     "no-useless-methods": require("./rules/no-useless-methods/no-useless-methods"),
     "no-ambiguity-target": require("./rules/no-ambiguity-target/no-ambiguity-target"),
-    "@typescript-no-watch": require("./rules/@typescript-no-watch/@typescript-no-watch"),
+    "no-watch": require("./rules/no-watch/no-watch"),
   },
   configs: {
     recommended: require("./config/recommended"),
