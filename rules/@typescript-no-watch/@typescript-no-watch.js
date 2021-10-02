@@ -19,7 +19,7 @@ module.exports = {
   create(context) {
     const { parserServices } = context;
     if (!parserServices.hasFullTypeInformation) {
-      // JavaScript-way
+      // JavaScript-way https://github.com/effector/eslint-plugin/issues/48#issuecomment-931107829
       return {};
     }
     const checker = parserServices.program.getTypeChecker();
