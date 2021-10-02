@@ -2,6 +2,8 @@
 
 Method `.watch` leads to imperative code. Try replacing it with operators (`forward`, `sample`, etc) or use the `target` parameter of the operators.
 
+> Caution! This rule only works on projects using TypeScript.
+
 ```ts
 const myFx = createEffect();
 const myEvent = createEvent();
