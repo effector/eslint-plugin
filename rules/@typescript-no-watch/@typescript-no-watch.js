@@ -18,45 +18,38 @@ module.exports = {
   },
   create(context) {
     const { parserServices } = context;
+    if (!parserServices.hasFullTypeInformation) {
+      // JavaScript-way
+      return {};
+    }
+    const checker = parserServices.program.getTypeChecker();
 
     return {
       CallExpression(node) {
         const methodName = node.callee?.property?.name;
-
         if (methodName !== "watch") {
           return;
         }
 
         const object = traverseNestedObjectNode(node.callee?.object);
-        const objectName = object?.name;
-        const calleeName = object?.callee?.name;
+        const originalNode = parserServices.esTreeNodeToTSNodeMap.get(object);
+        const type = checker.getTypeAtLocation(originalNode);
 
-        if (!objectName && !["sample", "guard"].includes(calleeName)) {
+        const isEffectorUnit =
+          ["Effect", "Event", "Store"].includes(type?.symbol?.escapedName) &&
+          type?.symbol?.parent?.escapedName?.includes("effector");
+
+        if (!isEffectorUnit) {
           return;
         }
 
-        // TypeScript-way
-        if (parserServices.hasFullTypeInformation) {
-          const checker = parserServices.program.getTypeChecker();
-          const originalNode = parserServices.esTreeNodeToTSNodeMap.get(object);
-          const type = checker.getTypeAtLocation(originalNode);
-
-          const isEffectorUnit =
-            ["Effect", "Event", "Store"].includes(type?.symbol?.escapedName) &&
-            type?.symbol?.parent?.escapedName?.includes("effector");
-
-          if (!isEffectorUnit) {
-            return;
-          }
-
-          reportGetStateCall({ context, node });
-        }
+        reportWatchCall({ context, node });
       },
     };
   },
 };
 
-function reportGetStateCall({ context, node }) {
+function reportWatchCall({ context, node }) {
   context.report({
     node,
     messageId: "abusiveCall",

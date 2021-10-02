@@ -82,6 +82,10 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
             messageId: "abusiveCall",
             type: "CallExpression",
           },
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
         ],
       })),
     ...["incorrect-with-store.ts"].map(readExampleForTheRule).map((result) => ({
