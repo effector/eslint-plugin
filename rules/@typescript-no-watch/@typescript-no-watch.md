@@ -7,104 +7,36 @@ Method `.watch` leads to imperative code. Try replacing it with operators (`forw
 ```ts
 const myFx = createEffect();
 const myEvent = createEvent();
+const $awesome = createStore();
 
-// 👍 good solution
-forward({
-  from: myFx,
-  to: myEvent,
-});
-forward({
-  from: myFx.done,
-  to: myEvent,
-});
-forward({
-  from: myFx.fail,
-  to: myEvent,
-});
-forward({
-  from: myFx.doneData,
-  to: myEvent,
-});
-forward({
-  from: myFx.failData,
-  to: myEvent,
-});
+// 👍 good solutions
 forward({
   from: myFx.finally,
   to: myEvent,
 });
 
-// 👎 bad solution
-myFx.watch(myEvent);
-myFx.done.watch(myEvent);
-myFx.fail.watch(myEvent);
-myFx.doneData.watch(myEvent);
-myFx.failData.watch(myEvent);
-myFx.finally.watch(myEvent);
-```
-
-```ts
-const myFx = createEffect();
-const myEvent = createEvent();
-
-// 👍 good solution
-forward({
-  from: myEvent,
-  to: myFx,
+guard({
+  clock: myEvent,
+  filter: Boolean,
+  target: myFx,
 });
 
-// 👎 bad solution
-myEvent.watch(async () => {
-  await myFx();
-});
-```
-
-```ts
-const $awesome = createStore();
-const myEvent = createEvent();
-
-// 👍 good solution
-forward({
+sample({
   from: $awesome.updates,
+  fn: identity,
   to: myEvent,
 });
 
-// 👎 bad solution
-$awesome.updates.watch(myEvent);
-```
+// 👎 bad solutions
+myFx.finally.watch(myEvent);
 
-```ts
-const myFx = createEffect();
-const myEvent = createEvent();
-
-// 👍 good solution
-guard({
-  clock: myEvent,
-  filter: Boolean,
-  target: myFx,
+myEvent.watch((payload) => {
+  if (Boolean(payload)) {
+    myFx(payload);
+  }
 });
 
-// 👎 bad solution
-guard({
-  clock: myEvent,
-  filter: Boolean,
-}).watch(myFx);
-```
-
-```ts
-const myFx = createEffect();
-const myEvent = createEvent();
-
-// 👍 good solution
-sample({
-  clock: myEvent,
-  fn: Identity,
-  target: myFx,
+$awesome.updates.watch((data) => {
+  myEvent(identity(data));
 });
-
-// 👎 bad solution
-sample({
-  clock: myEvent,
-  fn: Identity,
-}).watch(myFx);
 ```
