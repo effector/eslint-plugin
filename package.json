@@ -2,6 +2,13 @@
   "name": "eslint-plugin-effector",
   "version": "0.3.1",
   "description": "Enforcing best practices for Effector",
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "eslintplugin",
+    "effector"
+  ],
+  "repository": "effector/eslint-plugin",
   "main": "index.js",
   "author": "Igor Kamyshev <igor@kamyshev.me>",
   "license": "MIT",
