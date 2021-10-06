@@ -24,56 +24,7 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
   valid: ["correct.ts"].map(readExampleForTheRule),
 
   invalid: [
-    ...["incorrect-with-effect.ts"]
-      .map(readExampleForTheRule)
-      .map((result) => ({
-        ...result,
-        errors: [
-          {
-            messageId: "abusiveCall",
-            type: "CallExpression",
-          },
-          {
-            messageId: "abusiveCall",
-            type: "CallExpression",
-          },
-          {
-            messageId: "abusiveCall",
-            type: "CallExpression",
-          },
-          {
-            messageId: "abusiveCall",
-            type: "CallExpression",
-          },
-          {
-            messageId: "abusiveCall",
-            type: "CallExpression",
-          },
-          {
-            messageId: "abusiveCall",
-            type: "CallExpression",
-          },
-        ],
-      })),
-    ...["incorrect-with-event.ts"].map(readExampleForTheRule).map((result) => ({
-      ...result,
-      errors: [
-        {
-          messageId: "abusiveCall",
-          type: "CallExpression",
-        },
-      ],
-    })),
-    ...["incorrect-with-guard.ts"].map(readExampleForTheRule).map((result) => ({
-      ...result,
-      errors: [
-        {
-          messageId: "abusiveCall",
-          type: "CallExpression",
-        },
-      ],
-    })),
-    ...["incorrect-with-sample.ts"]
+    ...[join("incorrect", "effect", "done.ts")]
       .map(readExampleForTheRule)
       .map((result) => ({
         ...result,
@@ -87,8 +38,84 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
             type: "CallExpression",
           },
         ],
+    })),
+    ...[join("incorrect", "effect", "fail.ts")]
+      .map(readExampleForTheRule)
+      .map((result) => ({
+        ...result,
+        errors: [
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+        ],
+    })),
+    ...[join("incorrect", "effect", "finally.ts")]
+      .map(readExampleForTheRule)
+      .map((result) => ({
+        ...result,
+        errors: [
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+        ],
+    })),
+    ...[join("incorrect", "effect", "base.ts")]
+      .map(readExampleForTheRule)
+      .map((result) => ({
+        ...result,
+        errors: [
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+        ],
       })),
-    ...["incorrect-with-store.ts"].map(readExampleForTheRule).map((result) => ({
+    ...[join("incorrect", "event.ts")]
+      .map(readExampleForTheRule)
+      .map((result) => ({
+      ...result,
+      errors: [
+        {
+          messageId: "abusiveCall",
+          type: "CallExpression",
+        },
+      ],
+    })),
+    ...[join("incorrect", "guard.ts")]
+      .map(readExampleForTheRule)
+      .map((result) => ({
+      ...result,
+      errors: [
+        {
+          messageId: "abusiveCall",
+          type: "CallExpression",
+        },
+      ],
+    })),
+    ...[join("incorrect", "sample.ts")]
+      .map(readExampleForTheRule)
+      .map((result) => ({
+        ...result,
+        errors: [
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+        ],
+      })),
+    ...[join("incorrect", "store.ts")]
+      .map(readExampleForTheRule)
+      .map((result) => ({
       ...result,
       errors: [
         {

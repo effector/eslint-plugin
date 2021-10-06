@@ -5,5 +5,5 @@
     "lib": ["es2017", "es2019"],
     "baseUrl": "./"
   },
-  "include": ["./**/examples/*.ts"]
+  "include": ["./**/examples/**/*.ts"]
 }
