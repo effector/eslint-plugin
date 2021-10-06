@@ -2,6 +2,7 @@ const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
 const { areNodesSameInText } = require("../../utils/are-nodes-same-in-text");
+const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
   meta: {
@@ -10,6 +11,7 @@ module.exports = {
       description: "Forbids unnecessary duplication in `clock` and `source`",
       category: "Quality",
       recommended: true,
+      url: createLinkToRule("no-unnecessary-duplication"),
     },
     messages: {
       unnecessaryDuplication:

@@ -1,6 +1,7 @@
 const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
+const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
   meta: {
@@ -9,6 +10,7 @@ module.exports = {
       description: "Avoid `.watch` calls on any Effector unit or operator",
       category: "Quality",
       recommended: true,
+      url: createLinkToRule("no-watch"),
     },
     messages: {
       abusiveCall:
