@@ -2,6 +2,7 @@ const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
 const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
+const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
   meta: {
@@ -10,6 +11,7 @@ module.exports = {
       description: "Forbids useless calls of `sample` and `guard`",
       category: "Quality",
       recommended: true,
+      url: createLinkToRule("no-useless-methods"),
     },
     messages: {
       uselessMethod:

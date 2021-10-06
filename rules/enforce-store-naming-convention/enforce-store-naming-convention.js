@@ -2,22 +2,30 @@ const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
 const { isStoreNameValid } = require("../../utils/is-store-name-valid");
-const { validateStoreNameConvention } = require("../../utils/validate-store-name-convention");
-const { getStoreNameConvention } = require("../../utils/get-store-name-convention");
-const { getCorrectedStoreName } = require("../../utils/get-corrected-store-name");
+const {
+  validateStoreNameConvention,
+} = require("../../utils/validate-store-name-convention");
+const {
+  getStoreNameConvention,
+} = require("../../utils/get-store-name-convention");
+const {
+  getCorrectedStoreName,
+} = require("../../utils/get-corrected-store-name");
+const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
   meta: {
     type: "problem",
     docs: {
       description:
-          "Enforce $ as a prefix or postfix for any store created by Effector methods",
+        "Enforce $ as a prefix or postfix for any store created by Effector methods",
       category: "Naming",
       recommended: true,
+      url: createLinkToRule("enforce-store-naming-convention"),
     },
     messages: {
       invalidName:
-          'Store "{{ storeName }}" should be named with {{ storeNameConvention }}, rename it to "{{ correctedStoreName }}"',
+        'Store "{{ storeName }}" should be named with {{ storeNameConvention }}, rename it to "{{ correctedStoreName }}"',
       renameStore: 'Rename "{{ storeName }}" to "{{ correctedStoreName }}"',
     },
     schema: [],
@@ -36,8 +44,8 @@ module.exports = {
           const type = checker.getTypeAtLocation(originalNode.initializer);
 
           const isEffectorStore =
-              type?.symbol?.escapedName === "Store" &&
-              type?.symbol?.parent?.escapedName?.includes("effector");
+            type?.symbol?.escapedName === "Store" &&
+            type?.symbol?.parent?.escapedName?.includes("effector");
 
           if (!isEffectorStore) {
             return;
@@ -52,7 +60,7 @@ module.exports = {
           reportStoreNameConventionViolation({
             context,
             node,
-            storeName
+            storeName,
           });
         },
       };
@@ -79,7 +87,7 @@ module.exports = {
           }
 
           const resultSavedInVariable =
-              node.parent.type === "VariableDeclarator";
+            node.parent.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             continue;
           }
@@ -93,7 +101,7 @@ module.exports = {
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
-            storeName
+            storeName,
           });
           return;
         }
@@ -107,7 +115,7 @@ module.exports = {
           }
 
           const resultSavedInVariable =
-              node.parent.type === "VariableDeclarator";
+            node.parent.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             return;
           }
@@ -118,11 +126,10 @@ module.exports = {
             return;
           }
 
-
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
-            storeName
+            storeName,
           });
           return;
         }
@@ -130,10 +137,10 @@ module.exports = {
         // Store creation in domain
         const STORE_IN_DOMAIN_CREATION_METHODS = ["createStore", "store"];
         if (
-            STORE_IN_DOMAIN_CREATION_METHODS.includes(node.callee?.property?.name)
+          STORE_IN_DOMAIN_CREATION_METHODS.includes(node.callee?.property?.name)
         ) {
           const resultSavedInVariable =
-              node.parent.type === "VariableDeclarator";
+            node.parent.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             return;
           }
@@ -147,7 +154,7 @@ module.exports = {
           reportStoreNameConventionViolation({
             context,
             node: node.parent,
-            storeName
+            storeName,
           });
           return;
         }
@@ -157,7 +164,6 @@ module.exports = {
 };
 
 function reportStoreNameConventionViolation({ context, node, storeName }) {
-
   const storeNameConvention = getStoreNameConvention(context);
   const correctedStoreName = getCorrectedStoreName(storeName, context);
 
@@ -167,7 +173,7 @@ function reportStoreNameConventionViolation({ context, node, storeName }) {
     data: {
       storeName,
       correctedStoreName,
-      storeNameConvention
+      storeNameConvention,
     },
     suggest: [
       {
@@ -180,4 +186,3 @@ function reportStoreNameConventionViolation({ context, node, storeName }) {
     ],
   });
 }
-

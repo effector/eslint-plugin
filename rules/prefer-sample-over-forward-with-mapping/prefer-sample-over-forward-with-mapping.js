@@ -4,6 +4,7 @@ const {
 const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
+const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
   meta: {
@@ -12,6 +13,7 @@ module.exports = {
       description: "Prefer `sample` over `forward` with `.map`/`.prepend`",
       category: "Quality",
       recommended: true,
+      url: createLinkToRule("prefer-sample-over-forward-with-mapping"),
     },
     messages: {
       overMap:
