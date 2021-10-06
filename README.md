@@ -49,3 +49,15 @@ To configure individual rules:
 - [effector/no-ambiguity-target](/rules/no-ambiguity-target/no-ambiguity-target.md)
 - [effector/prefer-sample-over-forward-with-mapping](/rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
 - [effector/no-watch](/rules/no-watch/no-watch.md)
+
+## Maintenance
+
+### Release flow
+
+1. Bump `version` in [package.json](./package.json)
+2. Fill [CHANGELOG.md](./CHANGELOG.md)
+3. Commit changes by `git commin -m "Release X.X.X"
+4. Create git tag for release by `git tag -a vX.X.X -m "vX.X.X"`
+5. Push changes to remote by `git push --follow-tags`
+6. Release package to registry by `yarn clean-publish`
+7. Fill release page by changelog on GitHub
