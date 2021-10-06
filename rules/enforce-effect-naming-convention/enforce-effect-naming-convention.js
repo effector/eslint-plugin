@@ -11,7 +11,7 @@ module.exports = {
         "Enforce Fx as a suffix for any effect created by Effector methods",
       category: "Naming",
       recommended: true,
-      link: createLinkToRule("enforce-effect-naming-convention"),
+      url: createLinkToRule("enforce-effect-naming-convention"),
     },
     messages: {
       invalidName:
