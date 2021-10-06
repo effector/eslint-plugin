@@ -48,3 +48,4 @@ To configure individual rules:
 - [effector/no-useless-methods](/rules/no-useless-methods/no-useless-methods.md)
 - [effector/no-ambiguity-target](/rules/no-ambiguity-target/no-ambiguity-target.md)
 - [effector/prefer-sample-over-forward-with-mapping](/rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
+- [effector/no-watch](/rules/no-watch/no-watch.md)
