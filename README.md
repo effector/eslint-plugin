@@ -56,8 +56,8 @@ To configure individual rules:
 
 1. Bump `version` in [package.json](./package.json)
 2. Fill [CHANGELOG.md](./CHANGELOG.md)
-3. Commit changes by `git commin -m "Release X.X.X"
+3. Commit changes by `git commin -m "Release X.X.X"`
 4. Create git tag for release by `git tag -a vX.X.X -m "vX.X.X"`
 5. Push changes to remote by `git push --follow-tags`
 6. Release package to registry by `yarn clean-publish`
-7. Fill release page by changelog on GitHub
+7. Fill release page with changelog on GitHub
