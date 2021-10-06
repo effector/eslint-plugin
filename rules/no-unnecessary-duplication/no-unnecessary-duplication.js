@@ -20,6 +20,7 @@ module.exports = {
       removeSource: "Remove `source`",
     },
     schema: [],
+    hasSuggestions: true,
   },
   create(context) {
     const importedFromEffector = new Map();

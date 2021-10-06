@@ -19,6 +19,7 @@ module.exports = {
       renameEffect: 'Rename "{{ effectName }}" to "{{ effectName }}Fx"',
     },
     schema: [],
+    hasSuggestions: true,
   },
   create(context) {
     const parserServices = context.parserServices;
