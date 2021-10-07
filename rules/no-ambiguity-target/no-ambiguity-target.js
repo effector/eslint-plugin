@@ -2,6 +2,7 @@ const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
 const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
+const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
   meta: {
@@ -10,6 +11,7 @@ module.exports = {
       description: "Forbids ambiguity targets in `sample` and `guard`",
       category: "Quality",
       recommended: true,
+      url: createLinkToRule("no-ambiguity-target"),
     },
     messages: {
       ambiguityTarget:
@@ -46,7 +48,8 @@ module.exports = {
 
           const resultAssignedInVariable = traverseParentByType(
             node,
-            "VariableDeclarator"
+            "VariableDeclarator",
+            { stopOnTypes: ["BlockStatement"] }
           );
           const resultPartOfChain = traverseParentByType(
             node,

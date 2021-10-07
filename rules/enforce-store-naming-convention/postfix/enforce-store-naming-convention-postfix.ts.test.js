@@ -2,9 +2,9 @@ const { RuleTester } =
   require("@typescript-eslint/experimental-utils").ESLintUtils;
 const { join } = require("path");
 
-const { readExample } = require("../../utils/read-example");
+const { readExample } = require("../../../utils/read-example");
 
-const rule = require("./enforce-store-naming-convention");
+const rule = require("../enforce-store-naming-convention");
 
 const ruleTester = new RuleTester({
   parser: "@typescript-eslint/parser",
@@ -12,16 +12,21 @@ const ruleTester = new RuleTester({
     ecmaVersion: 2020,
     sourceType: "module",
     project: "./tsconfig.json",
-    tsconfigRootDir: join(__dirname, ".."),
+    tsconfigRootDir: join(__dirname, "../.."),
   },
 });
 
 const readExampleForTheRule = (name) => ({
   code: readExample(__dirname, name),
   filename: join(__dirname, "examples", name),
+  settings: {
+    effector: {
+      storeNameConvention: "postfix"
+    }
+  },
 });
 
-ruleTester.run("effector/enforce-store-naming-convention.ts.test", rule, {
+ruleTester.run("effector/enforce-store-naming-convention-postfix.ts.test", rule, {
   valid: ["correct-store-naming.ts"].map(readExampleForTheRule),
 
   invalid: [

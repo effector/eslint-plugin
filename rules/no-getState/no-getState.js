@@ -1,6 +1,8 @@
 const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
+const { isStoreNameValid } = require("../../utils/is-store-name-valid");
+const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
   meta: {
@@ -9,6 +11,7 @@ module.exports = {
       description: "Forbids `.getState` calls on any Effector store",
       category: "Quality",
       recommended: true,
+      url: createLinkToRule("no-getState"),
     },
     messages: {
       abusiveCall:
@@ -17,7 +20,7 @@ module.exports = {
     schema: [],
   },
   create(context) {
-    const parserServices = context.parserServices;
+    const { parserServices } = context;
 
     return {
       CallExpression(node) {
@@ -51,7 +54,7 @@ module.exports = {
         }
         // JavaScript-way
         else {
-          const isEffectorStore = objectName.startsWith("$");
+          const isEffectorStore = isStoreNameValid(objectName, context);
           if (!isEffectorStore) {
             return;
           }

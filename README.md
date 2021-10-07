@@ -41,10 +41,23 @@ To configure individual rules:
 
 ## Supported Rules
 
-- [effector/enforce-store-naming-convention](/rules/enforce-store-naming-convention/enforce-store-naming-convention.md)
-- [effector/enforce-effect-naming-convention](/rules/enforce-effect-naming-convention/enforce-effect-naming-convention.md)
-- [effector/no-getState](/rules/no-getState/no-getState.md)
-- [effector/no-unnecessary-duplication](/rules/no-unnecessary-duplication/no-unnecessary-duplication.md)
-- [effector/no-useless-methods](/rules/no-useless-methods/no-useless-methods.md)
-- [effector/no-ambiguity-target](/rules/no-ambiguity-target/no-ambiguity-target.md)
-- [effector/prefer-sample-over-forward-with-mapping](/rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
+- [effector/enforce-store-naming-convention](rules/enforce-store-naming-convention/enforce-store-naming-convention.md)
+- [effector/enforce-effect-naming-convention](rules/enforce-effect-naming-convention/enforce-effect-naming-convention.md)
+- [effector/no-getState](rules/no-getState/no-getState.md)
+- [effector/no-unnecessary-duplication](rules/no-unnecessary-duplication/no-unnecessary-duplication.md)
+- [effector/no-useless-methods](rules/no-useless-methods/no-useless-methods.md)
+- [effector/no-ambiguity-target](rules/no-ambiguity-target/no-ambiguity-target.md)
+- [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
+- [effector/no-watch](rules/no-watch/no-watch.md)
+
+## Maintenance
+
+### Release flow
+
+1. Bump `version` in [package.json](package.json)
+2. Fill [CHANGELOG.md](CHANGELOG.md)
+3. Commit changes by `git commin -m "Release X.X.X"`
+4. Create git tag for release by `git tag -a vX.X.X -m "vX.X.X"`
+5. Push changes to remote by `git push --follow-tags`
+6. Release package to registry by `yarn clean-publish`
+7. Fill release page with changelog on GitHub

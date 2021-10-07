@@ -1,6 +1,7 @@
 const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
+const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
   meta: {
@@ -10,6 +11,7 @@ module.exports = {
         "Enforce Fx as a suffix for any effect created by Effector methods",
       category: "Naming",
       recommended: true,
+      url: createLinkToRule("enforce-effect-naming-convention"),
     },
     messages: {
       invalidName:

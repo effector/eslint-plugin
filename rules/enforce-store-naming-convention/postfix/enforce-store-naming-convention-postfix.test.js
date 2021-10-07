@@ -1,8 +1,8 @@
 const { RuleTester } = require("eslint");
 
-const { readExample } = require("../../utils/read-example");
+const { readExample } = require("../../../utils/read-example");
 
-const rule = require("./enforce-store-naming-convention");
+const rule = require("../enforce-store-naming-convention");
 
 const ruleTester = new RuleTester({
   parserOptions: {
@@ -13,21 +13,29 @@ const ruleTester = new RuleTester({
 
 const readExampleForTheRule = (name) => readExample(__dirname, name);
 
-ruleTester.run("effector/enforce-store-naming-convention.test", rule, {
-  valid: [
+ruleTester.run("effector/enforce-store-naming-convention-postfix.test", rule, {
+    valid: [
     "correct-store-naming.js",
     "correct-store-naming-from-other-package.js",
     "correct-store-naming-in-domain.js",
     "correct-examples-issue-23.js",
   ]
     .map(readExampleForTheRule)
-    .map((code) => ({ code })),
+    .map((code) => ({
+        code,
+        settings: {
+          effector: {
+            storeNameConvention: "postfix"
+          }
+        },
+    })),
 
   invalid: [
     // Errors
     ...[
       "incorrect-createStore.js",
       "incorrect-createStore-alias.js",
+      "incorrect-createStore-prefix.js",
       "incorrect-restore.js",
       "incorrect-restore-alias.js",
       "incorrect-combine.js",
@@ -38,6 +46,11 @@ ruleTester.run("effector/enforce-store-naming-convention.test", rule, {
       .map(readExampleForTheRule)
       .map((code) => ({
         code,
+        settings: {
+          effector: {
+            storeNameConvention: "postfix"
+          }
+        },
         errors: [
           {
             messageId: "invalidName",

@@ -1,5 +1,7 @@
-function traverseParentByType(node, type) {
-  if (!node) {
+function traverseParentByType(node, type, config) {
+  const stopOnTypes = config?.stopOnTypes ?? [];
+
+  if (!node || stopOnTypes.includes(node.type)) {
     return null;
   }
 
@@ -7,7 +9,7 @@ function traverseParentByType(node, type) {
     return node;
   }
 
-  return traverseParentByType(node.parent, type);
+  return traverseParentByType(node.parent, type, config);
 }
 
 module.exports = { traverseParentByType };
