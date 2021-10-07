@@ -3,5 +3,5 @@ module.exports = {
   collectCoverage: false,
   collectCoverageFrom: ["rules/**/{!(examples),}/*.js"],
   moduleFileExtensions: ["js"],
-  coverageReporters: ["text-summary", "lcov"],
+  coverageReporters: ["text-summary", "lcov"]
 };

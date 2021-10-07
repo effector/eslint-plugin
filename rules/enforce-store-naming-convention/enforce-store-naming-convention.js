@@ -29,6 +29,7 @@ module.exports = {
       renameStore: 'Rename "{{ storeName }}" to "{{ correctedStoreName }}"',
     },
     schema: [],
+    hasSuggestions: true,
   },
   create(context) {
     const { parserServices } = context;
