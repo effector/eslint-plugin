@@ -49,6 +49,7 @@ To configure individual rules:
 - [effector/no-ambiguity-target](rules/no-ambiguity-target/no-ambiguity-target.md)
 - [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
 - [effector/no-watch](rules/no-watch/no-watch.md)
+- [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
 
 ## Maintenance
 

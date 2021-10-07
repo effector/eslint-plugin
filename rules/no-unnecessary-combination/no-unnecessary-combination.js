@@ -1,6 +1,7 @@
 const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
+const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
   meta: {
@@ -10,6 +11,7 @@ module.exports = {
         "Forbids unnecessary combinations in `clock`, `source` and `forward`",
       category: "Quality",
       recommended: true,
+      url: createLinkToRule("no-unnecessary-combination"),
     },
     messages: {
       unnecessaryCombination:

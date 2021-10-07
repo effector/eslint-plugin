@@ -8,6 +8,7 @@ module.exports = {
     "no-useless-methods": require("./rules/no-useless-methods/no-useless-methods"),
     "no-ambiguity-target": require("./rules/no-ambiguity-target/no-ambiguity-target"),
     "no-watch": require("./rules/no-watch/no-watch"),
+    "no-unnecessary-combination": require("./rules/no-unnecessary-combination/no-unnecessary-combination"),
   },
   configs: {
     recommended: require("./config/recommended"),

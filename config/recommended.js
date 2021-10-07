@@ -8,5 +8,6 @@ module.exports = {
     "effector/prefer-sample-over-forward-with-mapping": "warn",
     "effector/no-ambiguity-target": "warn",
     "effector/no-watch": "warn",
+    "effector/no-unnecessary-combination": "warn",
   },
 };
