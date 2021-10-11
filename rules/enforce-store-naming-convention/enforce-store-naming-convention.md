@@ -17,7 +17,7 @@ Prefix convention will be enforced:
 const $name = createStore(null);
 
 // 👎 bad name
-const name = createStrore(null);
+const name = createStore(null);
 ```
 ## Postfix convention
 
