@@ -33,7 +33,7 @@
   },
   "peerDependencies": {
     "effector": "*",
-    "eslint": "*"
+    "eslint": "7 || 8"
   },
   "dependencies": {
     "prettier": "^2.3.2"

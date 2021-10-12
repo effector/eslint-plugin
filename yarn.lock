@@ -1816,7 +1816,7 @@ __metadata:
     typescript: ^4.4.2
   peerDependencies:
     effector: "*"
-    eslint: "*"
+    eslint: 7 || 8
   languageName: unknown
   linkType: soft
 
