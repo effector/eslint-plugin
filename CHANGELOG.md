@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.0
+
+- Add new rule: `no-watch` ([PR #51](https://github.com/effector/eslint-plugin/pull/51) by @binjospookie)
+- Add new rule: `no-unnecessary-combination` ([PR #43](https://github.com/effector/eslint-plugin/pull/43))
+- Decrease package size in `node_modules` 42.4 kB -> 39.3 kB ([PR #54](https://github.com/effector/eslint-plugin/pull/54))
+- Add links to rule docs to IDE prompts ([PR #55](https://github.com/effector/eslint-plugin/pull/55))
+- Support ESLint 8 ([PR #58](https://github.com/effector/eslint-plugin/pull/58))
+
 ## v0.3.1
 
 - Fixed false-positive in `no-ambiguity-target` with factories ([PR #50](https://github.com/effector/eslint-plugin/pull/50))
