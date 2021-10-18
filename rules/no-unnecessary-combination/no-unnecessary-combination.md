@@ -3,9 +3,12 @@
 Call of `combine`/`merge` in `clock`/`source` is unnecessary. It can be omitted from source code.
 
 ```ts
-// 👎 can be simplifies
-const eventOne = guard({ clock: combine($store1, $store2), filter: $filter });
+// 👎 can be simplified
+const badEventOne = guard({ clock: combine($store1, $store2), filter: $filter });
+const badEventOne = guard({ clock: combine($store1, $store2, (store1, store2) => ({x: store1, y: store2})), filter: $filter });
 
 // 👍 better
-const eventTwo = guard({ clock: [$store1, $store2], filter: $filter });
+const goodEventOne = guard({ clock: [$store1, $store2], filter: $filter });
+const goodEventTwo = guard({ clock: ({x: $store1, x: $store2}), filter: $filter });
 ```
+
