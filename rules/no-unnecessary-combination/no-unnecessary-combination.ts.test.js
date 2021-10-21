@@ -21,7 +21,12 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run("effector/no-unnecessary-combination.ts.test", rule, {
-  valid: ["correct.ts"].map(readExampleForTheRule),
+  valid: [
+    "correct.ts",
+    "correct-combine-in-clock-guard.ts",
+    "correct-combine-in-clock-sample.ts",
+    "correct-combine-in-from-forward.ts",
+  ].map(readExampleForTheRule),
 
   invalid: [
     ...[
@@ -44,10 +49,7 @@ ruleTester.run("effector/no-unnecessary-combination.ts.test", rule, {
       })),
     ...[
       "unnecessary-combine-in-source-guard.ts",
-      "unnecessary-combine-in-clock-guard.ts",
       "unnecessary-combine-in-source-sample.ts",
-      "unnecessary-combine-in-clock-sample.ts",
-      "unnecessary-combine-in-from-forward.ts",
     ]
       .map(readExampleForTheRule)
       .map((result) => ({

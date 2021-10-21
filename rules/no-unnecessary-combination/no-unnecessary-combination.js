@@ -35,10 +35,15 @@ module.exports = {
 
         const CONFIG_ARG_PROPERTIES = ["source", "clock", "from"];
 
-        const UNNECESSARY_METHODS = ["combine", "merge"];
-        const localUnnecessaryMethods = UNNECESSARY_METHODS.map((m) =>
-          importedFromEffector.get(m)
-        ).filter(Boolean);
+        function toLocalMethod(method) {
+          return importedFromEffector.get(method);
+        }
+
+        const UNNECESSARY_METHODS = {
+          source: ["combine", "merge"].map(toLocalMethod).filter(Boolean),
+          clock: ["merge"].map(toLocalMethod).filter(Boolean),
+          from: ["merge"].map(toLocalMethod).filter(Boolean),
+        };
 
         for (const method of METHODS_WITH_POSSIBLE_UNNECESSARY_COMBINATION) {
           const localMethod = importedFromEffector.get(method);
@@ -62,9 +67,12 @@ module.exports = {
 
           for (const candidate of candidates) {
             const candidateName = candidate?.value?.callee?.name;
-            if (!candidateName) {
+            const argProp = candidate?.key?.name;
+            if (!candidateName || !argProp) {
               continue;
             }
+
+            const localUnnecessaryMethods = UNNECESSARY_METHODS[argProp];
 
             const UnnecessaryMethodIsEffectorMethod =
               localUnnecessaryMethods.some((m) => m === candidateName);
