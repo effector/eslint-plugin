@@ -1694,6 +1694,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"effector-react@npm:^22.0.4":
+  version: 22.0.4
+  resolution: "effector-react@npm:22.0.4"
+  peerDependencies:
+    effector: ^22.0.2
+    react: ">=16.8.0 <19.0.0"
+  checksum: dd23498f4c8c1eb9ae86d56cec01d24fe5284b77b3baab037c4cc14e4138e0db553e950328de776ddbe8a06791dda4d2d6bde7ad484041f63f316140fab52d9f
+  languageName: node
+  linkType: hard
+
 "effector@npm:^22.0.0":
   version: 22.0.0
   resolution: "effector@npm:22.0.0"
@@ -1809,6 +1819,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.0.0
     clean-publish: ^3.2.0
     effector: ^22.0.0
+    effector-react: ^22.0.4
     eslint: ^8.0.0
     glob: ^7.1.7
     jest: ^27.1.0

@@ -1,6 +1,4 @@
-const {
-  extractImportedFromEffector,
-} = require("../../utils/extract-imported-from-effector");
+const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
@@ -28,7 +26,11 @@ module.exports = {
 
     return {
       ImportDeclaration(node) {
-        extractImportedFromEffector(importedFromEffector, node);
+        extractImportedFrom({
+          importMap: importedFromEffector,
+          node,
+          libraryName: "effector",
+        });
       },
       CallExpression(node) {
         const localMethod = importedFromEffector.get("forward");

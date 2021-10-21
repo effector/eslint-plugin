@@ -1,6 +1,4 @@
-const {
-  extractImportedFromEffector,
-} = require("../../utils/extract-imported-from-effector");
+const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
@@ -54,7 +52,11 @@ module.exports = {
     const importedFromEffector = new Map();
     return {
       ImportDeclaration(node) {
-        extractImportedFromEffector(importedFromEffector, node);
+        extractImportedFrom({
+          importMap: importedFromEffector,
+          node,
+          libraryName: "effector",
+        });
       },
       CallExpression(node) {
         // Effect creation with method

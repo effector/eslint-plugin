@@ -3,7 +3,8 @@
     "isolatedModules": true,
     "module": "commonjs",
     "lib": ["es2017", "es2019"],
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "jsx": "preserve"
   },
-  "include": ["./**/examples/**/*.ts"]
+  "include": ["./**/examples/**/*.ts", "./**/examples/**/*.tsx"]
 }

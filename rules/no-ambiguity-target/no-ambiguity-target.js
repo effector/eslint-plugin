@@ -1,6 +1,4 @@
-const {
-  extractImportedFromEffector,
-} = require("../../utils/extract-imported-from-effector");
+const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
@@ -24,7 +22,11 @@ module.exports = {
 
     return {
       ImportDeclaration(node) {
-        extractImportedFromEffector(importedFromEffector, node);
+        extractImportedFrom({
+          importMap: importedFromEffector,
+          node,
+          libraryName: "effector",
+        });
       },
       CallExpression(node) {
         const POSSIBLE_USELESS_METHODS = ["sample", "guard"];

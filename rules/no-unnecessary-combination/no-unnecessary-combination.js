@@ -1,6 +1,4 @@
-const {
-  extractImportedFromEffector,
-} = require("../../utils/extract-imported-from-effector");
+const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {
@@ -24,7 +22,11 @@ module.exports = {
 
     return {
       ImportDeclaration(node) {
-        extractImportedFromEffector(importedFromEffector, node);
+        extractImportedFrom({
+          importMap: importedFromEffector,
+          node,
+          libraryName: "effector",
+        });
       },
       CallExpression(node) {
         const METHODS_WITH_POSSIBLE_UNNECESSARY_COMBINATION = [

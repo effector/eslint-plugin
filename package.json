@@ -26,6 +26,7 @@
     "@typescript-eslint/parser": "^5.0.0",
     "clean-publish": "^3.2.0",
     "effector": "^22.0.0",
+    "effector-react": "^22.0.4",
     "eslint": "^8.0.0",
     "glob": "^7.1.7",
     "jest": "^27.1.0",
