@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.1
+
+- Specify ESLint version in peerDependencies
+- Fix false-positive in `no-unnecessary-combination` rule ([PR #64](https://github.com/effector/eslint-plugin/pull/64))
+
 ## v0.4.0
 
 - Add new rule: `no-watch` ([PR #51](https://github.com/effector/eslint-plugin/pull/51) by @binjospookie)
