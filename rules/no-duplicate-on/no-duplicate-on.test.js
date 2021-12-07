@@ -11,8 +11,8 @@ const ruleTester = new RuleTester({
 
 ruleTester.run("effector/no-duplicate-on.test", rule, {
   valid: [
-    "$store.on(first, () => null).on(second, () => null);",
-    "$store.on(first, () => null);",
+    // "$store.on(first, () => null).on(second, () => null);",
+    // "$store.on(first, () => null);",
   ].map((code) => ({ code })),
 
   invalid: [
@@ -20,7 +20,7 @@ ruleTester.run("effector/no-duplicate-on.test", rule, {
       code: "$store.on(first, () => null).on(first, () => null);",
       errors: [
         {
-          messageId: "duplcateOn",
+          messageId: "duplicateOn",
           type: "CallExpression",
           data: { storeName: "$store", unitName: "first" },
         },
