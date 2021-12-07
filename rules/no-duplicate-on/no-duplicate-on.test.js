@@ -20,7 +20,7 @@ ruleTester.run("effector/no-duplicate-on.test", rule, {
       code: "$store.on(first, () => null).on(first, () => null);",
       errors: [
         {
-          messageId: "duplcateOn",
+          messageId: "duplicateOn",
           type: "CallExpression",
           data: { storeName: "$store", unitName: "first" },
         },
