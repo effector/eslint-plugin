@@ -70,6 +70,16 @@ module.exports = {
             continue;
           }
 
+          const resultIsWatched = node?.parent?.property?.name === "watch";
+          if (resultIsWatched) {
+            continue;
+          }
+
+          const resultIsArgument = node?.parent?.type === "CallExpression";
+          if (resultIsArgument) {
+            continue;
+          }
+
           context.report({
             node,
             messageId: "uselessMethod",

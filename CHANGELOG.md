@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.2
+
+- Fix false-positive in `no-useless-methods` rule ([PR #77](https://github.com/effector/eslint-plugin/pull/77))
+
 ## v0.4.1
 
 - Specify ESLint version in peerDependencies
