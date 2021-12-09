@@ -15,7 +15,7 @@ const readExampleForTheRule = (name) => ({
   code: readExample(__dirname, name),
 });
 
-ruleTester.run("effector/no-useless-methods.ts.test", rule, {
+ruleTester.run("effector/no-useless-methods.test", rule, {
   valid: ["correct-examples-issue-74.js"].map(readExampleForTheRule),
 
   invalid: [],
