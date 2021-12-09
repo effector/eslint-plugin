@@ -14,7 +14,7 @@ const ruleTester = new RuleTester({
 const readExampleForTheRule = (name) => readExample(__dirname, name);
 
 ruleTester.run("effector/enforce-store-naming-convention-prefix.test", rule, {
-    valid: [
+  valid: [
     "correct-store-naming.js",
     "correct-store-naming-from-other-package.js",
     "correct-store-naming-in-domain.js",
@@ -58,7 +58,7 @@ const store = createStore(null);
           suggestions: [
             {
               messageId: "renameStore",
-              data: { storeName: "store" },
+              data: { storeName: "store", correctedStoreName: "$store" },
               output: `
 import {createStore} from 'effector';
 const $store = createStore(null);

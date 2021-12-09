@@ -9,12 +9,17 @@ const ruleTester = new RuleTester({
     ecmaVersion: 2020,
     sourceType: "module",
   },
+  settings: {
+    effector: {
+      storeNameConvention: "postfix",
+    },
+  },
 });
 
 const readExampleForTheRule = (name) => readExample(__dirname, name);
 
 ruleTester.run("effector/enforce-store-naming-convention-postfix.test", rule, {
-    valid: [
+  valid: [
     "correct-store-naming.js",
     "correct-store-naming-from-other-package.js",
     "correct-store-naming-in-domain.js",
@@ -22,12 +27,7 @@ ruleTester.run("effector/enforce-store-naming-convention-postfix.test", rule, {
   ]
     .map(readExampleForTheRule)
     .map((code) => ({
-        code,
-        settings: {
-          effector: {
-            storeNameConvention: "postfix"
-          }
-        },
+      code,
     })),
 
   invalid: [
@@ -48,8 +48,8 @@ ruleTester.run("effector/enforce-store-naming-convention-postfix.test", rule, {
         code,
         settings: {
           effector: {
-            storeNameConvention: "postfix"
-          }
+            storeNameConvention: "postfix",
+          },
         },
         errors: [
           {
@@ -70,10 +70,10 @@ const store = createStore(null);
           suggestions: [
             {
               messageId: "renameStore",
-              data: { storeName: "store" },
+              data: { storeName: "store", correctedStoreName: "store$" },
               output: `
 import {createStore} from 'effector';
-const $store = createStore(null);
+const store$ = createStore(null);
 `,
             },
           ],

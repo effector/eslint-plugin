@@ -179,7 +179,7 @@ function reportStoreNameConventionViolation({ context, node, storeName }) {
     suggest: [
       {
         messageId: "renameStore",
-        data: { storeName },
+        data: { storeName, correctedStoreName },
         fix(fixer) {
           return fixer.replaceTextRange(node.id.range, correctedStoreName);
         },
