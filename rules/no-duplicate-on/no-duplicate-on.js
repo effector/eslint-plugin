@@ -1,5 +1,6 @@
 const { isStoreNameValid } = require("../../utils/is-store-name-valid");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { getNestedObjectName } = require("../../utils/get-nested-object-name");
 
 module.exports = {
   meta: {
@@ -60,9 +61,7 @@ module.exports = {
         }
 
         const triggerObjects = normalizePossibleArrayNode(node.arguments[0]);
-        const unitNames = triggerObjects.map(
-          (triggerObject) => triggerObject.name
-        );
+        const unitNames = triggerObjects.map(getNestedObjectName);
 
         for (const unitName of unitNames) {
           const unitAlreadyUsed = isEventUsedInStoreOn(storeName, unitName);

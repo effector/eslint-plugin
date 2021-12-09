@@ -14,6 +14,7 @@ ruleTester.run("effector/no-duplicate-on.test", rule, {
     "$store.on(first, () => null).on(second, () => null);",
     "$store.on([first, second], () => null);",
     "$store.on(first, () => null);",
+    "$store.on(firstFx, () => null).on(firstFx.doneData, () => null);",
   ].map((code) => ({ code })),
 
   invalid: [
@@ -50,6 +51,26 @@ ruleTester.run("effector/no-duplicate-on.test", rule, {
           messageId: "duplicateOn",
           type: "CallExpression",
           data: { storeName: "$store", unitName: "first" },
+        },
+      ],
+    },
+    {
+      code: "$store.on(firstFx.doneData, () => null).on(firstFx.doneData, () => null);",
+      errors: [
+        {
+          messageId: "duplicateOn",
+          type: "CallExpression",
+          data: { storeName: "$store", unitName: "firstFx.doneData" },
+        },
+      ],
+    },
+    {
+      code: "$store.on(service.firstFx.doneData, () => null).on(service.firstFx.doneData, () => null);",
+      errors: [
+        {
+          messageId: "duplicateOn",
+          type: "CallExpression",
+          data: { storeName: "$store", unitName: "service.firstFx.doneData" },
         },
       ],
     },
