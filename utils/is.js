@@ -2,12 +2,11 @@ const {
   expressionHasEffectorType,
   variableHasEffectorType,
 } = require("./has-effector-type");
-const { isStoreNameValid } = require("./naming");
+const { isStoreNameValid, isEffectNameValid } = require("./naming");
 
 const is = {
   variable: {
     store({ context, node }) {
-      // TypeScript-way
       if (context.parserServices.hasFullTypeInformation) {
         return variableHasEffectorType({
           node,
@@ -16,13 +15,22 @@ const is = {
         });
       }
 
-      // JavaScript-way
       return isStoreNameValid({ name: node?.name, context });
+    },
+    effect({ context, node }) {
+      if (context.parserServices.hasFullTypeInformation) {
+        return variableHasEffectorType({
+          node,
+          possibleTypes: ["Effect"],
+          context,
+        });
+      }
+
+      return isEffectNameValid({ name: node?.name, context });
     },
   },
   expression: {
     store({ context, node }) {
-      // TypeScript-way
       if (context.parserServices.hasFullTypeInformation) {
         return expressionHasEffectorType({
           node,
@@ -31,8 +39,18 @@ const is = {
         });
       }
 
-      // JavaScript-way
       return isStoreNameValid({ name: node?.name, context });
+    },
+    effect({ context, node }) {
+      if (context.parserServices.hasFullTypeInformation) {
+        return expressionHasEffectorType({
+          node,
+          possibleTypes: ["Effect"],
+          context,
+        });
+      }
+
+      return isEffectNameValid({ name: node?.name, context });
     },
   },
 };
