@@ -1,6 +1,6 @@
-const { isStoreNameValid } = require("../../utils/is-store-name-valid");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { getNestedObjectName } = require("../../utils/get-nested-object-name");
+const { isStore } = require("../../utils/is");
 
 module.exports = {
   meta: {
@@ -42,21 +42,11 @@ module.exports = {
     }
 
     return {
-      CallExpression(node) {
-        const methodName = node.callee?.property?.name;
-        if (methodName !== "on") {
-          return;
-        }
+      'CallExpression[callee.property.name="on"]'(node) {
+        const storeObject = getNestedCallee(node) ?? getAssignedVariable(node);
+        const storeName = getStoreName(storeObject);
 
-        const storeObject = getNestedCallee(node);
-        const storeName = storeObject?.name;
-
-        if (!storeName) {
-          return;
-        }
-
-        const isEffectorStore = isStoreNameValid(storeName, context);
-        if (!isEffectorStore) {
+        if (!isStore({ context, node: storeObject })) {
           return;
         }
 
@@ -95,11 +85,25 @@ function normalizePossibleArrayNode(node) {
 }
 
 function getNestedCallee(node) {
-  const callee = node.callee;
+  const { callee } = node;
 
-  if (callee.object.type === "CallExpression") {
+  if (callee.object?.type === "CallExpression") {
     return getNestedCallee(callee.object);
   }
 
   return callee.object;
+}
+
+function getAssignedVariable(node) {
+  const { parent } = node;
+
+  if (parent.type === "VariableDeclarator") {
+    return parent;
+  }
+
+  return getAssignedVariable(parent);
+}
+
+function getStoreName(node) {
+  return node.name ?? node.id.name;
 }
