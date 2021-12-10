@@ -9,6 +9,7 @@ module.exports = {
     "no-ambiguity-target": require("./rules/no-ambiguity-target/no-ambiguity-target"),
     "no-watch": require("./rules/no-watch/no-watch"),
     "no-unnecessary-combination": require("./rules/no-unnecessary-combination/no-unnecessary-combination"),
+    "no-duplicate-on": require("./rules/no-duplicate-on"),
   },
   configs: {
     recommended: require("./config/recommended"),
