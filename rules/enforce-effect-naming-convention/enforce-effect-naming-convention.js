@@ -2,6 +2,7 @@ const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { hasEffectorType } = require("../../utils/has-effector-type");
 
 module.exports = {
   meta: {
@@ -27,13 +28,12 @@ module.exports = {
     if (parserServices.hasFullTypeInformation) {
       return {
         VariableDeclarator(node) {
-          const checker = parserServices.program.getTypeChecker();
-          const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node);
-          const type = checker.getTypeAtLocation(originalNode.initializer);
-
-          const isEffectorEffect =
-            type?.symbol?.escapedName === "Effect" &&
-            type?.symbol?.parent?.escapedName?.includes("effector");
+          const isEffectorEffect = hasEffectorType({
+            node,
+            context,
+            typeNames: ["Effect"],
+            useInitializer: true,
+          });
 
           if (!isEffectorEffect) {
             return;

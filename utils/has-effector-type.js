@@ -1,7 +1,9 @@
-function hasEffectorType({ node, typeNames, context }) {
+function hasEffectorType({ node, typeNames, context, useInitializer }) {
   const checker = context.parserServices.program.getTypeChecker();
   const originalNode = context.parserServices.esTreeNodeToTSNodeMap.get(node);
-  const type = checker.getTypeAtLocation(originalNode.initializer);
+  const type = checker.getTypeAtLocation(
+    useInitializer ? originalNode.initializer : originalNode
+  );
 
   return (
     typeNames.includes(type?.symbol?.escapedName) &&

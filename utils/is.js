@@ -4,7 +4,12 @@ const { isStoreNameValid } = require("./is-store-name-valid");
 function isStore({ context, node }) {
   // TypeScript-way
   if (context.parserServices.hasFullTypeInformation) {
-    return hasEffectorType({ node, typeNames: ["Store"], context });
+    return hasEffectorType({
+      node,
+      typeNames: ["Store"],
+      context,
+      useInitializer: true,
+    });
   }
 
   // JavaScript-way

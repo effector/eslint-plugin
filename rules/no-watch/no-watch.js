@@ -2,6 +2,7 @@ const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { hasEffectorType } = require("../../utils/has-effector-type");
 
 module.exports = {
   meta: {
@@ -24,22 +25,17 @@ module.exports = {
       // JavaScript-way https://github.com/effector/eslint-plugin/issues/48#issuecomment-931107829
       return {};
     }
-    const checker = parserServices.program.getTypeChecker();
 
     return {
-      CallExpression(node) {
-        const methodName = node.callee?.property?.name;
-        if (methodName !== "watch") {
-          return;
-        }
-
+      'CallExpression[callee.property.name="watch"]'(node) {
         const object = traverseNestedObjectNode(node.callee?.object);
-        const originalNode = parserServices.esTreeNodeToTSNodeMap.get(object);
-        const type = checker.getTypeAtLocation(originalNode);
 
-        const isEffectorUnit =
-          ["Effect", "Event", "Store"].includes(type?.symbol?.escapedName) &&
-          type?.symbol?.parent?.escapedName?.includes("effector");
+        const isEffectorUnit = hasEffectorType({
+          node: object,
+          context,
+          typeNames: ["Effect", "Event", "Store"],
+          useInitializer: false,
+        });
 
         if (!isEffectorUnit) {
           return;
