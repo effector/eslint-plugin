@@ -20,8 +20,14 @@ module.exports = {
   create(context) {
     const usedOns = new Map();
 
-    function isEventUsedInStoreOn(storeName, unitName) {
-      const usedUnits = usedOns.get(storeName);
+    function isEventUsedInStoreOn(scope, storeName, unitName) {
+      const usedOnsOnScope = usedOns.get(scope);
+
+      if (!usedOnsOnScope) {
+        return false;
+      }
+
+      const usedUnits = usedOnsOnScope.get(storeName);
 
       if (!usedUnits) {
         return false;
@@ -30,12 +36,19 @@ module.exports = {
       return usedUnits.has(unitName);
     }
 
-    function markUnitAsUsedInStoreOn(storeName, unitNames) {
-      let usedUnits = usedOns.get(storeName);
+    function markUnitAsUsedInStoreOn(scope, storeName, unitNames) {
+      let usedOnsOnScope = usedOns.get(scope);
+
+      if (!usedOnsOnScope) {
+        usedOnsOnScope = new Map();
+        usedOns.set(scope, usedOnsOnScope);
+      }
+
+      let usedUnits = usedOnsOnScope.get(storeName);
 
       if (!usedUnits) {
         usedUnits = new Set();
-        usedOns.set(storeName, usedUnits);
+        usedOnsOnScope.set(storeName, usedUnits);
       }
 
       usedUnits.add(...unitNames);
@@ -53,8 +66,14 @@ module.exports = {
         const triggerObjects = normalizePossibleArrayNode(node.arguments[0]);
         const unitNames = triggerObjects.map(getNestedObjectName);
 
+        const scope = context.getScope();
+
         for (const unitName of unitNames) {
-          const unitAlreadyUsed = isEventUsedInStoreOn(storeName, unitName);
+          const unitAlreadyUsed = isEventUsedInStoreOn(
+            scope,
+            storeName,
+            unitName
+          );
 
           if (unitAlreadyUsed) {
             context.report({
@@ -70,7 +89,7 @@ module.exports = {
           }
         }
 
-        markUnitAsUsedInStoreOn(storeName, unitNames);
+        markUnitAsUsedInStoreOn(scope, storeName, unitNames);
       },
     };
   },

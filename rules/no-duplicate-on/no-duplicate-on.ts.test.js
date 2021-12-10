@@ -21,8 +21,13 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run("effector/no-duplicate-on.ts.test", rule, {
-  valid: ["correct.ts"].map(readExampleForTheRule),
-  invalid: ["incorrect-with-invalid-naming.ts"]
+  valid: [
+    // "correct.ts",
+    // "correct-with-scopes.ts"
+  ].map(readExampleForTheRule),
+  invalid: [
+    "incorrect-with-invalid-naming.ts"
+  ]
     .map(readExampleForTheRule)
     .map((example) => ({
       ...example,
