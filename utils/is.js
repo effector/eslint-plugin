@@ -1,27 +1,40 @@
-const { hasEffectorType } = require("./has-effector-type");
+const {
+  expressionHasEffectorType,
+  variableHasEffectorType,
+} = require("./has-effector-type");
 const { isStoreNameValid } = require("./is-store-name-valid");
 
-function isStore({ context, node }) {
-  // TypeScript-way
-  if (context.parserServices.hasFullTypeInformation) {
-    return hasEffectorType({
-      node,
-      typeNames: ["Store"],
-      context,
-      useInitializer: true,
-    });
-  }
+const is = {
+  variable: {
+    store({ context, node }) {
+      // TypeScript-way
+      if (context.parserServices.hasFullTypeInformation) {
+        return variableHasEffectorType({
+          node,
+          possibleTypes: ["Store"],
+          context,
+        });
+      }
 
-  // JavaScript-way
-  return isStoreNameValid(node?.name, context);
-}
+      // JavaScript-way
+      return isStoreNameValid(node?.name, context);
+    },
+  },
+  expression: {
+    store({ context, node }) {
+      // TypeScript-way
+      if (context.parserServices.hasFullTypeInformation) {
+        return expressionHasEffectorType({
+          node,
+          possibleTypes: ["Store"],
+          context,
+        });
+      }
 
-function isEvent({ context, node }) {
-  return false;
-}
+      // JavaScript-way
+      return isStoreNameValid(node?.name, context);
+    },
+  },
+};
 
-function isEffect({ context, node }) {
-  return false;
-}
-
-module.exports = { isEffect, isEvent, isStore };
+module.exports = { is };

@@ -3,7 +3,7 @@ const {
 } = require("../../utils/traverse-nested-object-node");
 const { isStoreNameValid } = require("../../utils/is-store-name-valid");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { hasEffectorType } = require("../../utils/has-effector-type");
+const { expressionHasEffectorType } = require("../../utils/has-effector-type");
 
 module.exports = {
   meta: {
@@ -39,11 +39,10 @@ module.exports = {
 
         // TypeScript-way
         if (parserServices.hasFullTypeInformation) {
-          const isEffectorStore = hasEffectorType({
+          const isEffectorStore = expressionHasEffectorType({
             node: object,
             context,
-            typeNames: ["Store"],
-            useInitializer: false,
+            possibleTypes: ["Store"],
           });
 
           if (!isEffectorStore) {

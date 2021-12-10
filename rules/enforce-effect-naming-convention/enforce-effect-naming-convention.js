@@ -2,7 +2,7 @@ const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { hasEffectorType } = require("../../utils/has-effector-type");
+const { variableHasEffectorType } = require("../../utils/has-effector-type");
 
 module.exports = {
   meta: {
@@ -28,11 +28,10 @@ module.exports = {
     if (parserServices.hasFullTypeInformation) {
       return {
         VariableDeclarator(node) {
-          const isEffectorEffect = hasEffectorType({
+          const isEffectorEffect = variableHasEffectorType({
             node,
             context,
-            typeNames: ["Effect"],
-            useInitializer: true,
+            possibleTypes: ["Effect"],
           });
 
           if (!isEffectorEffect) {

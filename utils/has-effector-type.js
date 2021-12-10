@@ -1,4 +1,4 @@
-function hasEffectorType({ node, typeNames, context, useInitializer }) {
+function hasEffectorType({ node, possibleTypes, context, useInitializer }) {
   const checker = context.parserServices.program.getTypeChecker();
   const originalNode = context.parserServices.esTreeNodeToTSNodeMap.get(node);
   const type = checker.getTypeAtLocation(
@@ -6,9 +6,30 @@ function hasEffectorType({ node, typeNames, context, useInitializer }) {
   );
 
   return (
-    typeNames.includes(type?.symbol?.escapedName) &&
+    possibleTypes.includes(type?.symbol?.escapedName) &&
     type?.symbol?.parent?.escapedName?.includes("effector")
   );
 }
 
-module.exports = { hasEffectorType };
+function variableHasEffectorType({ node, possibleTypes, context }) {
+  return hasEffectorType({
+    node,
+    possibleTypes,
+    context,
+    useInitializer: true,
+  });
+}
+
+function expressionHasEffectorType({ node, possibleTypes, context }) {
+  return hasEffectorType({
+    node,
+    possibleTypes,
+    context,
+    useInitializer: false,
+  });
+}
+
+module.exports = {
+  variableHasEffectorType,
+  expressionHasEffectorType,
+};
