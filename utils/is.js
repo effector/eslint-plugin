@@ -2,7 +2,7 @@ const {
   expressionHasEffectorType,
   variableHasEffectorType,
 } = require("./has-effector-type");
-const { isStoreNameValid } = require("./is-store-name-valid");
+const { isStoreNameValid } = require("./naming");
 
 const is = {
   variable: {
@@ -17,7 +17,7 @@ const is = {
       }
 
       // JavaScript-way
-      return isStoreNameValid(node?.name, context);
+      return isStoreNameValid({ name: node?.name, context });
     },
   },
   expression: {
@@ -32,7 +32,7 @@ const is = {
       }
 
       // JavaScript-way
-      return isStoreNameValid(node?.name, context);
+      return isStoreNameValid({ name: node?.name, context });
     },
   },
 };

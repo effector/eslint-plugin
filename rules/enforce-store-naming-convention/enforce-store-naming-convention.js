@@ -1,7 +1,7 @@
 const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
-const { isStoreNameValid } = require("../../utils/is-store-name-valid");
+const { isStoreNameValid } = require("../../utils/naming");
 const {
   validateStoreNameConvention,
 } = require("../../utils/validate-store-name-convention");
@@ -53,7 +53,7 @@ module.exports = {
 
           const storeName = node.id.name;
 
-          if (isStoreNameValid(storeName, context)) {
+          if (isStoreNameValid({ name: storeName, context })) {
             return;
           }
 
@@ -94,7 +94,7 @@ module.exports = {
 
           const storeName = node.parent.id.name;
 
-          if (isStoreNameValid(storeName, context)) {
+          if (isStoreNameValid({ name: storeName, context })) {
             continue;
           }
 
@@ -110,7 +110,7 @@ module.exports = {
         if (node.callee?.property?.name === "map") {
           const storeNameCreatedFromMap = node.callee?.object?.name;
 
-          if (!isStoreNameValid(storeNameCreatedFromMap, context)) {
+          if (!isStoreNameValid({ name: storeNameCreatedFromMap, context })) {
             return;
           }
 
@@ -122,7 +122,7 @@ module.exports = {
 
           const storeName = node.parent.id.name;
 
-          if (isStoreNameValid(storeName, context)) {
+          if (isStoreNameValid({ name: storeName, context })) {
             return;
           }
 
@@ -147,7 +147,7 @@ module.exports = {
 
           const storeName = node.parent.id.name;
 
-          if (isStoreNameValid(storeName, context)) {
+          if (isStoreNameValid({ name: storeName, context })) {
             return;
           }
 

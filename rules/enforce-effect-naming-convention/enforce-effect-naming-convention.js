@@ -3,6 +3,7 @@ const {
 } = require("../../utils/extract-imported-from-effector");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { variableHasEffectorType } = require("../../utils/has-effector-type");
+const { isEffectNameValid } = require("../../utils/naming");
 
 module.exports = {
   meta: {
@@ -40,7 +41,7 @@ module.exports = {
 
           const effectName = node.id.name;
 
-          if (effectName?.endsWith("Fx")) {
+          if (isEffectNameValid({ name: effectName })) {
             return;
           }
 
@@ -76,7 +77,7 @@ module.exports = {
           }
 
           const effectName = node.parent.id.name;
-          if (effectName.endsWith("Fx")) {
+          if (isEffectNameValid({ name: effectName })) {
             continue;
           }
 
@@ -100,7 +101,7 @@ module.exports = {
           }
 
           const effectName = node.parent.id.name;
-          if (effectName.endsWith("Fx")) {
+          if (isEffectNameValid({ name: effectName })) {
             return;
           }
 
