@@ -12,6 +12,7 @@ const {
   getCorrectedStoreName,
 } = require("../../utils/get-corrected-store-name");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { hasEffectorType } = require("../../utils/has-effector-type");
 
 module.exports = {
   meta: {
@@ -40,13 +41,12 @@ module.exports = {
     if (parserServices.hasFullTypeInformation) {
       return {
         VariableDeclarator(node) {
-          const checker = parserServices.program.getTypeChecker();
-          const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node);
-          const type = checker.getTypeAtLocation(originalNode.initializer);
-
-          const isEffectorStore =
-            type?.symbol?.escapedName === "Store" &&
-            type?.symbol?.parent?.escapedName?.includes("effector");
+          const isEffectorStore = hasEffectorType({
+            node,
+            context,
+            typeNames: ["Store"],
+            useInitializer: true,
+          });
 
           if (!isEffectorStore) {
             return;

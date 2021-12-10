@@ -50,6 +50,7 @@ To configure individual rules:
 - [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
 - [effector/no-watch](rules/no-watch/no-watch.md)
 - [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
+- [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
 
 ## Maintenance
 

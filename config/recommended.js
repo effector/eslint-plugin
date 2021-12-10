@@ -9,5 +9,6 @@ module.exports = {
     "effector/no-ambiguity-target": "warn",
     "effector/no-watch": "warn",
     "effector/no-unnecessary-combination": "warn",
+    "effector/no-duplicate-on": "error",
   },
 };
