@@ -23,4 +23,15 @@ function isStoreNameValid({ name, context }) {
   return false;
 }
 
-module.exports = { isEffectNameValid, isStoreNameValid };
+const namingOf = {
+  effect: {
+    isValid: (opts) => isEffectNameValid(opts),
+    isInvalid: (opts) => !isEffectNameValid(opts),
+  },
+  store: {
+    isValid: (opts) => isStoreNameValid(opts),
+    isInvalid: (opts) => !isStoreNameValid(opts),
+  },
+};
+
+module.exports = { namingOf };

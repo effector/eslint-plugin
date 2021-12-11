@@ -24,7 +24,7 @@ module.exports = {
       'CallExpression[callee.property.name="getState"]'(node) {
         const storeNode = traverseNestedObjectNode(node.callee?.object);
 
-        const isEffectorStore = is.expression.store({
+        const isEffectorStore = is.store({
           context,
           node: storeNode,
         });

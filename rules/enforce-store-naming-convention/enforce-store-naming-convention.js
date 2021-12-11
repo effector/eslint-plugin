@@ -1,7 +1,7 @@
 const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
-const { isStoreNameValid } = require("../../utils/naming");
+const { namingOf } = require("../../utils/naming");
 const {
   validateStoreNameConvention,
 } = require("../../utils/validate-store-name-convention");
@@ -12,7 +12,7 @@ const {
   getCorrectedStoreName,
 } = require("../../utils/get-corrected-store-name");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { variableHasEffectorType } = require("../../utils/has-effector-type");
+const { nodeTypeIs } = require("../../utils/node-type-is");
 
 module.exports = {
   meta: {
@@ -41,10 +41,9 @@ module.exports = {
     if (parserServices.hasFullTypeInformation) {
       return {
         VariableDeclarator(node) {
-          const isEffectorStore = variableHasEffectorType({
+          const isEffectorStore = nodeTypeIs.store({
             node,
             context,
-            possibleTypes: ["Store"],
           });
 
           if (!isEffectorStore) {
@@ -53,15 +52,13 @@ module.exports = {
 
           const storeName = node.id.name;
 
-          if (isStoreNameValid({ name: storeName, context })) {
-            return;
+          if (namingOf.store.isInvalid({ name: storeName, context })) {
+            reportStoreNameConventionViolation({
+              context,
+              node,
+              storeName,
+            });
           }
-
-          reportStoreNameConventionViolation({
-            context,
-            node,
-            storeName,
-          });
         },
       };
     }
@@ -94,7 +91,7 @@ module.exports = {
 
           const storeName = node.parent.id.name;
 
-          if (isStoreNameValid({ name: storeName, context })) {
+          if (namingOf.store.isValid({ name: storeName, context })) {
             continue;
           }
 
@@ -110,7 +107,9 @@ module.exports = {
         if (node.callee?.property?.name === "map") {
           const storeNameCreatedFromMap = node.callee?.object?.name;
 
-          if (!isStoreNameValid({ name: storeNameCreatedFromMap, context })) {
+          if (
+            namingOf.store.isInvalid({ name: storeNameCreatedFromMap, context })
+          ) {
             return;
           }
 
@@ -122,7 +121,7 @@ module.exports = {
 
           const storeName = node.parent.id.name;
 
-          if (isStoreNameValid({ name: storeName, context })) {
+          if (namingOf.store.isValid({ name: storeName, context })) {
             return;
           }
 
@@ -147,7 +146,7 @@ module.exports = {
 
           const storeName = node.parent.id.name;
 
-          if (isStoreNameValid({ name: storeName, context })) {
+          if (namingOf.store.isValid({ name: storeName, context })) {
             return;
           }
 

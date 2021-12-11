@@ -2,8 +2,8 @@ const {
   extractImportedFromEffector,
 } = require("../../utils/extract-imported-from-effector");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { variableHasEffectorType } = require("../../utils/has-effector-type");
-const { isEffectNameValid } = require("../../utils/naming");
+const { nodeTypeIs } = require("../../utils/node-type-is");
+const { namingOf } = require("../../utils/naming");
 
 module.exports = {
   meta: {
@@ -29,10 +29,9 @@ module.exports = {
     if (parserServices.hasFullTypeInformation) {
       return {
         VariableDeclarator(node) {
-          const isEffectorEffect = variableHasEffectorType({
+          const isEffectorEffect = nodeTypeIs.effect({
             node,
             context,
-            possibleTypes: ["Effect"],
           });
 
           if (!isEffectorEffect) {
@@ -41,11 +40,9 @@ module.exports = {
 
           const effectName = node.id.name;
 
-          if (isEffectNameValid({ name: effectName })) {
-            return;
+          if (namingOf.effect.isInvalid({ name: effectName })) {
+            reportEffectNameConventionViolation({ context, node, effectName });
           }
-
-          reportEffectNameConventionViolation({ context, node, effectName });
         },
       };
     }
@@ -77,7 +74,7 @@ module.exports = {
           }
 
           const effectName = node.parent.id.name;
-          if (isEffectNameValid({ name: effectName })) {
+          if (namingOf.effect.isValid({ name: effectName })) {
             continue;
           }
 
@@ -101,7 +98,7 @@ module.exports = {
           }
 
           const effectName = node.parent.id.name;
-          if (isEffectNameValid({ name: effectName })) {
+          if (namingOf.effect.isValid({ name: effectName })) {
             return;
           }
 

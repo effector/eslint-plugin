@@ -59,7 +59,7 @@ module.exports = {
         const storeObject = getNestedCallee(node) ?? getAssignedVariable(node);
         const storeName = getStoreName(storeObject);
 
-        if (!is.variable.store({ context, node: storeObject })) {
+        if (!is.store({ context, node: storeObject })) {
           return;
         }
 
