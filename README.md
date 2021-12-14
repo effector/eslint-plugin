@@ -51,6 +51,7 @@ To configure individual rules:
 - [effector/no-watch](rules/no-watch/no-watch.md)
 - [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
 - [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
+- [effector/strict-effect-handlers](rules/strict-effect-handlers/strict-effect-handlers.md)
 
 ## Maintenance
 

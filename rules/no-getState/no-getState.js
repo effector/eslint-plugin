@@ -1,9 +1,8 @@
 const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
-const { isStoreNameValid } = require("../../utils/is-store-name-valid");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { hasEffectorType } = require("../../utils/has-effector-type");
+const { is } = require("../../utils/is");
 
 module.exports = {
   meta: {
@@ -21,46 +20,20 @@ module.exports = {
     schema: [],
   },
   create(context) {
-    const { parserServices } = context;
-
     return {
-      CallExpression(node) {
-        const methodName = node.callee?.property?.name;
-        if (methodName !== "getState") {
+      'CallExpression[callee.property.name="getState"]'(node) {
+        const storeNode = traverseNestedObjectNode(node.callee?.object);
+
+        const isEffectorStore = is.store({
+          context,
+          node: storeNode,
+        });
+
+        if (!isEffectorStore) {
           return;
         }
 
-        const object = traverseNestedObjectNode(node.callee?.object);
-        const objectName = object?.name;
-
-        if (!objectName) {
-          return;
-        }
-
-        // TypeScript-way
-        if (parserServices.hasFullTypeInformation) {
-          const isEffectorStore = hasEffectorType({
-            node: object,
-            context,
-            typeNames: ["Store"],
-            useInitializer: false,
-          });
-
-          if (!isEffectorStore) {
-            return;
-          }
-
-          reportGetStateCall({ context, node, storeName: objectName });
-        }
-        // JavaScript-way
-        else {
-          const isEffectorStore = isStoreNameValid(objectName, context);
-          if (!isEffectorStore) {
-            return;
-          }
-
-          reportGetStateCall({ context, node, storeName: objectName });
-        }
+        reportGetStateCall({ context, node, storeName: storeNode.name });
       },
     };
   },

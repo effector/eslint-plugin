@@ -2,7 +2,7 @@ const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { hasEffectorType } = require("../../utils/has-effector-type");
+const { nodeTypeIs } = require("../../utils/node-type-is");
 
 module.exports = {
   meta: {
@@ -30,11 +30,9 @@ module.exports = {
       'CallExpression[callee.property.name="watch"]'(node) {
         const object = traverseNestedObjectNode(node.callee?.object);
 
-        const isEffectorUnit = hasEffectorType({
+        const isEffectorUnit = nodeTypeIs.unit({
           node: object,
           context,
-          typeNames: ["Effect", "Event", "Store"],
-          useInitializer: false,
         });
 
         if (!isEffectorUnit) {

@@ -1,27 +1,30 @@
-const { hasEffectorType } = require("./has-effector-type");
-const { isStoreNameValid } = require("./is-store-name-valid");
+const { nodeTypeIs } = require("./node-type-is");
+const { namingOf } = require("./naming");
 
-function isStore({ context, node }) {
-  // TypeScript-way
-  if (context.parserServices.hasFullTypeInformation) {
-    return hasEffectorType({
-      node,
-      typeNames: ["Store"],
-      context,
-      useInitializer: true,
-    });
-  }
+function isSomething({ isValidNaming, isTypeCorrect }) {
+  return ({ node, context }) => {
+    if (context.parserServices.hasFullTypeInformation) {
+      return isTypeCorrect({ node, context });
+    }
 
-  // JavaScript-way
-  return isStoreNameValid(node?.name, context);
+    return isValidNaming({ name: node?.name ?? node?.id?.name, context });
+  };
 }
 
-function isEvent({ context, node }) {
-  return false;
-}
+const isStore = isSomething({
+  isTypeCorrect: nodeTypeIs.store,
+  isValidNaming: namingOf.store.isValid,
+});
 
-function isEffect({ context, node }) {
-  return false;
-}
+const isEffect = isSomething({
+  isTypeCorrect: nodeTypeIs.effect,
+  isValidNaming: namingOf.effect.isValid,
+});
 
-module.exports = { isEffect, isEvent, isStore };
+const is = {
+  store: (opts) => isStore(opts),
+  effect: (opts) => isEffect(opts),
+  not: { store: (opts) => !isStore(opts), effect: (opts) => !isEffect(opts) },
+};
+
+module.exports = { is };

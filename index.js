@@ -10,6 +10,7 @@ module.exports = {
     "no-watch": require("./rules/no-watch/no-watch"),
     "no-unnecessary-combination": require("./rules/no-unnecessary-combination/no-unnecessary-combination"),
     "no-duplicate-on": require("./rules/no-duplicate-on/no-duplicate-on"),
+    "strict-effect-handlers": require("./rules/strict-effect-handlers/strict-effect-handlers"),
   },
   configs: {
     recommended: require("./config/recommended"),

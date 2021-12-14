@@ -1,6 +1,6 @@
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { getNestedObjectName } = require("../../utils/get-nested-object-name");
-const { isStore } = require("../../utils/is");
+const { is } = require("../../utils/is");
 
 module.exports = {
   meta: {
@@ -59,7 +59,7 @@ module.exports = {
         const storeObject = getNestedCallee(node) ?? getAssignedVariable(node);
         const storeName = getStoreName(storeObject);
 
-        if (!isStore({ context, node: storeObject })) {
+        if (!is.store({ context, node: storeObject })) {
           return;
         }
 
