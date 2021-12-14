@@ -25,7 +25,7 @@ Add `effector` to the plugins section of your `.eslintrc` configuration file. Yo
 ```json
 {
   "plugins": ["effector"],
-  "extends": ["plugin:effector/recommended"]
+  "extends": ["plugin:effector/recommended", "plugin:effector/scope"]
 }
 ```
 
@@ -39,7 +39,17 @@ To configure individual rules:
 }
 ```
 
-## Supported Rules
+### Available presets
+
+#### plugin:effector/recommended
+
+This preset is recommended for most projects.
+
+#### plugin:effector/scope
+
+This preset is recommended for projects that use [Fork API](https://effector.dev/docs/api/effector/scope). You can read more about Fork API in [an article](https://dev.to/effector/the-best-part-of-effector-4c27).
+
+### Supported rules
 
 - [effector/enforce-store-naming-convention](rules/enforce-store-naming-convention/enforce-store-naming-convention.md)
 - [effector/enforce-effect-naming-convention](rules/enforce-effect-naming-convention/enforce-effect-naming-convention.md)
