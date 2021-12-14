@@ -12,8 +12,10 @@ module.exports = {
       url: createLinkToRule("strict-effect-handlers"),
     },
     messages: {
-      mixedCalls:
+      mixedCallsInHandler:
         "Handler of effect `{{ effectName }}` can lead to scope loosing in Fork API.",
+      mixedCallsInFunction:
+        "Function `{{ functionName }}` can lead to scope loosing in Fork API.",
     },
     schema: [],
   },
@@ -22,27 +24,43 @@ module.exports = {
       if (!node.body?.body) {
         return;
       }
-      const effectName = node.parent?.parent?.id?.name ?? "Unknown";
 
-      const handlerBody = node.body.body;
-
-      const calledNodes = handlerBody
+      const calledNodes = node.body.body
         .filter((bodyNode) => bodyNode.expression?.type === "AwaitExpression")
-        .map((awaitNode) => awaitNode.expression.argument.callee);
+        .map((awaitNode) => ({
+          node: awaitNode.expression.argument.callee,
+          context,
+        }));
 
-      const hasEffects = calledNodes.some((calledNode) =>
-        is.effect({ context, node: calledNode })
-      );
+      const hasEffects = calledNodes.some(is.effect);
+      const hasRegularAsyncFunctions = calledNodes.some(is.not.effect);
 
-      const hasRegularAsyncFunctions = calledNodes.some((calledNode) =>
-        is.not.effect({ context, node: calledNode })
-      );
+      const hasError = hasEffects && hasRegularAsyncFunctions;
 
-      if (hasEffects && hasRegularAsyncFunctions) {
+      if (!hasError) {
+        return;
+      }
+
+      const isEffectHandler = is.effect({
+        node: node.parent?.parent,
+        context,
+      });
+
+      if (isEffectHandler) {
+        const effectName = node.parent?.parent?.id?.name ?? "Unknown";
+
         context.report({
           node: node.parent,
-          messageId: "mixedCalls",
+          messageId: "mixedCallsInHandler",
           data: { effectName },
+        });
+      } else {
+        const functionName = node.id?.name ?? "Unknown";
+
+        context.report({
+          node,
+          messageId: "mixedCallsInFunction",
+          data: { functionName },
         });
       }
     }

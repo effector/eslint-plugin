@@ -7,7 +7,7 @@ function isSomething({ isValidNaming, isTypeCorrect }) {
       return isTypeCorrect({ node, context });
     }
 
-    return isValidNaming({ name: node?.name, context });
+    return isValidNaming({ name: node?.name ?? node?.id?.name, context });
   };
 }
 

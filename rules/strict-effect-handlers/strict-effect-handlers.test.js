@@ -24,7 +24,7 @@ ruleTester.run("effector/strict-effect-handlers.test", rule, {
       ...readExampleForTheRule("incorrect-mix-async-fx.js"),
       errors: [
         {
-          messageId: "mixedCalls",
+          messageId: "mixedCallsInHandler",
           type: "CallExpression",
           data: { effectName: "finalFx" },
         },
@@ -34,7 +34,7 @@ ruleTester.run("effector/strict-effect-handlers.test", rule, {
       ...readExampleForTheRule("incorrect-mix-async-fx-in-func.js"),
       errors: [
         {
-          messageId: "mixedCalls",
+          messageId: "mixedCallsInHandler",
           type: "CallExpression",
           data: { effectName: "finalFx" },
         },
@@ -44,9 +44,19 @@ ruleTester.run("effector/strict-effect-handlers.test", rule, {
       ...readExampleForTheRule("incorrect-mix-async-fx-in-named-func.js"),
       errors: [
         {
-          messageId: "mixedCalls",
+          messageId: "mixedCallsInHandler",
           type: "CallExpression",
           data: { effectName: "finalFx" },
+        },
+      ],
+    },
+    {
+      ...readExampleForTheRule("incorrect-mix-in-simple-function.js"),
+      errors: [
+        {
+          messageId: "mixedCallsInFunction",
+          type: "FunctionDeclaration",
+          data: { functionName: "justFunc" },
         },
       ],
     },

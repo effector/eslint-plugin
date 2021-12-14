@@ -7,7 +7,7 @@ function hasEffectorType({ node, possibleTypes, context }) {
 
   return (
     possibleTypes.includes(type?.symbol?.escapedName) &&
-    type?.symbol?.parent?.escapedName?.includes("effector")
+    Boolean(type?.symbol?.parent?.escapedName?.includes("effector"))
   );
 }
 

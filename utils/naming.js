@@ -1,7 +1,7 @@
 const { getStoreNameConvention } = require("./get-store-name-convention");
 
 function isEffectNameValid({ name }) {
-  return name?.endsWith("Fx");
+  return Boolean(name?.endsWith("Fx"));
 }
 
 function isStoreNameValid({ name, context }) {
