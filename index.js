@@ -14,5 +14,6 @@ module.exports = {
   },
   configs: {
     recommended: require("./config/recommended"),
+    scope: require("./config/scope"),
   },
 };
