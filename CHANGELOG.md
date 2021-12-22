@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.1
+
+- Fix possible exceptions on non-effector code
+
 ## v0.5.0
 
 ### Rules
