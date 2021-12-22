@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.5.0
+
+### Rules
+
+- Add new rule `no-duplicate-on` ([PR #76](https://github.com/effector/eslint-plugin/pull/76))
+- Add new rule `strict-effect-handlers` ([PR #78](https://github.com/effector/eslint-plugin/pull/78))
+- Add new rule `enforce-gate-naming-convention` ([PR #80](https://github.com/effector/eslint-plugin/pull/80))
+
+### Presets
+
+- Add new preset `scope` ([PR #79](https://github.com/effector/eslint-plugin/pull/79))
+- Add new preset `react` ([PR #80](https://github.com/effector/eslint-plugin/pull/80))
+
+### Fixes
+
+- Fix incorrect suggestion in IDE in rule `enforce-store-naming-convention`
+
 ## v0.4.2
 
 - Fix false-positive in `no-useless-methods` rule ([PR #77](https://github.com/effector/eslint-plugin/pull/77))
