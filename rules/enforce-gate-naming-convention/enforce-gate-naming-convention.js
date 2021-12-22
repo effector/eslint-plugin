@@ -1,4 +1,6 @@
+const { nodeTypeIs } = require("../../utils/node-type-is");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { namingOf } = require("../../utils/naming");
 
 module.exports = {
   meta: {
@@ -21,7 +23,24 @@ module.exports = {
     const parserServices = context.parserServices;
     // TypeScript-way
     if (parserServices.hasFullTypeInformation) {
-      return {};
+      return {
+        VariableDeclarator(node) {
+          const isEffectorGate = nodeTypeIs.gate({
+            node,
+            context,
+          });
+
+          if (!isEffectorGate) {
+            return;
+          }
+
+          const gateName = node.id.name;
+
+          if (namingOf.gate.isInvalid({ name: gateName })) {
+            reportGateNameConventionViolation({ context, node, gateName });
+          }
+        },
+      };
     }
 
     // JavaScript-way
@@ -30,7 +49,7 @@ module.exports = {
 };
 
 function reportGateNameConventionViolation({ context, node, gateName }) {
-  const [firstChar, ...restChars] = gateName.split();
+  const [firstChar, ...restChars] = gateName.split("");
   const correctedGateName = [firstChar.toUpperCase(), ...restChars].join("");
 
   context.report({

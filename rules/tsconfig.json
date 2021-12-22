@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "isolatedModules": true,
+    "esModuleInterop": true,
     "module": "commonjs",
     "lib": ["es2017", "es2019"],
     "baseUrl": "./"
