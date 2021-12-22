@@ -4,6 +4,12 @@ function isEffectNameValid({ name }) {
   return Boolean(name?.endsWith("Fx"));
 }
 
+function isGateNameValid({ name }) {
+  const [firstChar] = name.split("");
+
+  return Boolean(firstChar?.toUpperCase() === firstChar);
+}
+
 function isStoreNameValid({ name, context }) {
   const storeNameConvention = getStoreNameConvention(context);
 
@@ -31,6 +37,10 @@ const namingOf = {
   store: {
     isValid: (opts) => isStoreNameValid(opts),
     isInvalid: (opts) => !isStoreNameValid(opts),
+  },
+  gate: {
+    isValid: (opts) => isGateNameValid(opts),
+    isInvalid: (opts) => !isGateNameValid(opts),
   },
 };
 

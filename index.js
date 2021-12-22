@@ -11,9 +11,11 @@ module.exports = {
     "no-unnecessary-combination": require("./rules/no-unnecessary-combination/no-unnecessary-combination"),
     "no-duplicate-on": require("./rules/no-duplicate-on/no-duplicate-on"),
     "strict-effect-handlers": require("./rules/strict-effect-handlers/strict-effect-handlers"),
+    "enforce-gate-naming-convention": require("./rules/enforce-gate-naming-convention/enforce-gate-naming-convention"),
   },
   configs: {
     recommended: require("./config/recommended"),
     scope: require("./config/scope"),
+    react: require("./config/react"),
   },
 };

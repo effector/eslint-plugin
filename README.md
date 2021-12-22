@@ -49,6 +49,10 @@ This preset is recommended for most projects.
 
 This preset is recommended for projects that use [Fork API](https://effector.dev/docs/api/effector/scope). You can read more about Fork API in [an article](https://dev.to/effector/the-best-part-of-effector-4c27).
 
+#### plugin:effector/react
+
+This preset is recommended for projects that use [React](https://reactjs.org) with Effector.
+
 ### Supported rules
 
 - [effector/enforce-store-naming-convention](rules/enforce-store-naming-convention/enforce-store-naming-convention.md)
@@ -62,6 +66,7 @@ This preset is recommended for projects that use [Fork API](https://effector.dev
 - [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
 - [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
 - [effector/strict-effect-handlers](rules/strict-effect-handlers/strict-effect-handlers.md)
+- [effector/enforce-gate-naming-convention](rules/enforce-gate-naming-convention/enforce-gate-naming-convention.md)
 
 ## Maintenance
 
