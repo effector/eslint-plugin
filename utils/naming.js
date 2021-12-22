@@ -39,7 +39,7 @@ const namingOf = {
     isInvalid: (opts) => !isStoreNameValid(opts),
   },
   gate: {
-    idValid: (opts) => isGateNameValid(opts),
+    isValid: (opts) => isGateNameValid(opts),
     isInvalid: (opts) => !isGateNameValid(opts),
   },
 };

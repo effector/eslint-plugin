@@ -51,7 +51,7 @@ const someGate = createGate();
           suggestions: [
             {
               messageId: "renameGate",
-              data: { effectName: "someGate" },
+              data: { gateName: "someGate", correctedGateName: "SomeGate" },
               output: `
 import {createGate} from 'effector-react';
 const SomeGate = createGate();
