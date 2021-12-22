@@ -1,6 +1,6 @@
 const {
-  extractImportedFromEffector,
-} = require("../../utils/extract-imported-from-effector");
+  extractImportedFrom,
+} = require("../../utils/extract-imported-from");
 const { namingOf } = require("../../utils/naming");
 const {
   validateStoreNameConvention,
@@ -67,7 +67,11 @@ module.exports = {
     const importedFromEffector = new Map();
     return {
       ImportDeclaration(node) {
-        extractImportedFromEffector(importedFromEffector, node);
+        extractImportedFrom({
+          importMap: importedFromEffector,
+          node,
+          packageName: "effector",
+        });
       },
       CallExpression(node) {
         // Store creation with method

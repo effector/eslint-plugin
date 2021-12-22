@@ -1,6 +1,6 @@
 const {
-  extractImportedFromEffector,
-} = require("../../utils/extract-imported-from-effector");
+  extractImportedFrom,
+} = require("../../utils/extract-imported-from");
 const { areNodesSameInText } = require("../../utils/are-nodes-same-in-text");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
@@ -24,11 +24,14 @@ module.exports = {
   },
   create(context) {
     const importedFromEffector = new Map();
-    const sourceCode = context.getSourceCode();
 
     return {
       ImportDeclaration(node) {
-        extractImportedFromEffector(importedFromEffector, node);
+        extractImportedFrom({
+          importMap: importedFromEffector,
+          node,
+          packageName: "effector",
+        });
       },
       CallExpression(node) {
         const METHODS_WITH_POSSIBLE_DUPLCATION = ["sample", "guard"];

@@ -1,6 +1,6 @@
 const {
-  extractImportedFromEffector,
-} = require("../../utils/extract-imported-from-effector");
+  extractImportedFrom,
+} = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { nodeTypeIs } = require("../../utils/node-type-is");
 const { namingOf } = require("../../utils/naming");
@@ -51,7 +51,11 @@ module.exports = {
     const importedFromEffector = new Map();
     return {
       ImportDeclaration(node) {
-        extractImportedFromEffector(importedFromEffector, node);
+        extractImportedFrom({
+          importMap: importedFromEffector,
+          node,
+          packageName: "effector",
+        });
       },
       CallExpression(node) {
         // Effect creation with method
