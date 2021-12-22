@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.2
+
+- Fix error of parsing empty function in `strict-effect-handlers`
+
 ## v0.5.1
 
 - Fix possible exceptions on non-effector code
