@@ -57,16 +57,16 @@ This preset is recommended for projects that use [React](https://reactjs.org) wi
 
 - [effector/enforce-store-naming-convention](rules/enforce-store-naming-convention/enforce-store-naming-convention.md)
 - [effector/enforce-effect-naming-convention](rules/enforce-effect-naming-convention/enforce-effect-naming-convention.md)
-- [effector/no-getState](rules/no-getState/no-getState.md)
+- [effector/enforce-gate-naming-convention](rules/enforce-gate-naming-convention/enforce-gate-naming-convention.md)
 - [effector/no-unnecessary-duplication](rules/no-unnecessary-duplication/no-unnecessary-duplication.md)
+- [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
 - [effector/no-useless-methods](rules/no-useless-methods/no-useless-methods.md)
 - [effector/no-ambiguity-target](rules/no-ambiguity-target/no-ambiguity-target.md)
-- [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
-- [effector/no-watch](rules/no-watch/no-watch.md)
-- [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
 - [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
+- [effector/no-getState](rules/no-getState/no-getState.md)
+- [effector/no-watch](rules/no-watch/no-watch.md)
+- [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
 - [effector/strict-effect-handlers](rules/strict-effect-handlers/strict-effect-handlers.md)
-- [effector/enforce-gate-naming-convention](rules/enforce-gate-naming-convention/enforce-gate-naming-convention.md)
 
 ## Maintenance
 
