@@ -124,5 +124,5 @@ function getAssignedVariable(node) {
 }
 
 function getStoreName(node) {
-  return node.name ?? node.id.name;
+  return node?.name ?? node?.id?.name;
 }

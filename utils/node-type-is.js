@@ -1,16 +1,20 @@
 function hasType({ node, possibleTypes, context, from }) {
-  const checker = context.parserServices.program.getTypeChecker();
-  const originalNode = context.parserServices.esTreeNodeToTSNodeMap.get(node);
-  const type = checker.getTypeAtLocation(
-    originalNode?.initializer ?? originalNode
-  );
+  try {
+    const checker = context.parserServices.program.getTypeChecker();
+    const originalNode = context.parserServices.esTreeNodeToTSNodeMap.get(node);
+    const type = checker.getTypeAtLocation(
+      originalNode?.initializer ?? originalNode
+    );
 
-  const symbol = type?.symbol ?? type?.aliasSymbol;
+    const symbol = type?.symbol ?? type?.aliasSymbol;
 
-  return (
-    possibleTypes.includes(symbol?.escapedName) &&
-    Boolean(symbol?.parent?.escapedName?.includes(from))
-  );
+    return (
+      possibleTypes.includes(symbol?.escapedName) &&
+      Boolean(symbol?.parent?.escapedName?.includes(from))
+    );
+  } catch (e) {
+    return false;
+  }
 }
 
 const nodeTypeIs = {
