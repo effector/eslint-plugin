@@ -1,6 +1,4 @@
-const {
-  extractImportedFrom,
-} = require("../../utils/extract-imported-from");
+const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");

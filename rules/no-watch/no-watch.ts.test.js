@@ -38,7 +38,7 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
             type: "CallExpression",
           },
         ],
-    })),
+      })),
     ...[join("incorrect", "effect", "fail.ts")]
       .map(readExampleForTheRule)
       .map((result) => ({
@@ -53,7 +53,7 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
             type: "CallExpression",
           },
         ],
-    })),
+      })),
     ...[join("incorrect", "effect", "finally.ts")]
       .map(readExampleForTheRule)
       .map((result) => ({
@@ -64,7 +64,7 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
             type: "CallExpression",
           },
         ],
-    })),
+      })),
     ...[join("incorrect", "effect", "base.ts")]
       .map(readExampleForTheRule)
       .map((result) => ({
@@ -79,25 +79,25 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
     ...[join("incorrect", "event.ts")]
       .map(readExampleForTheRule)
       .map((result) => ({
-      ...result,
-      errors: [
-        {
-          messageId: "abusiveCall",
-          type: "CallExpression",
-        },
-      ],
-    })),
+        ...result,
+        errors: [
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+        ],
+      })),
     ...[join("incorrect", "guard.ts")]
       .map(readExampleForTheRule)
       .map((result) => ({
-      ...result,
-      errors: [
-        {
-          messageId: "abusiveCall",
-          type: "CallExpression",
-        },
-      ],
-    })),
+        ...result,
+        errors: [
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+        ],
+      })),
     ...[join("incorrect", "sample.ts")]
       .map(readExampleForTheRule)
       .map((result) => ({
@@ -116,17 +116,17 @@ ruleTester.run("effector/no-watch.ts.test", rule, {
     ...[join("incorrect", "store.ts")]
       .map(readExampleForTheRule)
       .map((result) => ({
-      ...result,
-      errors: [
-        {
-          messageId: "abusiveCall",
-          type: "CallExpression",
-        },
-        {
-          messageId: "abusiveCall",
-          type: "CallExpression",
-        },
-      ],
-    })),
+        ...result,
+        errors: [
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+          {
+            messageId: "abusiveCall",
+            type: "CallExpression",
+          },
+        ],
+      })),
   ],
 });

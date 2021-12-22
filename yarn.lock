@@ -1856,8 +1856,10 @@ __metadata:
     eslint: ^8.0.0
     glob: ^7.1.7
     jest: ^27.1.0
+    nano-staged: ^0.5.0
     prettier: ^2.3.2
     react: ^17.0.2
+    simple-git-hooks: ^2.7.0
     typescript: ^4.4.2
   peerDependencies:
     effector: "*"
@@ -3593,6 +3595,17 @@ fsevents@^2.3.2:
   languageName: node
   linkType: hard
 
+"nano-staged@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "nano-staged@npm:0.5.0"
+  dependencies:
+    picocolors: ^1.0.0
+  bin:
+    nano-staged: lib/bin.js
+  checksum: 452a73347ddc72226293536a00ce03c9335541f484c99c382506f2daf919ea476d22902887ff3fa315944983f245b8f8c6defe7a26b363d673b374ce032c2e44
+  languageName: node
+  linkType: hard
+
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -3836,6 +3849,13 @@ fsevents@^2.3.2:
   version: 4.0.0
   resolution: "path-type@npm:4.0.0"
   checksum: 5b1e2daa247062061325b8fdbfd1fb56dde0a448fb1455453276ea18c60685bdad23a445dc148cf87bc216be1573357509b7d4060494a6fd768c7efad833ee45
+  languageName: node
+  linkType: hard
+
+"picocolors@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "picocolors@npm:1.0.0"
+  checksum: a2e8092dd86c8396bdba9f2b5481032848525b3dc295ce9b57896f931e63fc16f79805144321f72976383fc249584672a75cc18d6777c6b757603f372f745981
   languageName: node
   linkType: hard
 
@@ -4154,6 +4174,15 @@ resolve@^1.20.0:
   version: 3.0.3
   resolution: "signal-exit@npm:3.0.3"
   checksum: f0169d3f1263d06df32ca072b0bf33b34c6f8f0341a7a1621558a2444dfbe8f5fec76b35537fcc6f0bc4944bdb5336fe0bdcf41a5422c4e45a1dba3f45475e6c
+  languageName: node
+  linkType: hard
+
+"simple-git-hooks@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "simple-git-hooks@npm:2.7.0"
+  bin:
+    simple-git-hooks: cli.js
+  checksum: e7d15ec4c20d2f6c85139fb9dee2cb25be684a27ff32931459fd2e5b1ed205ab89f31fd2e0fc53fc964c1a576d33cbcfbf69611f3d694f11851152f4bc415145
   languageName: node
   linkType: hard
 

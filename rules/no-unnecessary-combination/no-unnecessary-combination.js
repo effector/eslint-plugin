@@ -1,6 +1,4 @@
-const {
-  extractImportedFrom,
-} = require("../../utils/extract-imported-from");
+const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
 module.exports = {

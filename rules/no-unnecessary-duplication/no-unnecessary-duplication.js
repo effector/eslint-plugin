@@ -1,6 +1,4 @@
-const {
-  extractImportedFrom,
-} = require("../../utils/extract-imported-from");
+const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { areNodesSameInText } = require("../../utils/are-nodes-same-in-text");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 

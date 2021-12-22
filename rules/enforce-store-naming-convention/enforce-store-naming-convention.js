@@ -1,6 +1,4 @@
-const {
-  extractImportedFrom,
-} = require("../../utils/extract-imported-from");
+const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { namingOf } = require("../../utils/naming");
 const {
   validateStoreNameConvention,

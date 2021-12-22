@@ -21,21 +21,25 @@ const readExampleForTheRule = (name) => ({
   filename: join(__dirname, "examples", name),
 });
 
-ruleTester.run("effector/enforce-store-naming-convention-prefix.ts.test", rule, {
-  valid: ["correct-store-naming.ts"].map(readExampleForTheRule),
+ruleTester.run(
+  "effector/enforce-store-naming-convention-prefix.ts.test",
+  rule,
+  {
+    valid: ["correct-store-naming.ts"].map(readExampleForTheRule),
 
-  invalid: [
-    // Errors
-    ...["incorrect-store-naming.ts"]
-      .map(readExampleForTheRule)
-      .map((result) => ({
-        ...result,
-        errors: [
-          {
-            messageId: "invalidName",
-            type: "VariableDeclarator",
-          },
-        ],
-      })),
-  ],
-});
+    invalid: [
+      // Errors
+      ...["incorrect-store-naming.ts"]
+        .map(readExampleForTheRule)
+        .map((result) => ({
+          ...result,
+          errors: [
+            {
+              messageId: "invalidName",
+              type: "VariableDeclarator",
+            },
+          ],
+        })),
+    ],
+  }
+);

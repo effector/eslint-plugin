@@ -1,6 +1,4 @@
-const {
-  extractImportedFrom,
-} = require("../../utils/extract-imported-from");
+const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 
