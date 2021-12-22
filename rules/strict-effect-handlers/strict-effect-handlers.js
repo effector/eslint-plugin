@@ -21,11 +21,13 @@ module.exports = {
   },
   create(context) {
     function onEffectHandler(node) {
-      if (!node.body?.body) {
+      const functionBody = node.body?.body;
+
+      if (!Array.isArray(functionBody)) {
         return;
       }
 
-      const calledNodes = node.body.body
+      const calledNodes = functionBody
         .filter((bodyNode) => bodyNode.expression?.type === "AwaitExpression")
         .map((awaitNode) => ({
           node: awaitNode.expression.argument.callee,

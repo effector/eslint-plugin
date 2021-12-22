@@ -15,9 +15,11 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run("effector/strict-effect-handlers.test", rule, {
-  valid: ["correct-only-async.js", "correct-only-fx.js"].map(
-    readExampleForTheRule
-  ),
+  valid: [
+    "correct-only-async.js",
+    "correct-only-fx.js",
+    "correct-empty-function.js",
+  ].map(readExampleForTheRule),
 
   invalid: [
     {
