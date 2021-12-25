@@ -26,7 +26,7 @@ forward({ from: eventOne.prepend((v) => v.length), to: eventTwo });
       code: `
 import { forward } from 'effector';
 forward({ from: eventOne, to: eventTwo });
-          `,
+`,
       errors: [
         {
           messageId: "noForward",
@@ -35,9 +35,9 @@ forward({ from: eventOne, to: eventTwo });
             {
               messageId: "replaceWithSample",
               output: `
-import {sample} from 'effector';
+import { sample } from 'effector';
 sample({ clock: eventOne, target: eventTwo });
-          `,
+`,
             },
           ],
         },
@@ -47,7 +47,7 @@ sample({ clock: eventOne, target: eventTwo });
       code: `
 import { forward } from 'effector';
 forward({ from: eventOne.prepend((v) => v.length), to: eventTwo });
-            `,
+`,
       errors: [
         {
           messageId: "noForward",
@@ -56,9 +56,9 @@ forward({ from: eventOne.prepend((v) => v.length), to: eventTwo });
             {
               messageId: "replaceWithSample",
               output: `
-import {sample} from 'effector';
-sample({ clock: eventOne.prepend((v) => v.length), target: eventTwo });
-            `,
+import { sample } from 'effector';
+sample({ clock: eventOne, fn: (v) => v.length), target: eventTwo });
+`,
             },
           ],
         },
@@ -77,9 +77,9 @@ forward({ from: eventOne.map((v) => v.length), to: eventTwo });
             {
               messageId: "replaceWithSample",
               output: `
-import {sample} from 'effector';
+import { sample } from 'effector';
 sample({ clock: eventOne, fn: (v) => v.length, target: eventTwo });
-      `,
+`,
             },
           ],
         },
@@ -98,9 +98,9 @@ forward({ from: eventOne, to: eventTwo.prepend((v) => v.length) });
             {
               messageId: "replaceWithSample",
               output: `
-import {sample} from 'effector';
+import { sample } from 'effector';
 sample({ clock: eventOne, fn: (v) => v.length, target: eventTwo });
-          `,
+`,
             },
           ],
         },
@@ -119,9 +119,9 @@ forward({ from: eventOne, to: serviceOne.featureOne.eventTwo.prepend((v) => v.le
             {
               messageId: "replaceWithSample",
               output: `
-import {sample} from 'effector';
+import { sample } from 'effector';
 sample({ clock: eventOne, fn: (v) => v.length, target: serviceOne.featureOne.eventTwo });
-      `,
+`,
             },
           ],
         },
@@ -140,9 +140,9 @@ forward({ from: serviceOne.featureOne.eventOne.map((v) => v.length), to: eventTw
             {
               messageId: "replaceWithSample",
               output: `
-import {sample} from 'effector';
+import { sample } from 'effector';
 sample({ clock: serviceOne.featureOne.eventOne, fn: (v) => v.length, target: eventTwo });
-  `,
+`,
             },
           ],
         },
@@ -152,7 +152,7 @@ sample({ clock: serviceOne.featureOne.eventOne, fn: (v) => v.length, target: eve
       code: `
 import { forward } from 'effector';
 forward({ from: merge(eventOne, eventOneOne), to: eventTwo });
-  `,
+`,
       errors: [
         {
           messageId: "noForward",
@@ -161,9 +161,9 @@ forward({ from: merge(eventOne, eventOneOne), to: eventTwo });
             {
               messageId: "replaceWithSample",
               output: `
-import {sample} from 'effector';
+import { sample } from 'effector';
 sample({ clock: merge(eventOne, eventOneOne), target: eventTwo });
-    `,
+`,
             },
           ],
         },
@@ -173,7 +173,7 @@ sample({ clock: merge(eventOne, eventOneOne), target: eventTwo });
       code: `
 import { forward } from 'effector';
 forward({ from: eventOne, to: [eventTwo, eventTwoTwo] });
-    `,
+`,
       errors: [
         {
           messageId: "noForward",
@@ -182,9 +182,9 @@ forward({ from: eventOne, to: [eventTwo, eventTwoTwo] });
             {
               messageId: "replaceWithSample",
               output: `
-import {sample} from 'effector';
+import { sample } from 'effector';
 sample({ clock: eventOne, target: [eventTwo, eventTwoTwo] });
-      `,
+`,
             },
           ],
         },

@@ -1,6 +1,6 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { buildObjectInText } = require("../../utils/builders");
+const { buildObjectFromPropertiesInText } = require("../../utils/builders");
 
 const { correctOrder } = require("./config");
 
@@ -67,7 +67,7 @@ module.exports = {
               {
                 messageId: "changeOrder",
                 fix(fixer) {
-                  const newConfig = buildObjectInText({
+                  const newConfig = buildObjectFromPropertiesInText({
                     context,
                     properties: sortNodesByName(optionsNodes, idealOrder),
                   });

@@ -1,7 +1,7 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { areNodesSameInText } = require("../../utils/are-nodes-same-in-text");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { buildObjectInText } = require("../../utils/builders");
+const { buildObjectFromPropertiesInText } = require("../../utils/builders");
 
 module.exports = {
   meta: {
@@ -88,7 +88,7 @@ function reportUnnecessaryDuplication({
       (p) => p !== paramToExcludeNode
     );
 
-    return buildObjectInText({ properties, context });
+    return buildObjectFromPropertiesInText({ properties, context });
   }
 
   context.report({

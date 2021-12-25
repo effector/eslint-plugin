@@ -1,4 +1,4 @@
-function buildObjectInText({ properties, context }) {
+function buildObjectFromPropertiesInText({ properties, context }) {
   const content = properties
     .map((property) => context.getSourceCode().getText(property))
     .join(", ");
@@ -6,4 +6,12 @@ function buildObjectInText({ properties, context }) {
   return `{ ${content} }`;
 }
 
-module.exports = { buildObjectInText };
+function buildObjectFromMapInText({ map, context }) {
+  const content = Object.entries(map)
+    .map(([key, node]) => `${key}: ${context.getSourceCode().getText(node)}`)
+    .join(", ");
+
+  return `{ ${content} }`;
+}
+
+module.exports = { buildObjectFromPropertiesInText, buildObjectFromMapInText };
