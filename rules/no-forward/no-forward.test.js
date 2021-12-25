@@ -148,5 +148,47 @@ sample({ clock: serviceOne.featureOne.eventOne, fn: (v) => v.length, target: eve
         },
       ],
     },
+    {
+      code: `
+import { forward } from 'effector';
+forward({ from: merge(eventOne, eventOneOne), to: eventTwo });
+  `,
+      errors: [
+        {
+          messageId: "noForward",
+          type: "CallExpression",
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: `
+import {sample} from 'effector';
+sample({ clock: merge(eventOne, eventOneOne), target: eventTwo });
+    `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+import { forward } from 'effector';
+forward({ from: eventOne, to: [eventTwo, eventTwoTwo] });
+    `,
+      errors: [
+        {
+          messageId: "noForward",
+          type: "CallExpression",
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: `
+import {sample} from 'effector';
+sample({ clock: eventOne, target: [eventTwo, eventTwoTwo] });
+      `,
+            },
+          ],
+        },
+      ],
+    },
   ],
 });
