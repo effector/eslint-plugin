@@ -2,7 +2,7 @@ const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { areNodesSameInText } = require("../../utils/are-nodes-same-in-text");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { buildObjectInText } = require("../../utils/builders");
-const { isMethod } = require("../../utils/method");
+const { method } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -34,39 +34,41 @@ module.exports = {
         });
       },
       CallExpression(node) {
-        const METHODS_WITH_POSSIBLE_DUPLCATION = ["sample", "guard"];
-        for (const method of METHODS_WITH_POSSIBLE_DUPLCATION) {
-          if (!isMethod({ node, importMap: importedFromEffector, method })) {
-            continue;
-          }
-
-          const params = {
-            source: node?.arguments?.[0]?.properties?.find(
-              (n) => n.key.name === "source"
-            ),
-            clock: node?.arguments?.[0]?.properties?.find(
-              (n) => n.key.name === "clock"
-            ),
-          };
-          if (!params.source || !params.clock) {
-            return;
-          }
-
-          const sameSourceAndClock = areNodesSameInText({
-            context,
-            nodes: [params.source?.value, params.clock?.value],
-          });
-          if (!sameSourceAndClock) {
-            return;
-          }
-
-          reportUnnecessaryDuplication({
-            context,
+        if (
+          method.isNot(["sample", "guard"], {
             node,
-            params,
-            firstArgument: node?.arguments?.[0],
-          });
+            importMap: importedFromEffector,
+          })
+        ) {
+          return;
         }
+
+        const params = {
+          source: node?.arguments?.[0]?.properties?.find(
+            (n) => n.key.name === "source"
+          ),
+          clock: node?.arguments?.[0]?.properties?.find(
+            (n) => n.key.name === "clock"
+          ),
+        };
+        if (!params.source || !params.clock) {
+          return;
+        }
+
+        const sameSourceAndClock = areNodesSameInText({
+          context,
+          nodes: [params.source?.value, params.clock?.value],
+        });
+        if (!sameSourceAndClock) {
+          return;
+        }
+
+        reportUnnecessaryDuplication({
+          context,
+          node,
+          params,
+          firstArgument: node?.arguments?.[0],
+        });
       },
     };
   },

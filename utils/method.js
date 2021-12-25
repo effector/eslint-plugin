@@ -1,12 +1,23 @@
-function isMethod({ node, method, importMap }) {
-  const localMethod = importMap.get(method);
-  if (!localMethod) {
-    return false;
-  }
+function isSomeMethod(methodName, { node, importMap }) {
+  const normalizedMethodNames = Array.isArray(methodName)
+    ? methodName
+    : [methodName];
 
-  const isEffectorMethod = node?.callee?.name === localMethod;
+  return normalizedMethodNames.some((method) => {
+    const localMethod = importMap.get(method);
+    if (!localMethod) {
+      return false;
+    }
 
-  return isEffectorMethod;
+    const isEffectorMethod = node?.callee?.name === localMethod;
+
+    return isEffectorMethod;
+  });
 }
 
-module.exports = { isMethod };
+const method = {
+  is: (...args) => isSomeMethod(...args),
+  isNot: (...args) => !isSomeMethod(...args),
+};
+
+module.exports = { method };

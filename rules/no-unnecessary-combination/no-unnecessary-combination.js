@@ -1,6 +1,6 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { isMethod } = require("../../utils/method");
+const { method } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -30,16 +30,10 @@ module.exports = {
         });
       },
       CallExpression(node) {
-        const METHODS_WITH_POSSIBLE_UNNECESSARY_COMBINATION = [
-          "sample",
-          "guard",
-          "forward",
-        ];
-
         const CONFIG_ARG_PROPERTIES = ["source", "clock", "from"];
 
-        function toLocalMethod(method) {
-          return importedFromEffector.get(method);
+        function toLocalMethod(methodName) {
+          return importedFromEffector.get(methodName);
         }
 
         const UNNECESSARY_METHODS = {
@@ -48,42 +42,45 @@ module.exports = {
           from: ["merge"].map(toLocalMethod).filter(Boolean),
         };
 
-        for (const method of METHODS_WITH_POSSIBLE_UNNECESSARY_COMBINATION) {
-          if (!isMethod({ node, importMap: importedFromEffector, method })) {
+        if (
+          method.isNot(["sample", "guard", "forward"], {
+            node,
+            importMap: importedFromEffector,
+          })
+        ) {
+          return;
+        }
+
+        const candidates =
+          node?.arguments?.[0]?.properties?.filter((n) =>
+            CONFIG_ARG_PROPERTIES.includes(n.key.name)
+          ) ?? [];
+
+        if (candidates.length === 0) {
+          return;
+        }
+
+        for (const candidate of candidates) {
+          const candidateName = candidate?.value?.callee?.name;
+          const argProp = candidate?.key?.name;
+          if (!candidateName || !argProp) {
             continue;
           }
 
-          const candidates =
-            node?.arguments?.[0]?.properties?.filter((n) =>
-              CONFIG_ARG_PROPERTIES.includes(n.key.name)
-            ) ?? [];
+          const localUnnecessaryMethods = UNNECESSARY_METHODS[argProp];
 
-          if (candidates.length === 0) {
+          const UnnecessaryMethodIsEffectorMethod =
+            localUnnecessaryMethods.some((m) => m === candidateName);
+
+          if (!UnnecessaryMethodIsEffectorMethod) {
             continue;
           }
 
-          for (const candidate of candidates) {
-            const candidateName = candidate?.value?.callee?.name;
-            const argProp = candidate?.key?.name;
-            if (!candidateName || !argProp) {
-              continue;
-            }
-
-            const localUnnecessaryMethods = UNNECESSARY_METHODS[argProp];
-
-            const UnnecessaryMethodIsEffectorMethod =
-              localUnnecessaryMethods.some((m) => m === candidateName);
-
-            if (!UnnecessaryMethodIsEffectorMethod) {
-              continue;
-            }
-
-            context.report({
-              node: candidate?.value,
-              messageId: "unnecessaryCombination",
-              data: { methodName: candidateName },
-            });
-          }
+          context.report({
+            node: candidate?.value,
+            messageId: "unnecessaryCombination",
+            data: { methodName: candidateName },
+          });
         }
       },
     };

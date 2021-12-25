@@ -1,7 +1,7 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { isMethod } = require("../../utils/method");
+const { method } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -30,61 +30,63 @@ module.exports = {
         });
       },
       CallExpression(node) {
-        const POSSIBLE_USELESS_METHODS = ["sample", "guard"];
-        for (const method of POSSIBLE_USELESS_METHODS) {
-          if (!isMethod({ node, importMap: importedFromEffector, method })) {
-            continue;
-          }
-
-          const resultAssignedInVariable = traverseParentByType(
+        if (
+          method.isNot(["sample", "guard"], {
             node,
-            "VariableDeclarator"
-          );
-          if (resultAssignedInVariable) {
-            continue;
-          }
-
-          const resultReturnedFromFactory = traverseParentByType(
-            node,
-            "ReturnStatement"
-          );
-          if (resultReturnedFromFactory) {
-            continue;
-          }
-
-          const resultPartOfChain = traverseParentByType(
-            node,
-            "ObjectExpression"
-          );
-          if (resultPartOfChain) {
-            continue;
-          }
-
-          const configHasTarget = node?.arguments?.[0]?.properties?.some(
-            (prop) => prop?.key.name === "target"
-          );
-          if (configHasTarget) {
-            continue;
-          }
-
-          const resultIsWatched = node?.parent?.property?.name === "watch";
-          if (resultIsWatched) {
-            continue;
-          }
-
-          const resultIsArgument = node?.parent?.type === "CallExpression";
-          if (resultIsArgument) {
-            continue;
-          }
-
-          context.report({
-            node,
-            messageId: "uselessMethod",
-            data: {
-              methodName: node?.callee?.name,
-            },
-          });
+            importMap: importedFromEffector,
+          })
+        ) {
+          return;
         }
+
+        const resultAssignedInVariable = traverseParentByType(
+          node,
+          "VariableDeclarator"
+        );
+        if (resultAssignedInVariable) {
+          return;
+        }
+
+        const resultReturnedFromFactory = traverseParentByType(
+          node,
+          "ReturnStatement"
+        );
+        if (resultReturnedFromFactory) {
+          return;
+        }
+
+        const resultPartOfChain = traverseParentByType(
+          node,
+          "ObjectExpression"
+        );
+        if (resultPartOfChain) {
+          return;
+        }
+
+        const configHasTarget = node?.arguments?.[0]?.properties?.some(
+          (prop) => prop?.key.name === "target"
+        );
+        if (configHasTarget) {
+          return;
+        }
+
+        const resultIsWatched = node?.parent?.property?.name === "watch";
+        if (resultIsWatched) {
+          return;
+        }
+
+        const resultIsArgument = node?.parent?.type === "CallExpression";
+        if (resultIsArgument) {
+          return;
+        }
+
+        context.report({
+          node,
+          messageId: "uselessMethod",
+          data: {
+            methodName: node?.callee?.name,
+          },
+        });
       },
     };
   },

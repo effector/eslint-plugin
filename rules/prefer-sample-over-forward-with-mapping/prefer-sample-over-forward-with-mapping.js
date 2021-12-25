@@ -3,7 +3,7 @@ const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { isMethod } = require("../../utils/method");
+const { method } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -35,10 +35,9 @@ module.exports = {
       },
       CallExpression(node) {
         if (
-          !isMethod({
+          method.isNot("forward", {
             node,
             importMap: importedFromEffector,
-            method: "forward",
           })
         ) {
           return;

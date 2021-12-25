@@ -1,7 +1,7 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { buildObjectInText } = require("../../utils/builders");
-const { isMethod } = require("../../utils/method");
+const { method } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -37,10 +37,9 @@ module.exports = {
         const METHOD_NAME = "forward";
 
         if (
-          !isMethod({
+          method.isNot("forward", {
             node,
             importMap: importedFromEffector,
-            method: METHOD_NAME,
           })
         ) {
           return;
