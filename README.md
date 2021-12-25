@@ -67,6 +67,7 @@ This preset is recommended for projects that use [React](https://reactjs.org) wi
 - [effector/no-watch](rules/no-watch/no-watch.md)
 - [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
 - [effector/strict-effect-handlers](rules/strict-effect-handlers/strict-effect-handlers.md)
+- [effector/keep-options-order](rules/keep-options-order/keep-options-order.md)
 
 ## Maintenance
 
