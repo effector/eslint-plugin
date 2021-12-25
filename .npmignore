@@ -5,3 +5,5 @@ scripts
 .pnp.cjs
 .yarnrc.yml
 coverage
+*.md
+tsconfig.json
