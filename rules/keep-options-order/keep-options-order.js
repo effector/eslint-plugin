@@ -1,5 +1,6 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { buildObjectInText } = require("../../utils/builders");
 
 const { correctOrder } = require("./config");
 
@@ -16,6 +17,7 @@ module.exports = {
       invalidOrder: `Order of options should be ${makeTag(
         correctOrder
       )}, but found {{ incorrectOrderTag }}`,
+      changeOrder: "Sort options",
     },
     schema: [],
     hasSuggestions: true,
@@ -44,12 +46,14 @@ module.exports = {
             continue;
           }
 
-          const optionsNodes = node?.arguments?.[0]?.properties;
+          const configNode = node?.arguments?.[0];
+          const optionsNodes = configNode?.properties;
 
           const optionsOrder = optionsNodes?.map((prop) => prop?.key.name);
 
-          const validOrder = isCorrectOrder(optionsOrder);
-          if (validOrder) {
+          const idealOrder = filteredCorrectOrder(optionsOrder);
+
+          if (isCorrectOrder(optionsOrder, idealOrder)) {
             continue;
           }
 
@@ -59,6 +63,19 @@ module.exports = {
             data: {
               incorrectOrderTag: makeTag(optionsOrder),
             },
+            suggest: [
+              {
+                messageId: "changeOrder",
+                fix(fixer) {
+                  const newConfig = buildObjectInText({
+                    context,
+                    properties: sortNodesByName(optionsNodes, idealOrder),
+                  });
+
+                  return fixer.replaceText(configNode, newConfig);
+                },
+              },
+            ],
           });
         }
       },
@@ -70,12 +87,21 @@ function makeTag(order) {
   return order.join("->");
 }
 
-function isCorrectOrder(checkOrder) {
-  const filteredCorrectOrder = correctOrder.filter((item) =>
-    checkOrder?.includes(item)
-  );
+function isCorrectOrder(checkOrder, idealOrder) {
+  return idealOrder.every((refItem, index) => checkOrder?.[index] === refItem);
+}
 
-  return filteredCorrectOrder.every(
-    (refItem, index) => checkOrder?.[index] === refItem
-  );
+function filteredCorrectOrder(checkOrder) {
+  return correctOrder.filter((item) => checkOrder?.includes(item));
+}
+
+function sortNodesByName(nodes, nameOrder) {
+  const newNodes = [];
+
+  for (const name of nameOrder) {
+    const node = nodes.find((node) => node?.key.name === name);
+    newNodes.push(node);
+  }
+
+  return newNodes;
 }

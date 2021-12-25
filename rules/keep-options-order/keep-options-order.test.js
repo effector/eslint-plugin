@@ -45,7 +45,7 @@ sample({ source, clock, fn, target });
               messageId: "changeOrder",
               output: `
 import {sample} from 'effector';
-sample({ clock, source, target });
+sample({ clock, source, fn, target });
       `,
             },
           ],
@@ -85,7 +85,7 @@ sample({ fn, clock: event.map(() => null), target });
               messageId: "changeOrder",
               output: `
 import {sample} from 'effector';
-sample({ clock: event.map(() => null), f, target });
+sample({ clock: event.map(() => null), fn, target });
           `,
             },
           ],
