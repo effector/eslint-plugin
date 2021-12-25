@@ -13,8 +13,8 @@ module.exports = {
       url: createLinkToRule("keep-options-order"),
     },
     messages: {
-      invalidOrder: `Order of options should be ${correctOrder.join(
-        "->"
+      invalidOrder: `Order of options should be ${makeTag(
+        correctOrder
       )}, but found {{ incorrectOrderTag }}`,
     },
     schema: [],
@@ -44,8 +44,12 @@ module.exports = {
             continue;
           }
 
-          const invalidOrder = false;
-          if (!invalidOrder) {
+          const optionsNodes = node?.arguments?.[0]?.properties;
+
+          const optionsOrder = optionsNodes?.map((prop) => prop?.key.name);
+
+          const validOrder = isCorrectOrder(optionsOrder);
+          if (validOrder) {
             continue;
           }
 
@@ -53,7 +57,7 @@ module.exports = {
             node,
             messageId: "invalidOrder",
             data: {
-              incorrectOrderTag: "UNKNOWN",
+              incorrectOrderTag: makeTag(optionsOrder),
             },
           });
         }
@@ -61,3 +65,17 @@ module.exports = {
     };
   },
 };
+
+function makeTag(order) {
+  return order.join("->");
+}
+
+function isCorrectOrder(checkOrder) {
+  const filteredCorrectOrder = correctOrder.filter((item) =>
+    checkOrder?.includes(item)
+  );
+
+  return filteredCorrectOrder.every(
+    (refItem, index) => checkOrder?.[index] === refItem
+  );
+}
