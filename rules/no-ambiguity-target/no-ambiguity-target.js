@@ -1,6 +1,7 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { isMethod } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -31,13 +32,7 @@ module.exports = {
       CallExpression(node) {
         const POSSIBLE_USELESS_METHODS = ["sample", "guard"];
         for (const method of POSSIBLE_USELESS_METHODS) {
-          const localMethod = importedFromEffector.get(method);
-          if (!localMethod) {
-            continue;
-          }
-
-          const isEffectorMethod = node?.callee?.name === localMethod;
-          if (!isEffectorMethod) {
+          if (!isMethod({ node, importMap: importedFromEffector, method })) {
             continue;
           }
 

@@ -1,6 +1,7 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { buildObjectInText } = require("../../utils/builders");
+const { isMethod } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -35,13 +36,13 @@ module.exports = {
       CallExpression(node) {
         const METHOD_NAME = "forward";
 
-        const localMethod = importedFromEffector.get(METHOD_NAME);
-        if (!localMethod) {
-          return;
-        }
-
-        const isEffectorMethod = node?.callee?.name === localMethod;
-        if (!isEffectorMethod) {
+        if (
+          !isMethod({
+            node,
+            importMap: importedFromEffector,
+            method: METHOD_NAME,
+          })
+        ) {
           return;
         }
 

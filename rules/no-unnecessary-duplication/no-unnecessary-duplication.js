@@ -2,6 +2,7 @@ const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { areNodesSameInText } = require("../../utils/are-nodes-same-in-text");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { buildObjectInText } = require("../../utils/builders");
+const { isMethod } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -35,13 +36,7 @@ module.exports = {
       CallExpression(node) {
         const METHODS_WITH_POSSIBLE_DUPLCATION = ["sample", "guard"];
         for (const method of METHODS_WITH_POSSIBLE_DUPLCATION) {
-          const localMethod = importedFromEffector.get(method);
-          if (!localMethod) {
-            continue;
-          }
-
-          const isEffectorMethod = node?.callee?.name === localMethod;
-          if (!isEffectorMethod) {
+          if (!isMethod({ node, importMap: importedFromEffector, method })) {
             continue;
           }
 

@@ -3,6 +3,7 @@ const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { isMethod } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -33,13 +34,13 @@ module.exports = {
         });
       },
       CallExpression(node) {
-        const localMethod = importedFromEffector.get("forward");
-        if (!localMethod) {
-          return;
-        }
-
-        const isEffectorMethod = node?.callee?.name === localMethod;
-        if (!isEffectorMethod) {
+        if (
+          !isMethod({
+            node,
+            importMap: importedFromEffector,
+            method: "forward",
+          })
+        ) {
           return;
         }
 

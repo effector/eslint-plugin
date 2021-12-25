@@ -1,5 +1,6 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { isMethod } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -48,13 +49,7 @@ module.exports = {
         };
 
         for (const method of METHODS_WITH_POSSIBLE_UNNECESSARY_COMBINATION) {
-          const localMethod = importedFromEffector.get(method);
-          if (!localMethod) {
-            continue;
-          }
-
-          const isEffectorMethod = node?.callee?.name === localMethod;
-          if (!isEffectorMethod) {
+          if (!isMethod({ node, importMap: importedFromEffector, method })) {
             continue;
           }
 
