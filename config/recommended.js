@@ -10,5 +10,6 @@ module.exports = {
     "effector/no-watch": "warn",
     "effector/no-unnecessary-combination": "warn",
     "effector/no-duplicate-on": "error",
+    "effector/keep-options-order": "warn",
   },
 };
