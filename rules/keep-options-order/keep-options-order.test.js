@@ -31,5 +31,86 @@ ruleTester.run("effector/keep-options-order.test", rule, {
           },
         ],
       })),
+    // Suggestions
+    {
+      code: `
+import {sample} from 'effector';
+sample({ source, clock, fn, target });
+      `,
+      errors: [
+        {
+          messageId: "invalidOrder",
+          suggestions: [
+            {
+              messageId: "changeOrder",
+              output: `
+import {sample} from 'effector';
+sample({ clock, source, target });
+      `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+import {sample} from 'effector';
+sample({ fn() { return null }, clock, target });
+        `,
+      errors: [
+        {
+          messageId: "invalidOrder",
+          suggestions: [
+            {
+              messageId: "changeOrder",
+              output: `
+import {sample} from 'effector';
+sample({ clock, fn() { return null }, target });
+        `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+import {sample} from 'effector';
+sample({ fn, clock: event.map(() => null), target });
+          `,
+      errors: [
+        {
+          messageId: "invalidOrder",
+          suggestions: [
+            {
+              messageId: "changeOrder",
+              output: `
+import {sample} from 'effector';
+sample({ clock: event.map(() => null), f, target });
+          `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+import {sample} from 'effector';
+sample({ source: combine({ a: $a }), clock, target });
+            `,
+      errors: [
+        {
+          messageId: "invalidOrder",
+          suggestions: [
+            {
+              messageId: "changeOrder",
+              output: `
+import {sample} from 'effector';
+sample({ clock, source: combine({ a: $a }), target });
+            `,
+            },
+          ],
+        },
+      ],
+    },
   ],
 });
