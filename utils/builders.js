@@ -6,4 +6,4 @@ function buildObjectInText({ properties, context }) {
   return `{ ${content} }`;
 }
 
-module.exports = { buildObject };
+module.exports = { buildObjectInText };
