@@ -63,9 +63,44 @@ module.exports = {
             {
               messageId: "replaceWithSample",
               *fix(fixer) {
+                let mapperFunctionNode = null;
+
+                let clockMapperUsed = false;
+                let targetMapperUsed = false;
+
+                let clockNode = forwardConfig.from.value;
+                let targetNode = forwardConfig.to.value;
+
+                if (
+                  clockNode.type === "CallExpression" &&
+                  clockNode?.callee?.property?.name === "map"
+                ) {
+                  mapperFunctionNode = clockNode?.arguments?.[0];
+                  clockNode = clockNode.callee.object;
+                  clockMapperUsed = true;
+                }
+
+                if (
+                  targetNode.type === "CallExpression" &&
+                  targetNode?.callee?.property?.name === "prepend"
+                ) {
+                  mapperFunctionNode = targetNode?.arguments?.[0];
+                  targetNode = targetNode.callee.object;
+                  targetMapperUsed = true;
+                }
+
+                // We cannot apply two mappers in one sample
+                // Let's revert mappers and use .map + .prepend
+                if (clockMapperUsed && targetMapperUsed) {
+                  mapperFunctionNode = null;
+                  clockNode = forwardConfig.from.value;
+                  targetNode = forwardConfig.to.value;
+                }
+
                 const sampleConfig = {
-                  clock: forwardConfig.from.value,
-                  target: forwardConfig.to.value,
+                  clock: clockNode,
+                  fn: mapperFunctionNode,
+                  target: targetNode,
                 };
 
                 yield fixer.replaceText(
@@ -76,8 +111,7 @@ module.exports = {
                   })})`
                 );
 
-                const importNode = importNodes.get(METHOD_NAME);
-                yield fixer.replaceText(importNode, "sample");
+                yield fixer.replaceText(importNodes.get(METHOD_NAME), "sample");
               },
             },
           ],

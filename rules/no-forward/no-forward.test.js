@@ -57,7 +57,7 @@ forward({ from: eventOne.prepend((v) => v.length), to: eventTwo });
               messageId: "replaceWithSample",
               output: `
 import { sample } from 'effector';
-sample({ clock: eventOne, fn: (v) => v.length), target: eventTwo });
+sample({ clock: eventOne.prepend((v) => v.length), target: eventTwo });
 `,
             },
           ],
@@ -184,6 +184,27 @@ forward({ from: eventOne, to: [eventTwo, eventTwoTwo] });
               output: `
 import { sample } from 'effector';
 sample({ clock: eventOne, target: [eventTwo, eventTwoTwo] });
+`,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+import { forward } from 'effector';
+forward({ from: eventOne.map((v) => v.length), to: eventTwo.prepend(v => v.toString()) });
+`,
+      errors: [
+        {
+          messageId: "noForward",
+          type: "CallExpression",
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: `
+import { sample } from 'effector';
+sample({ clock: eventOne.map((v) => v.length), target: eventTwo.prepend(v => v.toString()) });
 `,
             },
           ],

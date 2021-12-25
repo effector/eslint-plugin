@@ -8,6 +8,7 @@ function buildObjectFromPropertiesInText({ properties, context }) {
 
 function buildObjectFromMapInText({ map, context }) {
   const content = Object.entries(map)
+    .filter(([_, node]) => Boolean(node))
     .map(([key, node]) => `${key}: ${context.getSourceCode().getText(node)}`)
     .join(", ");
 
