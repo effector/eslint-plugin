@@ -1,6 +1,6 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
-const { buildObjectFromMapInText } = require("../../utils/builders");
+const { buildObjectInText } = require("../../utils/builders");
 
 module.exports = {
   meta: {
@@ -97,17 +97,15 @@ module.exports = {
                   targetNode = forwardConfig.to.value;
                 }
 
-                const sampleConfig = {
-                  clock: clockNode,
-                  fn: mapperFunctionNode,
-                  target: targetNode,
-                };
-
                 yield fixer.replaceText(
                   node,
-                  `sample(${buildObjectFromMapInText({
+                  `sample(${buildObjectInText.fromMapOfNodes({
+                    properties: {
+                      clock: clockNode,
+                      fn: mapperFunctionNode,
+                      target: targetNode,
+                    },
                     context,
-                    map: sampleConfig,
                   })})`
                 );
 
