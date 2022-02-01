@@ -4,6 +4,7 @@ const {
 } = require("../../utils/traverse-nested-object-node");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { method } = require("../../utils/method");
+const { replaceForwardBySample } = require("../../utils/replace-by-sample");
 
 module.exports = {
   meta: {
@@ -19,16 +20,20 @@ module.exports = {
         "Instead of `forward` with `{{ eventName }}.map` you can use `sample`",
       overPrepend:
         "Instead of `forward` with `{{ eventName }}.prepend` you can use `sample`",
+      replaceWithSample: "Repalce `forward` with `sample`.",
     },
     schema: [],
+    hasSuggestions: true,
   },
   create(context) {
+    const importNodes = new Map();
     const importedFromEffector = new Map();
 
     return {
       ImportDeclaration(node) {
         extractImportedFrom({
           importMap: importedFromEffector,
+          nodeMap: importNodes,
           node,
           packageName: "effector",
         });
@@ -72,14 +77,25 @@ module.exports = {
             return;
           }
 
-          // console.log(eventName);
-
           context.report({
             node,
             messageId,
             data: {
               eventName,
             },
+            suggest: [
+              {
+                messageId: "replaceWithSample",
+                *fix(fixer) {
+                  yield* replaceForwardBySample(forwardConfig, {
+                    fixer,
+                    node,
+                    context,
+                    importNodes,
+                  });
+                },
+              },
+            ],
           });
         }
 

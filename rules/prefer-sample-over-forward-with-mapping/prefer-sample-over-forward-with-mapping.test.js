@@ -36,6 +36,15 @@ forward({ from: eventOne.map((v) => v.length), to: eventTwo });
           messageId: "overMap",
           type: "CallExpression",
           data: { eventName: "eventOne" },
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: `
+import { sample } from 'effector';
+sample({ clock: eventOne, fn: (v) => v.length, target: eventTwo });
+`,
+            },
+          ],
         },
       ],
     },
@@ -49,6 +58,15 @@ forward({ from: eventOne, to: eventTwo.prepend((v) => v.length) });
           messageId: "overPrepend",
           type: "CallExpression",
           data: { eventName: "eventTwo" },
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: `
+import { sample } from 'effector';
+sample({ clock: eventOne, fn: (v) => v.length, target: eventTwo });
+`,
+            },
+          ],
         },
       ],
     },
@@ -62,6 +80,15 @@ forward({ from: eventOne, to: serviceOne.featureOne.eventTwo.prepend((v) => v.le
           messageId: "overPrepend",
           type: "CallExpression",
           data: { eventName: "eventTwo" },
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: `
+import { sample } from 'effector';
+sample({ clock: eventOne, fn: (v) => v.length, target: serviceOne.featureOne.eventTwo });
+`,
+            },
+          ],
         },
       ],
     },
@@ -75,6 +102,15 @@ forward({ from: serviceOne.featureOne.eventOne.map((v) => v.length), to: eventTw
           messageId: "overMap",
           type: "CallExpression",
           data: { eventName: "eventOne" },
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: `
+import { sample } from 'effector';
+sample({ clock: serviceOne.featureOne.eventOne, fn: (v) => v.length, target: eventTwo });
+`,
+            },
+          ],
         },
       ],
     },
