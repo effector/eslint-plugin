@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.6.0
+
+- Add new rule `keep-options-order` ([PR #81](https://github.com/effector/eslint-plugin/pull/81))
+- Add new rule `no-forward` ([PR #82](https://github.com/effector/eslint-plugin/pull/82))
+- Fix false-positive on nested obejct with store in `no-duplicate-on` ([PR #86](https://github.com/effector/eslint-plugin/pull/86))
+- Fix possible exception on WIP code in some IDEs in `no-duplicate-on`
+
 ## v0.5.2
 
 - Fix error of parsing empty function in `strict-effect-handlers`
