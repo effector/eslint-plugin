@@ -1,5 +1,8 @@
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { getNestedObjectName } = require("../../utils/get-nested-object-name");
+const {
+  traverseNestedObjectNode,
+} = require("../../utils/traverse-nested-object-node");
 const { is } = require("../../utils/is");
 
 module.exports = {
@@ -56,7 +59,9 @@ module.exports = {
 
     return {
       'CallExpression[callee.property.name="on"]'(node) {
-        const storeObject = getNestedCallee(node) ?? getAssignedVariable(node);
+        const storeObject = traverseNestedObjectNode(
+          getNestedCallee(node) ?? getAssignedVariable(node)
+        );
         const storeName = getStoreName(storeObject);
 
         if (!is.store({ context, node: storeObject })) {
