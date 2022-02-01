@@ -25,3 +25,5 @@ sample({
   target: eventTwo,
 });
 ```
+
+💡 Tip: It could be superseded by [no-forward](../no-forward/no-forward.md).

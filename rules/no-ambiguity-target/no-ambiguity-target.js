@@ -1,6 +1,7 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
+const { method } = require("../../utils/method");
 
 module.exports = {
   meta: {
@@ -29,46 +30,42 @@ module.exports = {
         });
       },
       CallExpression(node) {
-        const POSSIBLE_USELESS_METHODS = ["sample", "guard"];
-        for (const method of POSSIBLE_USELESS_METHODS) {
-          const localMethod = importedFromEffector.get(method);
-          if (!localMethod) {
-            continue;
-          }
-
-          const isEffectorMethod = node?.callee?.name === localMethod;
-          if (!isEffectorMethod) {
-            continue;
-          }
-
-          const configHasTarget = node?.arguments?.[0]?.properties?.some(
-            (prop) => prop?.key.name === "target"
-          );
-          if (!configHasTarget) {
-            continue;
-          }
-
-          const resultAssignedInVariable = traverseParentByType(
+        if (
+          method.isNot(["sample", "guard"], {
             node,
-            "VariableDeclarator",
-            { stopOnTypes: ["BlockStatement"] }
-          );
-          const resultPartOfChain = traverseParentByType(
+            importMap: importedFromEffector,
+          })
+        ) {
+          return;
+        }
+
+        const configHasTarget = node?.arguments?.[0]?.properties?.some(
+          (prop) => prop?.key.name === "target"
+        );
+        if (!configHasTarget) {
+          return;
+        }
+
+        const resultAssignedInVariable = traverseParentByType(
+          node,
+          "VariableDeclarator",
+          { stopOnTypes: ["BlockStatement"] }
+        );
+        const resultPartOfChain = traverseParentByType(
+          node,
+          "ObjectExpression"
+        );
+
+        if (resultAssignedInVariable || resultPartOfChain) {
+          context.report({
             node,
-            "ObjectExpression"
-          );
+            messageId: "ambiguityTarget",
+            data: {
+              methodName: node?.callee?.name,
+            },
+          });
 
-          if (resultAssignedInVariable || resultPartOfChain) {
-            context.report({
-              node,
-              messageId: "ambiguityTarget",
-              data: {
-                methodName: node?.callee?.name,
-              },
-            });
-
-            continue;
-          }
+          return;
         }
       },
     };

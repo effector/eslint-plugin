@@ -61,6 +61,7 @@ This preset is recommended for projects that use [React](https://reactjs.org) wi
 - [effector/no-unnecessary-duplication](rules/no-unnecessary-duplication/no-unnecessary-duplication.md)
 - [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
 - [effector/no-useless-methods](rules/no-useless-methods/no-useless-methods.md)
+- [effector/no-forward](rules/no-forward/no-forward.md)
 - [effector/no-ambiguity-target](rules/no-ambiguity-target/no-ambiguity-target.md)
 - [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
 - [effector/no-getState](rules/no-getState/no-getState.md)

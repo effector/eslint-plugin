@@ -67,9 +67,9 @@ module.exports = {
               {
                 messageId: "changeOrder",
                 fix(fixer) {
-                  const newConfig = buildObjectInText({
-                    context,
+                  const newConfig = buildObjectInText.fromArrayOfNodes({
                     properties: sortNodesByName(optionsNodes, idealOrder),
+                    context,
                   });
 
                   return fixer.replaceText(configNode, newConfig);

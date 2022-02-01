@@ -13,6 +13,7 @@ module.exports = {
     "strict-effect-handlers": require("./rules/strict-effect-handlers/strict-effect-handlers"),
     "enforce-gate-naming-convention": require("./rules/enforce-gate-naming-convention/enforce-gate-naming-convention"),
     "keep-options-order": require("./rules/keep-options-order/keep-options-order"),
+    "no-forward": require("./rules/no-forward/no-forward"),
   },
   configs: {
     recommended: require("./config/recommended"),
