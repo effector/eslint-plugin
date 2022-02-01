@@ -5,6 +5,7 @@ const {
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { method } = require("../../utils/method");
 const { replaceForwardBySample } = require("../../utils/replace-by-sample");
+const { extractConfig } = require("../../utils/extract-config");
 
 module.exports = {
   meta: {
@@ -48,12 +49,7 @@ module.exports = {
           return;
         }
 
-        const forwardConfig = {
-          from: node.arguments?.[0]?.properties.find(
-            (n) => n.key?.name === "from"
-          ),
-          to: node.arguments?.[0]?.properties.find((n) => n.key?.name === "to"),
-        };
+        const forwardConfig = extractConfig(["from", "to"], { node });
 
         if (!forwardConfig.from || !forwardConfig.to) {
           return;

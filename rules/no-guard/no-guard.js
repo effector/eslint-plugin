@@ -1,22 +1,22 @@
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { method } = require("../../utils/method");
-const { replaceForwardBySample } = require("../../utils/replace-by-sample");
+const { replaceGuardBySample } = require("../../utils/replace-by-sample");
 const { extractConfig } = require("../../utils/extract-config");
 
 module.exports = {
   meta: {
     type: "problem",
     docs: {
-      description: "Prefer `sample` over `forward`",
+      description: "Prefer `sample` over `guard`",
       category: "Quality",
       recommended: true,
-      url: createLinkToRule("no-forward"),
+      url: createLinkToRule("no-guard"),
     },
     messages: {
-      noForward:
-        "Instead of `forward` you can use `sample`, it is more extendable.",
-      replaceWithSample: "Repalce `forward` with `sample`.",
+      noGuard:
+        "Instead of `guard` you can use `sample`, it is more extendable.",
+      replaceWithSample: "Repalce `guard` with `sample`.",
     },
     schema: [],
     hasSuggestions: true,
@@ -36,7 +36,7 @@ module.exports = {
       },
       CallExpression(node) {
         if (
-          method.isNot("forward", {
+          method.isNot("guard", {
             node,
             importMap: importedFromEffector,
           })
@@ -44,20 +44,25 @@ module.exports = {
           return;
         }
 
-        const forwardConfig = extractConfig(["from", "to"], { node });
+        const guardConfig = extractConfig(
+          ["source", "clock", "target", "filter"],
+          {
+            node,
+          }
+        );
 
-        if (!forwardConfig.from || !forwardConfig.to) {
+        if (!guardConfig.clock || !guardConfig.filter) {
           return;
         }
 
         context.report({
-          messageId: "noForward",
+          messageId: "noGuard",
           node,
           suggest: [
             {
               messageId: "replaceWithSample",
               *fix(fixer) {
-                yield* replaceForwardBySample(forwardConfig, {
+                yield* replaceGuardBySample(guardConfig, {
                   fixer,
                   node,
                   context,
