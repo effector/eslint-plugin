@@ -101,6 +101,10 @@ module.exports = {
 };
 
 function normalizePossibleArrayNode(node) {
+  if (!node) {
+    return [];
+  }
+
   if (node.type === "ArrayExpression") {
     return node.elements;
   }

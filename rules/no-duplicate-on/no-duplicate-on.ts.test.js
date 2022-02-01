@@ -25,6 +25,7 @@ ruleTester.run("effector/no-duplicate-on.ts.test", rule, {
     "correct.ts",
     "correct-with-scopes.ts",
     "correct-with-nesting.ts",
+    "correct-with-empty-on.ts",
   ].map(readExampleForTheRule),
   invalid: ["incorrect-with-invalid-naming.ts"]
     .map(readExampleForTheRule)
