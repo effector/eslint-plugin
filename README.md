@@ -53,6 +53,10 @@ This preset is recommended for projects that use [Fork API](https://effector.dev
 
 This preset is recommended for projects that use [React](https://reactjs.org) with Effector.
 
+#### plugin:effector/future
+
+This preset contains rules wich enforce _future-effector_ code-style.
+
 ### Supported rules
 
 - [effector/enforce-store-naming-convention](rules/enforce-store-naming-convention/enforce-store-naming-convention.md)
@@ -62,6 +66,7 @@ This preset is recommended for projects that use [React](https://reactjs.org) wi
 - [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
 - [effector/no-useless-methods](rules/no-useless-methods/no-useless-methods.md)
 - [effector/no-forward](rules/no-forward/no-forward.md)
+- [effector/no-guard](rules/no-guard/no-guard.md)
 - [effector/no-ambiguity-target](rules/no-ambiguity-target/no-ambiguity-target.md)
 - [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
 - [effector/no-getState](rules/no-getState/no-getState.md)

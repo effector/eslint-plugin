@@ -1,5 +1,31 @@
 const { buildObjectInText } = require("./builders");
 
+function* replaceGuardBySample(
+  guardConfig,
+  { fixer, node, context, importNodes }
+) {
+  let mapperFunctionNode = null;
+
+  let clockNode = guardConfig.clock?.value;
+  let targetNode = guardConfig.target?.value;
+  let sourceNode = guardConfig.source?.value;
+  let filterNode = guardConfig.filter?.value;
+
+  if (
+    targetNode.type === "CallExpression" &&
+    targetNode?.callee?.property?.name === "prepend"
+  ) {
+    mapperFunctionNode = targetNode?.arguments?.[0];
+    targetNode = targetNode.callee.object;
+    targetMapperUsed = true;
+  }
+
+  yield* replaceBySample(
+    { clockNode, sourceNode, filterNode, mapperFunctionNode, targetNode },
+    { node, fixer, context, importNodes, methodName: "guard" }
+  );
+}
+
 function* replaceForwardBySample(
   forwardConfig,
   { fixer, node, context, importNodes }
@@ -39,13 +65,13 @@ function* replaceForwardBySample(
   }
 
   yield* replaceBySample(
-    { clockNode, targetNode, mapperFunctionNode },
+    { clockNode, mapperFunctionNode, targetNode },
     { node, fixer, context, importNodes, methodName: "forward" }
   );
 }
 
 function* replaceBySample(
-  { clockNode, targetNode, mapperFunctionNode },
+  { clockNode, sourceNode, filterNode, mapperFunctionNode, targetNode },
   { node, fixer, context, importNodes, methodName }
 ) {
   yield fixer.replaceText(
@@ -53,6 +79,8 @@ function* replaceBySample(
     `sample(${buildObjectInText.fromMapOfNodes({
       properties: {
         clock: clockNode,
+        source: sourceNode,
+        filter: filterNode,
         fn: mapperFunctionNode,
         target: targetNode,
       },
@@ -63,4 +91,4 @@ function* replaceBySample(
   yield fixer.replaceText(importNodes.get(methodName), "sample");
 }
 
-module.exports = { replaceForwardBySample };
+module.exports = { replaceForwardBySample, replaceGuardBySample };
