@@ -22,7 +22,7 @@ guard({
 });
 
 // 👍 makes sense
-guard({
+sample({
   clock: trigger,
   soruce: $data,
   filter: Boolean,
