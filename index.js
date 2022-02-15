@@ -14,7 +14,7 @@ module.exports = {
     "enforce-gate-naming-convention": require("./rules/enforce-gate-naming-convention/enforce-gate-naming-convention"),
     "keep-options-order": require("./rules/keep-options-order/keep-options-order"),
     "no-forward": require("./rules/no-forward/no-forward"),
-    "no-guard": require("./rules/no-forward/no-guard"),
+    "no-guard": require("./rules/no-guard/no-guard"),
   },
   configs: {
     recommended: require("./config/recommended"),
