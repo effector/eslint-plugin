@@ -39,41 +39,43 @@ To configure individual rules:
 }
 ```
 
-### Available presets
+### Available rules by preset
 
 #### plugin:effector/recommended
 
 This preset is recommended for most projects.
 
+- [effector/enforce-store-naming-convention](rules/enforce-store-naming-convention/enforce-store-naming-convention.md)
+- [effector/enforce-effect-naming-convention](rules/enforce-effect-naming-convention/enforce-effect-naming-convention.md)
+- [effector/no-getState](rules/no-getState/no-getState.md)
+- [effector/no-useless-methods](rules/no-useless-methods/no-useless-methods.md)
+- [effector/no-unnecessary-duplication](rules/no-unnecessary-duplication/no-unnecessary-duplication.md)
+- [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
+- [effector/no-ambiguity-target](rules/no-ambiguity-target/no-ambiguity-target.md)
+- [effector/no-watch](rules/no-watch/no-watch.md)
+- [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
+- [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
+- [effector/keep-options-order](rules/keep-options-order/keep-options-order.md)
+
 #### plugin:effector/scope
 
 This preset is recommended for projects that use [Fork API](https://effector.dev/docs/api/effector/scope). You can read more about Fork API in [an article](https://dev.to/effector/the-best-part-of-effector-4c27).
+
+- [effector/strict-effect-handlers](rules/strict-effect-handlers/strict-effect-handlers.md)
 
 #### plugin:effector/react
 
 This preset is recommended for projects that use [React](https://reactjs.org) with Effector.
 
+- [effector/enforce-gate-naming-convention](rules/enforce-gate-naming-convention/enforce-gate-naming-convention.md)
+
 #### plugin:effector/future
 
 This preset contains rules wich enforce _future-effector_ code-style.
 
-### Supported rules
-
-- [effector/enforce-store-naming-convention](rules/enforce-store-naming-convention/enforce-store-naming-convention.md)
-- [effector/enforce-effect-naming-convention](rules/enforce-effect-naming-convention/enforce-effect-naming-convention.md)
-- [effector/enforce-gate-naming-convention](rules/enforce-gate-naming-convention/enforce-gate-naming-convention.md)
-- [effector/no-unnecessary-duplication](rules/no-unnecessary-duplication/no-unnecessary-duplication.md)
-- [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
-- [effector/no-useless-methods](rules/no-useless-methods/no-useless-methods.md)
+- [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
 - [effector/no-forward](rules/no-forward/no-forward.md)
 - [effector/no-guard](rules/no-guard/no-guard.md)
-- [effector/no-ambiguity-target](rules/no-ambiguity-target/no-ambiguity-target.md)
-- [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
-- [effector/no-getState](rules/no-getState/no-getState.md)
-- [effector/no-watch](rules/no-watch/no-watch.md)
-- [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
-- [effector/strict-effect-handlers](rules/strict-effect-handlers/strict-effect-handlers.md)
-- [effector/keep-options-order](rules/keep-options-order/keep-options-order.md)
 
 ## Maintenance
 
