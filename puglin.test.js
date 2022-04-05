@@ -26,4 +26,18 @@ describe("plugin", () => {
 
     expect(exportedRules).toEqual(allRules);
   });
+
+  test("any config should be exported", async () => {
+    const configsDirContent = await readdir(join(__dirname, "config"));
+
+    const allConfigs = configsDirContent
+      .map((fileName) => fileName.replace(".js", ""))
+      .sort();
+
+    const exportedConfigs = Object.entries(plugin.configs)
+      .map(([name]) => name)
+      .sort();
+
+    expect(exportedConfigs).toEqual(allConfigs);
+  });
 });
