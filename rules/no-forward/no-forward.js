@@ -16,7 +16,7 @@ module.exports = {
     messages: {
       noForward:
         "Instead of `forward` you can use `sample`, it is more extendable.",
-      replaceWithSample: "Repalce `forward` with `sample`.",
+      replaceWithSample: "Replace `forward` with `sample`.",
     },
     schema: [],
     hasSuggestions: true,
