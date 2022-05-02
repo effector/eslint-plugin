@@ -73,7 +73,6 @@ This preset is recommended for projects that use [React](https://reactjs.org) wi
 
 This preset contains rules wich enforce _future-effector_ code-style.
 
-- [effector/prefer-sample-over-forward-with-mapping](rules/prefer-sample-over-forward-with-mapping/prefer-sample-over-forward-with-mapping.md)
 - [effector/no-forward](rules/no-forward/no-forward.md)
 - [effector/no-guard](rules/no-guard/no-guard.md)
 
