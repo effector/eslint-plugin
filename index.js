@@ -15,6 +15,7 @@ module.exports = {
     "keep-options-order": require("./rules/keep-options-order/keep-options-order"),
     "no-forward": require("./rules/no-forward/no-forward"),
     "no-guard": require("./rules/no-guard/no-guard"),
+    "prefer-serializable-value-in-store": require("./rules/prefer-serializable-value-in-store/prefer-serializable-value-in-store"),
   },
   configs: {
     recommended: require("./config/recommended"),

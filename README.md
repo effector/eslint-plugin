@@ -56,6 +56,7 @@ This preset is recommended for most projects.
 - [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
 - [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
 - [effector/keep-options-order](rules/keep-options-order/keep-options-order.md)
+- [effector/prefer-serializable-value-in-store](rules/prefer-serializable-value-in-store/prefer-serializable-value-in-store.md)
 
 #### plugin:effector/scope
 
