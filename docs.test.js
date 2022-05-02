@@ -57,9 +57,9 @@ describe("docs", () => {
         const [readmeContentConfigDocSection] =
           readmeContentAfterConfigDocSectionStart.split("###");
 
-        const includedRuleNames = Object.keys(config.rules).map((fullName) =>
-          fullName.replace("effector/", "")
-        );
+        const includedRuleNames = Object.entries(config.rules)
+          .filter(([_, ruleMode]) => ruleMode !== "off")
+          .map(([fullName]) => fullName.replace("effector/", ""));
 
         const excludedRules = Object.keys(plugin.rules).filter(
           (rule) => !includedRuleNames.includes(rule)
