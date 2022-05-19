@@ -15,6 +15,7 @@ module.exports = {
     "keep-options-order": require("./rules/keep-options-order/keep-options-order"),
     "no-forward": require("./rules/no-forward/no-forward"),
     "no-guard": require("./rules/no-guard/no-guard"),
+    "no-inline-units": require("./rules/no-inline-units/no-inline-units"),
   },
   configs: {
     recommended: require("./config/recommended"),
