@@ -29,6 +29,7 @@
     "effector": "^22.0.0",
     "effector-react": "^22.0.6",
     "eslint": "^8.0.0",
+    "glob": "^8.0.3",
     "jest": "^27.1.0",
     "nano-staged": "^0.5.0",
     "react": "^17.0.2",
