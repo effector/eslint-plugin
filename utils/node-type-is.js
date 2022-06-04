@@ -32,6 +32,21 @@ const nodeTypeIs = {
     }),
   gate: (opts) =>
     hasType({ ...opts, possibleTypes: ["Gate"], from: "effector-react" }),
+  effectorReactHook: (opts) =>
+    hasType({
+      ...opts,
+      possibleTypes: opts.hook
+        ? [].concat(opts.hook)
+        : [
+            "useStore",
+            "useStoreMap",
+            "useList",
+            "useEvent",
+            "useGate",
+            "useUnit",
+          ],
+      from: "effector-react",
+    }),
   not: {
     effect: (opts) =>
       !hasType({
@@ -51,6 +66,7 @@ const nodeTypeIs = {
       }),
     gate: (opts) =>
       !hasType({ ...opts, possibleTypes: ["Gate"], from: "effector-react" }),
+    effectorReactHook: (opts) => !nodeTypeIs.effectorReactHook(opts),
   },
 };
 
