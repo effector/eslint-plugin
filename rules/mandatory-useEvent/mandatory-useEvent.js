@@ -1,5 +1,17 @@
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { isInsideReactComponent } = require("../../utils/react");
+const { nodeTypeIs } = require("../../utils/node-type-is");
+const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
+
+function isInsideUseEventCall({ node, context }) {
+  const calleeParentNode = traverseParentByType(node.parent, "CallExpression");
+
+  if (calleeParentNode?.callee?.name === "useEvent") {
+    return true;
+  }
+
+  return false;
+}
 
 module.exports = {
   meta: {
@@ -17,5 +29,33 @@ module.exports = {
     },
     schema: [],
   },
-  create(context) {},
+  create(context) {
+    const parserServices = context.parserServices;
+
+    // TypeScript-only rule, since units can be imported from anywhere
+    if (parserServices.hasFullTypeInformation) {
+      return {
+        Identifier(node) {
+          if (isInsideReactComponent(node)) {
+            if (
+              nodeTypeIs.effect({ node, context }) ||
+              nodeTypeIs.event({ node, context })
+            ) {
+              if (!isInsideUseEventCall({ node, context })) {
+                context.report({
+                  node,
+                  messageId: "useEventNeeded",
+                  data: {
+                    unitName: node.name,
+                  },
+                });
+              }
+            }
+          }
+        },
+      };
+    }
+
+    return {};
+  },
 };
