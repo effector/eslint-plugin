@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.7.0
+
+### Rules
+
+- Add new rule `mandatory-useEvent` ([PR #100](https://github.com/effector/eslint-plugin/pull/100))
+
+### Presets
+
+- Add `mandatory-useEvent` to `scope` preset
+
 ## v0.6.0
 
 - Add new rule `keep-options-order` ([PR #81](https://github.com/effector/eslint-plugin/pull/81))
