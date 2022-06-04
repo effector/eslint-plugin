@@ -3,16 +3,6 @@ const { isInsideReactComponent } = require("../../utils/react");
 const { nodeTypeIs } = require("../../utils/node-type-is");
 const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
 
-function isInsideUseEventCall({ node, context }) {
-  const calleeParentNode = traverseParentByType(node.parent, "CallExpression");
-
-  if (calleeParentNode?.callee?.name === "useEvent") {
-    return true;
-  }
-
-  return false;
-}
-
 module.exports = {
   meta: {
     type: "problem",
@@ -59,3 +49,15 @@ module.exports = {
     return {};
   },
 };
+
+function isInsideUseEventCall({ node, context }) {
+  const calleeParentNode = traverseParentByType(node.parent, "CallExpression");
+
+  if (!calleeParentNode?.callee) return false;
+
+  return nodeTypeIs.effectorReactHook({
+    node: calleeParentNode.callee,
+    context,
+    hook: ["useEvent", "useUnit"],
+  });
+}
