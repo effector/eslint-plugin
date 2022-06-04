@@ -56,12 +56,14 @@ This preset is recommended for most projects.
 - [effector/no-unnecessary-combination](rules/no-unnecessary-combination/no-unnecessary-combination.md)
 - [effector/no-duplicate-on](rules/no-duplicate-on/no-duplicate-on.md)
 - [effector/keep-options-order](rules/keep-options-order/keep-options-order.md)
+- [effector/mandatory-useEvent](rules/mandatory-useEvent/mandatory-useEvent.md)
 
 #### plugin:effector/scope
 
 This preset is recommended for projects that use [Fork API](https://effector.dev/docs/api/effector/scope). You can read more about Fork API in [an article](https://dev.to/effector/the-best-part-of-effector-4c27).
 
 - [effector/strict-effect-handlers](rules/strict-effect-handlers/strict-effect-handlers.md)
+- [effector/mandatory-useEvent](rules/mandatory-useEvent/mandatory-useEvent.md)
 
 #### plugin:effector/react
 
