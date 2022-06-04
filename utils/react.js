@@ -83,7 +83,7 @@ function isInsideReactComponent(node) {
   while (node) {
     const functionName = getFunctionName(node);
     if (functionName) {
-      if (isComponentName(functionName)) {
+      if (isComponentName(functionName) || isHook(functionName)) {
         return true;
       }
     }
