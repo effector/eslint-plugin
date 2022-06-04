@@ -38,8 +38,8 @@ ruleTester.run("effector/mandatory-useEvent.ts.test", rule, {
         ...result,
         errors: [
           {
-            messageId: "invalidName",
-            type: "VariableDeclarator",
+            messageId: "useEventNeeded",
+            type: "Identifier",
           },
         ],
       })),
