@@ -16,7 +16,7 @@ module.exports = {
     messages: {
       noGuard:
         "Instead of `guard` you can use `sample`, it is more extendable.",
-      replaceWithSample: "Repalce `guard` with `sample`.",
+      replaceWithSample: "Replace `guard` with `sample`.",
     },
     schema: [],
     hasSuggestions: true,

@@ -1,6 +1,6 @@
 import { createEffect, createEvent, createStore, guard } from "effector";
 
-// Examples were found in production code-base with false-poitive detection on 0.3.0
+// Examples were found in production code-base with false-positive detection on 0.3.0
 // https://github.com/effector/eslint-plugin/issues/49
 
 interface IFilters {

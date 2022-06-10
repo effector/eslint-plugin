@@ -1,6 +1,6 @@
 # effector/no-duplicate-on
 
-Disallows duplcates `on`-handlers on particular store.
+Disallows duplicates `on`-handlers on particular store.
 
 ```ts
 const increment = createEvent();

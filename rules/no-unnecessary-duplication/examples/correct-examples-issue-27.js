@@ -1,6 +1,6 @@
 import { sample } from "effector";
 
-// Examples were found in production code-base with false-poitive detection on 0.1.3
+// Examples were found in production code-base with false-positive detection on 0.1.3
 // https://github.com/igorkamyshev/eslint-plugin-effector/issues/27
 
 sample({

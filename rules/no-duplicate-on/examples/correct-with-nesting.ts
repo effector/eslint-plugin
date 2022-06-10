@@ -1,4 +1,4 @@
-// Examples were found in production code-base with false-poitive detection on 0.5.2
+// Examples were found in production code-base with false-positive detection on 0.5.2
 // https://github.com/effector/eslint-plugin/issues/85
 
 import { createEvent, createStore } from "effector";

@@ -72,7 +72,7 @@ This preset is recommended for projects that use [React](https://reactjs.org) wi
 
 #### plugin:effector/future
 
-This preset contains rules wich enforce _future-effector_ code-style.
+This preset contains rules, which enforce _future-effector_ code-style.
 
 - [effector/no-forward](rules/no-forward/no-forward.md)
 - [effector/no-guard](rules/no-guard/no-guard.md)

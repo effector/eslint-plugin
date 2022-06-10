@@ -21,7 +21,7 @@ module.exports = {
         "Instead of `forward` with `{{ eventName }}.map` you can use `sample`",
       overPrepend:
         "Instead of `forward` with `{{ eventName }}.prepend` you can use `sample`",
-      replaceWithSample: "Repalce `forward` with `sample`.",
+      replaceWithSample: "Replace `forward` with `sample`.",
     },
     schema: [],
     hasSuggestions: true,
