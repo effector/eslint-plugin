@@ -45,7 +45,7 @@ module.exports = {
           return;
         }
 
-        if (isInsideUseEventCall({ node, context })) {
+        if (isInsideEffectorHook({ node, context })) {
           return;
         }
 
@@ -61,7 +61,7 @@ module.exports = {
   },
 };
 
-function isInsideUseEventCall({ node, context }) {
+function isInsideEffectorHook({ node, context }) {
   const calleeParentNode = traverseParentByType(node.parent, "CallExpression");
 
   if (!calleeParentNode?.callee) return false;
@@ -69,6 +69,6 @@ function isInsideUseEventCall({ node, context }) {
   return nodeTypeIs.effectorReactHook({
     node: calleeParentNode.callee,
     context,
-    hook: ["useEvent", "useUnit"],
+    hook: ["useEvent", "useUnit", "useStore"],
   });
 }
