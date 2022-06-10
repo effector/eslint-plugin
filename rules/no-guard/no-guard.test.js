@@ -110,5 +110,26 @@ sample({ clock: merge(eventOne, eventOneOne), source: $someStore, filter: Boolea
         },
       ],
     },
+    {
+      code: `
+import { guard } from 'effector';
+guard({ clock: fFx.failData, filter: isAborted });
+`,
+      errors: [
+        {
+          messageId: "noGuard",
+          type: "CallExpression",
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: `
+import { sample } from 'effector';
+sample({ clock: fFx.failData, filter: isAborted });
+`,
+            },
+          ],
+        },
+      ],
+    },
   ],
 });

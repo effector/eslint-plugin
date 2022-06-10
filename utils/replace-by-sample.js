@@ -12,7 +12,7 @@ function* replaceGuardBySample(
   let filterNode = guardConfig.filter?.value;
 
   if (
-    targetNode.type === "CallExpression" &&
+    targetNode?.type === "CallExpression" &&
     targetNode?.callee?.property?.name === "prepend"
   ) {
     mapperFunctionNode = targetNode?.arguments?.[0];
@@ -39,7 +39,7 @@ function* replaceForwardBySample(
   let targetNode = forwardConfig.to.value;
 
   if (
-    clockNode.type === "CallExpression" &&
+    clockNode?.type === "CallExpression" &&
     clockNode?.callee?.property?.name === "map"
   ) {
     mapperFunctionNode = clockNode?.arguments?.[0];
@@ -48,7 +48,7 @@ function* replaceForwardBySample(
   }
 
   if (
-    targetNode.type === "CallExpression" &&
+    targetNode?.type === "CallExpression" &&
     targetNode?.callee?.property?.name === "prepend"
   ) {
     mapperFunctionNode = targetNode?.arguments?.[0];
