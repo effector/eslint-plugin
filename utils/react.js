@@ -90,9 +90,19 @@ function isInsideReactComponent(node) {
     if (isForwardRefCallback(node) || isMemoCallback(node)) {
       return true;
     }
+
+    // TODO: define class-components
+    if (isClass(node)) {
+      return false;
+    }
+
     node = node.parent;
   }
   return false;
+}
+
+function isClass(node) {
+  return node?.type === "ClassDeclaration";
 }
 
 function isInsideReactHook(node) {

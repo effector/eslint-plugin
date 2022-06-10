@@ -3,7 +3,7 @@ import { allSettled, createEffect, fork } from "effector";
 const somethingHasppenedFx = createEffect();
 
 export function CreateController() {
-  abstract class SomeController {
+  class SomeController {
     private async handleHttp() {
       const scope = fork({ handlers: [[somethingHasppenedFx, () => null]] });
 
