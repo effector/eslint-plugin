@@ -131,5 +131,26 @@ sample({ clock: fFx.failData, filter: isAborted });
         },
       ],
     },
+    {
+      code: `
+import { guard } from 'effector';
+guard(fFx.failData, { filter: isAborted });
+`,
+      errors: [
+        {
+          messageId: "noGuard",
+          type: "CallExpression",
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: `
+import { sample } from 'effector';
+sample({ clock: fFx.failData, filter: isAborted });
+`,
+            },
+          ],
+        },
+      ],
+    },
   ],
 });
