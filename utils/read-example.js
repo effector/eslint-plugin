@@ -7,8 +7,8 @@ function readExample(dirname, exampleName) {
 }
 
 function getCorrectExamples(dirname, config = {}) {
-  const { ext = "js", namesOnly = true } = config;
-  const pattern = `correct-*.${ext}`;
+  const { ext, namesOnly = true } = config;
+  const pattern = `correct-*.${resolveExtension(ext)}`;
   const correct = glob.sync(join(dirname, "examples", pattern));
 
   let result = correct;
@@ -24,9 +24,27 @@ function getCorrectExamples(dirname, config = {}) {
   return result;
 }
 
+function resolveExtension(ext) {
+  const DEFAULT_EXT = "js";
+
+  if (Array.isArray(ext)) {
+    if (ext.length === 0) {
+      return DEFAULT_EXT;
+    }
+
+    if (ext.length === 1) {
+      return ext[0];
+    }
+
+    return `{${ext.join(",")}}`;
+  }
+
+  return ext ?? DEFAULT_EXT;
+}
+
 function getIncorrectExamples(dirname, config = {}) {
-  const { ext = "js", namesOnly = true } = config;
-  const pattern = `incorrect-*.${ext}`;
+  const { ext, namesOnly = true } = config;
+  const pattern = `incorrect-*.${resolveExtension(ext)}`;
   const incorrect = glob.sync(join(dirname, "examples", pattern));
 
   let result = incorrect;
