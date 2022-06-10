@@ -4,7 +4,9 @@
 
 ### Rules
 
-- Add new rule `mandatory-useEvent` ([PR #100](https://github.com/effector/eslint-plugin/pull/100))
+- Add new rule `no-guard` ([PR #88](https://github.com/effector/eslint-plugin/pull/88))
+- Add new rule `mandatory-useEvent` ([PR #100](https://github.com/effector/eslint-plugin/pull/100) by @AlexandrHoroshih)
+- Support Node.js 18 ([PR #101](https://github.com/effector/eslint-plugin/pull/101))
 
 ### Presets
 
