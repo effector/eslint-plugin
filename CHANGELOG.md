@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.2
+
+- Handle case with two arguments in `guard` of `no-guard`
+
 ## v0.7.1
 
 - Handle case with empty fields in `no-guard`/`no-forward`
