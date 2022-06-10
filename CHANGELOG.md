@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.1
+
+- Handle case with empty fields in `no-guard`/`no-forward`
+
 ## v0.7.0
 
 ### Rules
