@@ -90,8 +90,38 @@ function isInsideReactComponent(node) {
     if (isForwardRefCallback(node) || isMemoCallback(node)) {
       return true;
     }
+
+    if (isClass(node) && !isClassComponent(node)) {
+      return false;
+    }
+
+    if (isClassComponent(node)) {
+      return true;
+    }
+
     node = node.parent;
   }
+  return false;
+}
+
+function isClass(node) {
+  return node?.type === "ClassDeclaration";
+}
+
+function isClassComponent(node) {
+  if (!node?.superClass) {
+    return false;
+  }
+  if (node?.superClass?.type === "MemberExpression") {
+    return (
+      node?.superClass?.object?.name === "React" &&
+      /^(Pure)?Component$/.test(node?.superClass?.property?.name)
+    );
+  }
+  if (node?.superClass?.type === "Identifier") {
+    return /^(Pure)?Component$/.test(node?.superClass?.name);
+  }
+
   return false;
 }
 

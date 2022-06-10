@@ -26,13 +26,13 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run("effector/mandatory-useEvent.ts.test", rule, {
-  valid: getCorrectExamples(__dirname, { ext: "tsx" }).map(
+  valid: getCorrectExamples(__dirname, { ext: ["tsx", "ts"] }).map(
     readExampleForTheRule
   ),
 
-  invalid: [
+  invalid:
     // Errors
-    ...getIncorrectExamples(__dirname, { ext: "tsx" })
+    getIncorrectExamples(__dirname, { ext: ["tsx", "ts"] })
       .map(readExampleForTheRule)
       .map((result) => ({
         ...result,
@@ -43,5 +43,4 @@ ruleTester.run("effector/mandatory-useEvent.ts.test", rule, {
           },
         ],
       })),
-  ],
 });
