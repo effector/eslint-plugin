@@ -30,15 +30,17 @@ ruleTester.run("effector/mandatory-useEvent.ts.test", rule, {
     readExampleForTheRule
   ),
 
-  invalid: getIncorrectExamples(__dirname, { ext: ["tsx", "ts"] })
-    .map(readExampleForTheRule)
-    .map((result) => ({
-      ...result,
-      errors: [
-        {
-          messageId: "useEventNeeded",
-          type: "Identifier",
-        },
-      ],
-    })),
+  invalid:
+    // Errors
+    getIncorrectExamples(__dirname, { ext: ["tsx", "ts"] })
+      .map(readExampleForTheRule)
+      .map((result) => ({
+        ...result,
+        errors: [
+          {
+            messageId: "useEventNeeded",
+            type: "Identifier",
+          },
+        ],
+      })),
 });
