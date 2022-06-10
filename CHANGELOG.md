@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.3
+
+- Fix false-positive in `mandatory-useEvent`
+
 ## v0.7.2
 
 - Handle case with two arguments in `guard` of `no-guard`

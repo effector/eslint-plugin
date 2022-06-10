@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-effector",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Enforcing best practices for Effector",
   "keywords": [
     "eslint",
