@@ -3,7 +3,7 @@ import { createEffect, attach } from "effector";
 // Just createEffect
 const baseEffectFx = createEffect();
 
-// Attcch
+// Attach
 const attachedFx = attach({ effect: baseEffectFx });
 
 // Factory

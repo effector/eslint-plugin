@@ -23,7 +23,7 @@ describe("docs", () => {
     ]);
   });
 
-  test("any rule should have like in main README.md", async () => {
+  test("any rule should have like in the main README.md", async () => {
     const readmeContent = await readFile(join(__dirname, "README.md"), "utf8");
 
     await Promise.all([
@@ -36,7 +36,7 @@ describe("docs", () => {
     ]);
   });
 
-  test("any config should be presented in main README.md", async () => {
+  test("any config should be presented in the main README.md", async () => {
     const readmeContent = await readFile(join(__dirname, "README.md"), "utf8");
 
     await Promise.all([
@@ -46,7 +46,7 @@ describe("docs", () => {
     ]);
   });
 
-  test("any config should have list of rules in main README.md", async () => {
+  test("any config should have list of rules in the main README.md", async () => {
     const readmeContent = await readFile(join(__dirname, "README.md"), "utf8");
 
     await Promise.all([
