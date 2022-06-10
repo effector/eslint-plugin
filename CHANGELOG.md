@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.4
+
+- Fix false-positive in `mandatory-useEvent` on effect stores
+
 ## v0.7.3
 
 - Fix false-positive in `mandatory-useEvent`
