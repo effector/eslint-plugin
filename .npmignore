@@ -1,9 +1,7 @@
-.yarn
 scripts
 **/examples/**
 *.test.*
-.pnp.cjs
-.yarnrc.yml
 coverage
 *.md
 tsconfig.json
+pnpm-lock.yaml
