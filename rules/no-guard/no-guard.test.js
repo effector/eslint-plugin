@@ -39,7 +39,7 @@ guard({ clock: eventOne, target: eventTwo, filter: Boolean });
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import { guard, sample } from 'effector';
 sample({ clock: eventOne, filter: Boolean, target: eventTwo });
 `,
             },
@@ -60,7 +60,7 @@ guard({ clock: eventOne, target: eventTwo.prepend((v) => v.length), filter: (v) 
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import { guard, sample } from 'effector';
 sample({ clock: eventOne, filter: (v) => v.length > 0, fn: (v) => v.length, target: eventTwo });
 `,
             },
@@ -81,7 +81,7 @@ guard({ clock: eventOne, target: serviceOne.featureOne.eventTwo.prepend((v) => v
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import { guard, sample } from 'effector';
 sample({ clock: eventOne, filter: $store, fn: (v) => v.length, target: serviceOne.featureOne.eventTwo });
 `,
             },
@@ -102,7 +102,7 @@ guard({ source: $someStore, clock: merge(eventOne, eventOneOne), target: eventTw
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import { guard, sample } from 'effector';
 sample({ clock: merge(eventOne, eventOneOne), source: $someStore, filter: Boolean, target: eventTwo });
 `,
             },
@@ -112,7 +112,7 @@ sample({ clock: merge(eventOne, eventOneOne), source: $someStore, filter: Boolea
     },
     {
       code: `
-import { guard } from 'effector';
+import { sample, guard } from 'effector';
 guard({ clock: fFx.failData, filter: isAborted });
 `,
       errors: [
@@ -123,7 +123,7 @@ guard({ clock: fFx.failData, filter: isAborted });
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import { sample, guard } from 'effector';
 sample({ clock: fFx.failData, filter: isAborted });
 `,
             },
@@ -133,7 +133,7 @@ sample({ clock: fFx.failData, filter: isAborted });
     },
     {
       code: `
-import { guard } from 'effector';
+import SmthDefault, { guard, forward } from 'effector';
 guard(fFx.failData, { filter: isAborted });
 `,
       errors: [
@@ -144,7 +144,7 @@ guard(fFx.failData, { filter: isAborted });
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import SmthDefault, { guard, sample, forward } from 'effector';
 sample({ clock: fFx.failData, filter: isAborted });
 `,
             },

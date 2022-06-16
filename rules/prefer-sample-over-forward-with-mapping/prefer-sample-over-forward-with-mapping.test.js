@@ -40,7 +40,7 @@ forward({ from: eventOne.map((v) => v.length), to: eventTwo });
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import { forward, sample } from 'effector';
 sample({ clock: eventOne, fn: (v) => v.length, target: eventTwo });
 `,
             },
@@ -62,7 +62,7 @@ forward({ from: eventOne, to: eventTwo.prepend((v) => v.length) });
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import { forward, sample } from 'effector';
 sample({ clock: eventOne, fn: (v) => v.length, target: eventTwo });
 `,
             },
@@ -84,7 +84,7 @@ forward({ from: eventOne, to: serviceOne.featureOne.eventTwo.prepend((v) => v.le
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import { forward, sample } from 'effector';
 sample({ clock: eventOne, fn: (v) => v.length, target: serviceOne.featureOne.eventTwo });
 `,
             },
@@ -106,7 +106,7 @@ forward({ from: serviceOne.featureOne.eventOne.map((v) => v.length), to: eventTw
             {
               messageId: "replaceWithSample",
               output: `
-import { sample } from 'effector';
+import { forward, sample } from 'effector';
 sample({ clock: serviceOne.featureOne.eventOne, fn: (v) => v.length, target: eventTwo });
 `,
             },
