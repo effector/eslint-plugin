@@ -88,7 +88,11 @@ function* replaceBySample(
     })})`
   );
 
-  yield fixer.replaceText(importNodes.get(methodName), "sample");
+  const importNode = importNodes.get(methodName);
+
+  if (!importNodes.has("sample")) {
+    yield fixer.insertTextAfter(importNode, ", sample");
+  }
 }
 
 module.exports = { replaceForwardBySample, replaceGuardBySample };
