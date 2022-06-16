@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.5
+
+- Fix `no-guard`/`no-forward` [suggestion bugs](https://github.com/effector/eslint-plugin/issues/87) ([PR #105](https://github.com/effector/eslint-plugin/pull/105) by @Minhir)
+
 ## v0.7.4
 
 - Fix false-positive in `mandatory-useEvent` on effect stores
