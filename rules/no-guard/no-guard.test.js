@@ -112,7 +112,7 @@ sample({ clock: merge(eventOne, eventOneOne), source: $someStore, filter: Boolea
     },
     {
       code: `
-import { guard } from 'effector';
+import { sample, guard } from 'effector';
 guard({ clock: fFx.failData, filter: isAborted });
 `,
       errors: [
@@ -123,7 +123,7 @@ guard({ clock: fFx.failData, filter: isAborted });
             {
               messageId: "replaceWithSample",
               output: `
-import { guard, sample } from 'effector';
+import { sample, guard } from 'effector';
 sample({ clock: fFx.failData, filter: isAborted });
 `,
             },

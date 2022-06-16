@@ -171,7 +171,7 @@ sample({ clock: merge(eventOne, eventOneOne), target: eventTwo });
     },
     {
       code: `
-import { forward } from 'effector';
+import { sample, forward } from 'effector';
 forward({ from: eventOne, to: [eventTwo, eventTwoTwo] });
 `,
       errors: [
@@ -182,7 +182,7 @@ forward({ from: eventOne, to: [eventTwo, eventTwoTwo] });
             {
               messageId: "replaceWithSample",
               output: `
-import { forward, sample } from 'effector';
+import { sample, forward } from 'effector';
 sample({ clock: eventOne, target: [eventTwo, eventTwoTwo] });
 `,
             },
