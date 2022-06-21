@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.6
+
+- Fix `keep-options-order` case for operators with `greedy` option
+
 ## v0.7.5
 
 - Fix `no-guard`/`no-forward` [suggestion bugs](https://github.com/effector/eslint-plugin/issues/87) ([PR #105](https://github.com/effector/eslint-plugin/pull/105) by @Minhir)
