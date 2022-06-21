@@ -6,4 +6,4 @@ const filter = createStore();
 const fn = () => null;
 const target = createEvent();
 
-sample({ source, clock, filter, fn, target });
+sample({ source, clock, filter, fn, greedy: true, target });

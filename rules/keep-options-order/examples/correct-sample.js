@@ -26,3 +26,5 @@ sample({ source, filter, target });
 
 sample({ filter, fn, target });
 sample({ filter, fn });
+
+sample({ filter, fn, greedy });
