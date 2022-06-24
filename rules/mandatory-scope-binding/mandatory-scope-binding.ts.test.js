@@ -8,7 +8,7 @@ const {
   getIncorrectExamples,
 } = require("../../utils/read-example");
 
-const rule = require("./mandatory-useEvent");
+const rule = require("./mandatory-scope-binding");
 
 const ruleTester = new RuleTester({
   parser: "@typescript-eslint/parser",
@@ -25,7 +25,7 @@ const readExampleForTheRule = (name) => ({
   filename: join(__dirname, "examples", name),
 });
 
-ruleTester.run("effector/mandatory-useEvent.ts.test", rule, {
+ruleTester.run("effector/mandatory-scope-binding.ts.test", rule, {
   valid: getCorrectExamples(__dirname, { ext: ["tsx", "ts"] }).map(
     readExampleForTheRule
   ),

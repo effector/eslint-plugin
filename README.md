@@ -79,7 +79,7 @@ This preset is recommended for projects that use [Fork API](https://effector.dev
 This preset is recommended for projects that use [React](https://reactjs.org) with Effector.
 
 - [effector/enforce-gate-naming-convention](rules/enforce-gate-naming-convention/enforce-gate-naming-convention.md)
-- [effector/mandatory-useEvent](rules/mandatory-useEvent/mandatory-useEvent.md)
+- [effector/mandatory-scope-binding](rules/mandatory-scope-binding/mandatory-scope-binding.md)
 - [effector/prefer-useUnit](rules/prefer-useUnit/prefer-useUnit.md)
 
 #### plugin:effector/future
