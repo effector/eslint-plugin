@@ -16,6 +16,7 @@ module.exports = {
     "no-forward": require("./rules/no-forward/no-forward"),
     "no-guard": require("./rules/no-guard/no-guard"),
     "mandatory-useEvent": require("./rules/mandatory-useEvent/mandatory-useEvent"),
+    "prefer-useUnit": require("./rules/prefer-useUnit/prefer-useUnit"),
   },
   configs: {
     recommended: require("./config/recommended"),

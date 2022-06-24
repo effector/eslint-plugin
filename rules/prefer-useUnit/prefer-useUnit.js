@@ -5,10 +5,11 @@ module.exports = {
   meta: {
     type: "problem",
     docs: {
-      description: "TBD",
+      description:
+        "Suggests to replace old hooks `useStore`/`useEvent` by the new one `useUnit`",
       category: "Quality",
       recommended: true,
-      url: createLinkToRule("mandatory-useUnit"),
+      url: createLinkToRule("prefer-useUnit"),
     },
     messages: {
       useUnitNeeded: "`{{ hookName }}` could be replaced by `useUnit`",
