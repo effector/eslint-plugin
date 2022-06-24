@@ -80,6 +80,7 @@ This preset is recommended for projects that use [React](https://reactjs.org) wi
 
 - [effector/enforce-gate-naming-convention](rules/enforce-gate-naming-convention/enforce-gate-naming-convention.md)
 - [effector/mandatory-useEvent](rules/mandatory-useEvent/mandatory-useEvent.md)
+- [effector/prefer-useUnit](rules/prefer-useUnit/prefer-useUnit.md)
 
 #### plugin:effector/future
 
