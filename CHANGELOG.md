@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.8.0
+
+- Rule `mandatory-useEvent` is renamed to `mandatory-scope-binding`
+- Add new rule `prefer-useUnit`
+
 ## v0.7.6
 
 - Fix `keep-options-order` case for operators with `greedy` option
