@@ -9,14 +9,14 @@ module.exports = {
     type: "problem",
     docs: {
       description:
-        "Forbids `Event` and `Effect` usage without `useEvent` in React components.",
+        "Forbids `Event` and `Effect` usage without `useUnit` in React components.",
       category: "Quality",
       recommended: true,
-      url: createLinkToRule("mandatory-useEvent"),
+      url: createLinkToRule("mandatory-scope-binding"),
     },
     messages: {
       useEventNeeded:
-        "{{ unitName }} must be wrapped with `useEvent` from `effector-react` before usage inside React components",
+        "{{ unitName }} must be wrapped with `useUnit` from `effector-react` before usage inside React components",
     },
     schema: [],
   },

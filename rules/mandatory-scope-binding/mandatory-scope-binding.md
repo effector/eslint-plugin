@@ -1,6 +1,6 @@
-# effector/mandatory-useEvent
+# effector/mandatory-scope-binding
 
-Forbids `Event` and `Effect` usage without `useEvent` in React components.
+Forbids `Event` and `Effect` usage without `useUnit` in React components.
 This ensures `Fork API` compatibility and allows to write isomorphic code for SSR apps.
 
 ```tsx
@@ -8,7 +8,7 @@ const increment = createEvent();
 
 // 👍 Event usage is wrapped with `useEvent`
 const GoodButton = () => {
-  const incrementEvent = useEvent(increment);
+  const incrementEvent = useUnit(increment);
 
   return <button onClick={incrementEvent}>+</button>;
 };
