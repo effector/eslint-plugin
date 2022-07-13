@@ -2,6 +2,6 @@ module.exports = {
   rules: {
     "effector/enforce-gate-naming-convention": "error",
     "effector/mandatory-scope-binding": "error",
-    "effector/prefer-useUnit": "warning",
+    "effector/prefer-useUnit": "warn",
   },
 };
