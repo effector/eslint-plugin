@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.1
+
+- Fix typo in `react` preset config
+
 ## v0.8.0
 
 - Rule `mandatory-useEvent` is renamed to `mandatory-scope-binding`
