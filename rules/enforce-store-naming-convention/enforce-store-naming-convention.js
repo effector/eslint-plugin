@@ -11,6 +11,7 @@ const {
 } = require("../../utils/get-corrected-store-name");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { nodeTypeIs } = require("../../utils/node-type-is");
+const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
 
 module.exports = {
   meta: {
@@ -75,31 +76,31 @@ module.exports = {
         // Store creation with method
         const STORE_CREATION_METHODS = ["createStore", "restore", "combine"];
         for (const method of STORE_CREATION_METHODS) {
-          const localMethod = importedFromEffector.get(method);
+          const localMethod = importedFromEffector.get(method);          
           if (!localMethod) {
             continue;
           }
-
+            
           const isEffectorStoreCreation = node.callee.name === localMethod;
           if (!isEffectorStoreCreation) {
             continue;
           }
 
-          const resultSavedInVariable =
-            node.parent.type === "VariableDeclarator";
+          const parentNode = traverseParentByType(node, "VariableDeclarator", ["Program"]);
+
+          const resultSavedInVariable = parentNode.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             continue;
           }
 
-          const storeName = node.parent.id.name;
-
+          const storeName = parentNode.id.name;
           if (namingOf.store.isValid({ name: storeName, context })) {
             continue;
           }
 
           reportStoreNameConventionViolation({
             context,
-            node: node.parent,
+            node: parentNode,
             storeName,
           });
           return;
@@ -115,8 +116,8 @@ module.exports = {
             return;
           }
 
-          const resultSavedInVariable =
-            node.parent.type === "VariableDeclarator";
+          const resultSavedInVariable = node.parent.type === "VariableDeclarator";
+
           if (!resultSavedInVariable) {
             return;
           }
@@ -140,13 +141,15 @@ module.exports = {
         if (
           STORE_IN_DOMAIN_CREATION_METHODS.includes(node.callee?.property?.name)
         ) {
-          const resultSavedInVariable =
-            node.parent.type === "VariableDeclarator";
+
+          const parentNode = traverseParentByType(node, "VariableDeclarator", ["Program"]);
+
+          const resultSavedInVariable = parentNode.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             return;
           }
 
-          const storeName = node.parent.id.name;
+          const storeName = parentNode.id.name;
 
           if (namingOf.store.isValid({ name: storeName, context })) {
             return;
@@ -154,7 +157,7 @@ module.exports = {
 
           reportStoreNameConventionViolation({
             context,
-            node: node.parent,
+            node: parentNode,
             storeName,
           });
           return;
