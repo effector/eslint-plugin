@@ -17,11 +17,13 @@ module.exports = {
     "no-guard": require("./rules/no-guard/no-guard"),
     "mandatory-scope-binding": require("./rules/mandatory-scope-binding/mandatory-scope-binding"),
     "prefer-useUnit": require("./rules/prefer-useUnit/prefer-useUnit"),
+    "no-patronum-debug": require("./rules/no-patronum-debug/no-patronum-debug"),
   },
   configs: {
     recommended: require("./config/recommended"),
     scope: require("./config/scope"),
     react: require("./config/react"),
     future: require("./config/future"),
+    patronum: require("./config/patronum"),
   },
 };

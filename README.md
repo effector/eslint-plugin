@@ -89,6 +89,12 @@ This preset contains rules, which enforce _future-effector_ code-style.
 - [effector/no-forward](rules/no-forward/no-forward.md)
 - [effector/no-guard](rules/no-guard/no-guard.md)
 
+#### plugin:effector/patronum
+
+This preset is recommended for projects that use [Patronum](https://patronum.effector.dev/).
+
+- [effector/no-patronum-debug](rules/no-patronum-debug/no-patronum-debug.md)
+
 ## Maintenance
 
 ### Release flow
