@@ -16,7 +16,7 @@ sample({
 })
 
 sample({
-  clock: $awesome.updates,
+  clock: myEvent,
   filter: Boolean,
   target: myFx,
 })
