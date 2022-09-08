@@ -9,7 +9,7 @@ const myFx = createEffect();
 const myEvent = createEvent();
 const $awesome = createStore();
 
-// 👍 good solution
+// 👍 good solutions
 
 sample({
   clock: myFx.finally,
