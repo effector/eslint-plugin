@@ -1,6 +1,6 @@
 # effector/no-watch
 
-Method `.watch` leads to imperative code. Try replacing it with operators (`sample`) or use the `target` parameter of the operators.
+Method `.watch` leads to imperative code. Try replacing it with operator (`sample`) or use the `target` parameter of the operator.
 
 > Caution! This rule only works on projects using TypeScript.
 
@@ -10,6 +10,17 @@ const myEvent = createEvent();
 const $awesome = createStore();
 
 // 👍 good solution
+
+sample({
+  clock: myFx.finally,
+  target: myEvent,
+})
+
+sample({
+  clock: $awesome.updates,
+  filter: Boolean,
+  target: myFx,
+})
 
 sample({
   clock: $awesome.updates,

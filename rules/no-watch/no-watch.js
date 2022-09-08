@@ -15,7 +15,7 @@ module.exports = {
     },
     messages: {
       abusiveCall:
-        "Method `.watch` leads to imperative code. Try to replace it with operators (`sample`) or use the `target` parameter of the operators.",
+        "Method `.watch` leads to imperative code. Try to replace it with operator (`sample`) or use the `target` parameter of the operator.",
     },
     schema: [],
   },
