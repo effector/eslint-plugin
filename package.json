@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-effector",
-  "version": "0.7.4",
+  "version": "0.8.2",
   "description": "Enforcing best practices for Effector",
   "keywords": [
     "eslint",
@@ -44,7 +44,7 @@
     "prettier": "^2.3.2"
   },
   "simple-git-hooks": {
-    "pre-commit": "yarn nano-staged"
+    "pre-commit": "pnpm nano-staged"
   },
   "nano-staged": {
     "*.{js,ts,md}": "prettier --write"

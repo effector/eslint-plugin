@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.8.2
+
+- Fix false-negative in `enforce-store-naming-convention` rule ([PR #119](https://github.com/effector/eslint-plugin/pull/119) by @iposokhin)
+
+## v0.8.1
+
+- Fix typo in `react` preset config
+
+## v0.8.0
+
+- Rule `mandatory-useEvent` is renamed to `mandatory-scope-binding`
+- Add new rule `prefer-useUnit`
+
+## v0.7.6
+
+- Fix `keep-options-order` case for operators with `greedy` option
+
+## v0.7.5
+
+- Fix `no-guard`/`no-forward` [suggestion bugs](https://github.com/effector/eslint-plugin/issues/87) ([PR #105](https://github.com/effector/eslint-plugin/pull/105) by @Minhir)
+
 ## v0.7.4
 
 - Fix false-positive in `mandatory-useEvent` on effect stores

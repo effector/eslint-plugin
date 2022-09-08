@@ -6,16 +6,27 @@ Enforcing best practices for [Effector](http://effector.dev/)
 
 ## Installation
 
-First, install [ESLint](http://eslint.org):
+Install [ESLint](http://eslint.org) and `eslint-plugin-effector`:
+
+### pnpm
 
 ```
-$ yarn add -D eslint
+$ pnpm install --dev eslint
+$ pnpm install --dev eslint-plugin-effector
 ```
 
-Next, install `eslint-plugin-effector`:
+### yarn
 
 ```
-$ yarn add -D eslint-plugin-effector
+$ yarn add --dev eslint
+$ yarn add --dev eslint-plugin-effector
+```
+
+### npm
+
+```
+$ npm install --dev eslint
+$ npm install --dev eslint-plugin-effector
 ```
 
 ## Usage
@@ -68,7 +79,8 @@ This preset is recommended for projects that use [Fork API](https://effector.dev
 This preset is recommended for projects that use [React](https://reactjs.org) with Effector.
 
 - [effector/enforce-gate-naming-convention](rules/enforce-gate-naming-convention/enforce-gate-naming-convention.md)
-- [effector/mandatory-useEvent](rules/mandatory-useEvent/mandatory-useEvent.md)
+- [effector/mandatory-scope-binding](rules/mandatory-scope-binding/mandatory-scope-binding.md)
+- [effector/prefer-useUnit](rules/prefer-useUnit/prefer-useUnit.md)
 
 #### plugin:effector/future
 
@@ -86,5 +98,5 @@ This preset contains rules, which enforce _future-effector_ code-style.
 3. Commit changes by `git commit -m "Release X.X.X"`
 4. Create git tag for release by `git tag -a vX.X.X -m "vX.X.X"`
 5. Push changes to remote by `git push --follow-tags`
-6. Release package to registry by `yarn clean-publish`
+6. Release package to registry by `pnpm clean-publish`
 7. Fill release page with changelog on GitHub

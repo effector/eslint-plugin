@@ -24,6 +24,8 @@ ruleTester.run("effector/enforce-store-naming-convention-postfix.test", rule, {
     "correct-store-naming-from-other-package.js",
     "correct-store-naming-in-domain.js",
     "correct-examples-issue-23.js",
+    "correct-store-naming-with-handlers.js",
+    "correct-store-naming-in-domain-with-handlers.js",
   ]
     .map(readExampleForTheRule)
     .map((code) => ({
@@ -42,6 +44,8 @@ ruleTester.run("effector/enforce-store-naming-convention-postfix.test", rule, {
       "incorrect-combine-alias.js",
       "incorrect-map.js",
       "incorrect-createStore-domain.js",
+      "incorrect-store-naming-with-handlers.js",
+      "incorrect-store-naming-in-domain-with-handlers.js",
     ]
       .map(readExampleForTheRule)
       .map((code) => ({
