@@ -10,7 +10,6 @@ const myEvent = createEvent();
 const $awesome = createStore();
 
 // 👍 good solutions
-
 sample({
   clock: myFx.finally,
   target: myEvent,
