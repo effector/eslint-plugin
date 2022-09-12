@@ -11,6 +11,7 @@ specifiers:
   glob: ^8.0.3
   jest: ^27.1.0
   nano-staged: ^0.5.0
+  patronum: ^1.12.1
   prettier: ^2.3.2
   react: ^17.0.2
   simple-git-hooks: ^2.7.0
@@ -30,6 +31,7 @@ devDependencies:
   glob: 8.0.3
   jest: 27.5.1
   nano-staged: 0.5.0
+  patronum: 1.12.1_effector@22.3.0
   react: 17.0.2
   simple-git-hooks: 2.8.0
   typescript: 4.7.3
@@ -2759,6 +2761,14 @@ packages:
   /path-type/4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
+    dev: true
+
+  /patronum/1.12.1_effector@22.3.0:
+    resolution: {integrity: sha512-3neqfLG2ZHxJNTM29IZGhmZNLm0jCx6eIB3EO9SFz9EYTmxZTIagkupNhRO2aVJYl2IQgFTgYJw2thuCnJPleA==}
+    peerDependencies:
+      effector: ^22.1.2
+    dependencies:
+      effector: 22.3.0
     dev: true
 
   /picocolors/1.0.0:
