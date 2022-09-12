@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.0
+
+- Add new rule `no-patronum-debug` ([PR #121](https://github.com/effector/eslint-plugin/pull/121) by @raidenmiro)
+
 ## v0.8.2
 
 - Fix false-negative in `enforce-store-naming-convention` rule ([PR #119](https://github.com/effector/eslint-plugin/pull/119) by @iposokhin)
