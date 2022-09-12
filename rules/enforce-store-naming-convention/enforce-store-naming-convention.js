@@ -76,19 +76,22 @@ module.exports = {
         // Store creation with method
         const STORE_CREATION_METHODS = ["createStore", "restore", "combine"];
         for (const method of STORE_CREATION_METHODS) {
-          const localMethod = importedFromEffector.get(method);          
+          const localMethod = importedFromEffector.get(method);
           if (!localMethod) {
             continue;
           }
-            
+
           const isEffectorStoreCreation = node.callee.name === localMethod;
           if (!isEffectorStoreCreation) {
             continue;
           }
 
-          const parentNode = traverseParentByType(node, "VariableDeclarator", ["Program"]);
+          const parentNode = traverseParentByType(node, "VariableDeclarator", [
+            "Program",
+          ]);
 
-          const resultSavedInVariable = parentNode.type === "VariableDeclarator";
+          const resultSavedInVariable =
+            parentNode?.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             continue;
           }
@@ -116,7 +119,8 @@ module.exports = {
             return;
           }
 
-          const resultSavedInVariable = node.parent.type === "VariableDeclarator";
+          const resultSavedInVariable =
+            node.parent.type === "VariableDeclarator";
 
           if (!resultSavedInVariable) {
             return;
@@ -141,10 +145,12 @@ module.exports = {
         if (
           STORE_IN_DOMAIN_CREATION_METHODS.includes(node.callee?.property?.name)
         ) {
+          const parentNode = traverseParentByType(node, "VariableDeclarator", [
+            "Program",
+          ]);
 
-          const parentNode = traverseParentByType(node, "VariableDeclarator", ["Program"]);
-
-          const resultSavedInVariable = parentNode.type === "VariableDeclarator";
+          const resultSavedInVariable =
+            parentNode.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             return;
           }
