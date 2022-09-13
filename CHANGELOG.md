@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.1
+
+- Fixed factory usage with `enforce-store-naming-convention`
+
 ## v0.9.0
 
 - Add new rule `no-patronum-debug` ([PR #121](https://github.com/effector/eslint-plugin/pull/121) by @raidenmiro)
