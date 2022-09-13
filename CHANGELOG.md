@@ -2,7 +2,7 @@
 
 ## v0.9.1
 
-- Fixed factory usage with `enforce-store-naming-convention`
+- Fixed factory usage with `enforce-store-naming-convention` ([PR #122](https://github.com/effector/eslint-plugin/pull/122)) by @Lonli-Lokli
 
 ## v0.9.0
 
