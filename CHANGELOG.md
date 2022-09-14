@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.0
+
+- Allow using package on Node.js 15 and Node.js 17 ([PR #124](https://github.com/effector/eslint-plugin/pull/124))
+
 ## v0.9.1
 
 - Fixed factory usage with `enforce-store-naming-convention` ([PR #122](https://github.com/effector/eslint-plugin/pull/122)) by @Lonli-Lokli
