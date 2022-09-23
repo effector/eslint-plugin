@@ -27,6 +27,9 @@ debug(store);
 import { debug } from 'patronum/debug'
 sample({ clock: tick, target: runFx })
 `,
+    `
+const $store = createStore(false).on(open, () => true)
+`,
   ].map((code) => ({ code })),
 
   invalid: [
@@ -80,7 +83,7 @@ const buttonClicked = createEvent();
     {
       code: `
 import { delay, debug, condition } from 'patronum';
-const $store = createEffect(() => 'effectFx');
+const effectFx = createEffect(() => 'effectFx');
 debug({ trace: true }, $store);
 `,
       errors: [
@@ -92,7 +95,7 @@ debug({ trace: true }, $store);
               messageId: "removePatronumDebug",
               output: `
 import { delay, condition } from 'patronum';
-const $store = createEffect(() => 'effectFx');
+const effectFx = createEffect(() => 'effectFx');
 `,
             },
           ],
@@ -209,6 +212,48 @@ debug(event)`,
               output: `
 import { condition } from 'patronum'
 const event = createEvent()`,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+import { condition, debug, delay } from 'patronum'
+
+const $store = createStore(false)
+
+const createTest = () => {
+  const state = {
+    equal(a, b) {
+      return a === b
+    }
+  }
+  debug($store)
+  return state
+}
+`,
+      errors: [
+        {
+          messageId: "noPatronumDebug",
+          type: "CallExpression",
+          suggestions: [
+            {
+              messageId: "removePatronumDebug",
+              output: `
+import { condition, delay } from 'patronum'
+
+const $store = createStore(false)
+
+const createTest = () => {
+  const state = {
+    equal(a, b) {
+      return a === b
+    }
+  }
+  return state
+}
+`,
             },
           ],
         },
