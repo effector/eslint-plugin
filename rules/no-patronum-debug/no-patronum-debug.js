@@ -31,10 +31,13 @@ module.exports = {
         });
       },
       CallExpression(node) {
-        const currentMethodName = node.callee?.name ?? node.callee?.object.name;
+        const currentMethod = node?.callee?.name ?? node?.callee?.object.name;
         const importedDebugFromPatronum = importedFromPatronum.get("debug");
 
-        if (currentMethodName !== importedDebugFromPatronum) {
+        if (
+          !importedDebugFromPatronum ||
+          currentMethod !== importedDebugFromPatronum
+        ) {
           return;
         }
 
@@ -71,7 +74,12 @@ function* removeDebugFromPatronum({
   const startToken = sourceCode.getTokenBefore(node);
 
   // remove line with debug
-  yield fixer.removeRange([startToken.range[1], node.range[1] + 1]);
+  yield fixer.removeRange([startToken.range[1], node.range[1]]);
+  const semi = sourceCode.getTokenBefore(node, {
+    filter: (token) => token.value === ";",
+  });
+
+  if (semi) yield fixer.remove(semi);
 
   const importDebugNode = importNodes.get(targetMethod);
 
@@ -81,12 +89,13 @@ function* removeDebugFromPatronum({
 
   // remove import with debug
   const importParentNode = importDebugNode.parent;
+  const amountImportFromPatronum = importParentNode.specifiers.length;
 
   /**
    * import { debug } from 'patronum'
    * import { debug } from 'patronum/debug'
    */
-  if (importParentNode.specifiers.length === 1) {
+  if (amountImportFromPatronum === 1) {
     yield fixer.removeRange([
       importParentNode.range[0],
       importParentNode.range[1] + 1,
@@ -95,9 +104,7 @@ function* removeDebugFromPatronum({
     return null;
   }
 
-  const amountImportFromPatronum = importParentNode.specifiers.length;
   const importLast = importParentNode.specifiers[amountImportFromPatronum - 1];
-
   const filterTokenComma = { filter: (token) => token.value === "," };
 
   /**
