@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.1
+
+- Fix false-positive in `no-patronum-debug` rule ([PR #126](https://github.com/effector/eslint-plugin/pull/126)) by @raidenmiro
+
 ## v0.10.0
 
 - Allow using package on Node.js 15 and Node.js 17 ([PR #124](https://github.com/effector/eslint-plugin/pull/124))
