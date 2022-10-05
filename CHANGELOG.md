@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.2
+
+- Fix unhandled exception in `no-patronum-debug` rule
+
 ## v0.10.1
 
 - Fix false-positive in `no-patronum-debug` rule ([PR #126](https://github.com/effector/eslint-plugin/pull/126)) by @raidenmiro
