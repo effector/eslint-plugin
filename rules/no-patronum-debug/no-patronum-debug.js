@@ -31,7 +31,7 @@ module.exports = {
         });
       },
       CallExpression(node) {
-        const currentMethod = node?.callee?.name ?? node?.callee?.object.name;
+        const currentMethod = node?.callee?.name ?? node?.callee?.object?.name;
         const importedDebugFromPatronum = importedFromPatronum.get("debug");
 
         if (

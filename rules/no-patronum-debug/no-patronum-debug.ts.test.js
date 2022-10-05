@@ -21,7 +21,7 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run("effector/no-patronum-debug", rule, {
-  valid: ["correct.ts"].map(readExampleForTheRule),
+  valid: ["correct.ts", "correct-issue-127.ts"].map(readExampleForTheRule),
   invalid: [
     ...["incorrect-with-debug.ts"]
       .map(readExampleForTheRule)
