@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.3
+
+- Fix unhandled rejection in `enforce-store-naming-convention` rule
+
 ## v0.10.2
 
 - Fix unhandled exception in `no-patronum-debug` rule
