@@ -150,7 +150,7 @@ module.exports = {
           ]);
 
           const resultSavedInVariable =
-            parentNode.type === "VariableDeclarator";
+            parentNode?.type === "VariableDeclarator";
           if (!resultSavedInVariable) {
             return;
           }
