@@ -13,7 +13,9 @@
   "author": "Igor Kamyshev <igor@kamyshev.me>",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "docs:build": "vitepress build docs",
+    "docs:dev": "vitepress dev docs"
   },
   "publishConfig": {
     "access": "public"
@@ -34,7 +36,9 @@
     "nano-staged": "^0.5.0",
     "react": "^17.0.2",
     "simple-git-hooks": "^2.7.0",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.2",
+    "vitepress": "1.0.0-alpha.28",
+    "vue": "^3.2.45"
   },
   "peerDependencies": {
     "effector": "*",
