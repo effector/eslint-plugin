@@ -27,7 +27,18 @@ export default {
       pattern:
         "https://github.com/effector/eslint-plugin/edit/master/docs/:path",
     },
-    nav: [],
+    nav: [
+      {
+        text: "Presets",
+        link: "/presets/",
+        activeMatch: "^/presets/",
+      },
+      {
+        text: "Rules",
+        link: "/rules/",
+        activeMatch: "^/rules/",
+      },
+    ],
     sidebar: {},
   },
 };

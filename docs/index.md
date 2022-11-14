@@ -14,5 +14,5 @@ hero:
       link: /presets/
     - theme: alt
       text: Rules
-      link: /rules
+      link: /rules/
 ---

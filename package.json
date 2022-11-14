@@ -14,8 +14,9 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "docs:build": "vitepress build docs",
-    "docs:dev": "vitepress dev docs"
+    "docs:prepare": "node ./docs/scripts/prepare-toc.js && node ./docs/scripts/prepare-presets.js",
+    "docs:build": "pnpm docs:prepare && vitepress build docs",
+    "docs:dev": "pnpm docs:prepare && vitepress dev docs"
   },
   "publishConfig": {
     "access": "public"
