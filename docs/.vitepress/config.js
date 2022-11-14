@@ -3,14 +3,14 @@ export default {
   title: "ESLint plugin for Effector",
   lastUpdated: true,
   head: [
-    // ['link', { rel: 'icon', href: '/favicon.ico', sizes: 'any' }],
-    // ['link', { rel: 'icon', href: '/icon.svg', type: 'image/svg+xml' }],
-    // ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
-    // ['link', { rel: 'manifest', href: '/manifest.webmanifest' }],
+    ["link", { rel: "icon", href: "/favicon.ico", sizes: "any" }],
+    ["link", { rel: "icon", href: "/comet.svg", type: "image/svg+xml" }],
+    ["link", { rel: "apple-touch-icon", href: "/apple-touch-icon.png" }],
+    ["link", { rel: "manifest", href: "/manifest.webmanifest" }],
   ],
   themeConfig: {
     siteTitle: "ESLint plugin for Effector",
-    // logo: '/logo.svg',
+    logo: "/comet.svg",
     footer: {
       message: "Released under the MIT License.",
     },
