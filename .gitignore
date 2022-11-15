@@ -3,3 +3,4 @@ coverage
 .DS_Store
 docs/.vitepress/dist
 docs/**/__*.md
+docs/changelog.md

@@ -38,6 +38,15 @@ export default {
         link: "/rules/",
         activeMatch: "^/rules/",
       },
+      {
+        text: "More",
+        items: [
+          {
+            text: "Changelog",
+            link: "/changelog",
+          },
+        ],
+      },
     ],
     sidebar: {},
   },
