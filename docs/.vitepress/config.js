@@ -45,6 +45,10 @@ export default {
             text: "Changelog",
             link: "/changelog",
           },
+          {
+            text: "Effector",
+            link: "https://effector.dev",
+          },
         ],
       },
     ],
