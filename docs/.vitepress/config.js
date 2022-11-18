@@ -1,6 +1,7 @@
 export default {
   lang: "en-US",
   title: "ESLint plugin for Effector",
+  description: "Enforcing best practices for Effector",
   lastUpdated: true,
   head: [
     ["link", { rel: "icon", href: "/favicon.ico", sizes: "any" }],
