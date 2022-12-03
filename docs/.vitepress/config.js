@@ -19,11 +19,11 @@ export default {
       { icon: "github", link: "https://github.com/effector/eslint-plugin" },
       { icon: "twitter", link: "https://twitter.com/effectorjs" },
     ],
-    // algolia: {
-    //   appId: 'kkk',
-    //   apiKey: 'lll',
-    //   indexName: 'eslint-plugin-effector',
-    // },
+    algolia: {
+      appId: "NW4641ANOK",
+      apiKey: "82a2fcdc603a1de18478e1c461450168",
+      indexName: "eslint-effector",
+    },
     editLink: {
       pattern:
         "https://github.com/effector/eslint-plugin/edit/master/docs/:path",
