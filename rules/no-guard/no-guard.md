@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/no-guard.html
+https://eslint.effector.dev/rules/no-guard.html

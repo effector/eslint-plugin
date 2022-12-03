@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/no-patronum-debug.html
+https://eslint.effector.dev/rules/no-patronum-debug.html

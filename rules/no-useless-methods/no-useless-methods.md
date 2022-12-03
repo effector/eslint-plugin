@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/no-useless-methods.html
+https://eslint.effector.dev/rules/no-useless-methods.html

@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/no-ambiguity-target.html
+https://eslint.effector.dev/rules/no-ambiguity-target.html

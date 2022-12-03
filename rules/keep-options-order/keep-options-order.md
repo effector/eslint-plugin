@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/keep-options-order.html
+https://eslint.effector.dev/rules/keep-options-order.html

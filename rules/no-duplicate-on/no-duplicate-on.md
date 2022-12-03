@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/no-duplicate-on.html
+https://eslint.effector.dev/rules/no-duplicate-on.html

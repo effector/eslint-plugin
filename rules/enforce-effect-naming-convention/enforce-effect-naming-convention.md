@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/enforce-effect-naming-convention.html
+https://eslint.effector.dev/rules/enforce-effect-naming-convention.html

@@ -1,5 +1,5 @@
 function createLinkToRule(name) {
-  return `https://eslint-plugin.pages.dev/rules/${name}`;
+  return `https://eslint.effector.dev/rules/${name}`;
 }
 
 module.exports = { createLinkToRule };

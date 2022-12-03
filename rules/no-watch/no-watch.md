@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/no-watch.html
+https://eslint.effector.dev/rules/no-watch.html

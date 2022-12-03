@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/no-unnecessary-combination.html
+https://eslint.effector.dev/rules/no-unnecessary-combination.html

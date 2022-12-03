@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/strict-effect-handlers.html
+https://eslint.effector.dev/rules/strict-effect-handlers.html

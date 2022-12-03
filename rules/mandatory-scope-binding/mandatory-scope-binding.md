@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/mandatory-scope-binding.html
+https://eslint.effector.dev/rules/mandatory-scope-binding.html

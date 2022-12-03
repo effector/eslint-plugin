@@ -1,6 +1,6 @@
 # eslint-plugin-effector
 
-Enforcing best practices for [Effector](http://effector.dev/). Documentation available at [eslint-plugin.pages.dev](https://eslint-plugin.pages.dev/).
+Enforcing best practices for [Effector](http://effector.dev/). Documentation available at [eslint.effector.dev](https://eslint.effector.dev/).
 
 > This plugin uses TypeScript for more precise results, but JavaScript is supported too.
 
@@ -40,7 +40,7 @@ Add `effector` to the plugins section of your `.eslintrc` configuration file. Yo
 }
 ```
 
-Read more detailed docs on [eslint-plugin.pages.dev](https://eslint-plugin.pages.dev/)
+Read more detailed docs on [eslint.effector.dev](https://eslint.effector.dev/)
 
 ## Maintenance
 

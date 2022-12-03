@@ -1,1 +1,1 @@
-https://eslint-plugin.pages.dev/rules/prefer-useUnit.html
+https://eslint.effector.dev/rules/prefer-useUnit.html
