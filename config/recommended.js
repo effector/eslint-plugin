@@ -1,4 +1,6 @@
-module.exports = {
+const all = require("./all");
+
+module.exports = Object.assign({}, all, {
   rules: {
     "effector/enforce-store-naming-convention": "error",
     "effector/enforce-effect-naming-convention": "error",
@@ -12,4 +14,4 @@ module.exports = {
     "effector/no-duplicate-on": "error",
     "effector/keep-options-order": "warn",
   },
-};
+});
