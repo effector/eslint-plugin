@@ -53,7 +53,8 @@ module.exports = {
         );
         const resultPartOfChain = traverseParentByType(
           node,
-          "ObjectExpression"
+          "ObjectExpression",
+          { stopOnTypes: ["BlockStatement"] }
         );
 
         if (resultAssignedInVariable || resultPartOfChain) {
