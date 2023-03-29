@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.5
+
+- Fix false-positive in `no-ambiguity-target` rule
+
 ## v0.10.4
 
 - Fix false-positive in `enforce-store-naming-convention` rule ([PR #137](https://github.com/effector/eslint-plugin/pull/137))
