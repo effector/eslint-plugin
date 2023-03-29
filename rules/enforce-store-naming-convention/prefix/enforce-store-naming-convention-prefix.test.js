@@ -20,6 +20,7 @@ ruleTester.run("effector/enforce-store-naming-convention-prefix.test", rule, {
     "correct-store-naming-in-domain.js",
     "correct-examples-issue-23.js",
     "correct-examples-issue-128.js",
+    "correct-examples-issue-136.js",
     "correct-store-naming-with-handlers.js",
     "correct-store-naming-in-domain-with-handlers.js",
     "correct-factory.js",

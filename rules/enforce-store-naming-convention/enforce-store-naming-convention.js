@@ -86,9 +86,9 @@ module.exports = {
             continue;
           }
 
-          const parentNode = traverseParentByType(node, "VariableDeclarator", [
-            "Program",
-          ]);
+          const parentNode = traverseParentByType(node, "VariableDeclarator", {
+            stopOnTypes: ["Program", "BlockStatement"],
+          });
 
           const resultSavedInVariable =
             parentNode?.type === "VariableDeclarator";
@@ -145,9 +145,9 @@ module.exports = {
         if (
           STORE_IN_DOMAIN_CREATION_METHODS.includes(node.callee?.property?.name)
         ) {
-          const parentNode = traverseParentByType(node, "VariableDeclarator", [
-            "Program",
-          ]);
+          const parentNode = traverseParentByType(node, "VariableDeclarator", {
+            stopOnTypes: ["Program", "BlockStatement"],
+          });
 
           const resultSavedInVariable =
             parentNode?.type === "VariableDeclarator";
