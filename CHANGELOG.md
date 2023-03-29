@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.4
+
+- Fix false-positive in `enforce-store-naming-convention` rule ([PR #137](https://github.com/effector/eslint-plugin/pull/137))
+
 ## v0.10.3
 
 - Fix unhandled rejection in `enforce-store-naming-convention` rule
