@@ -12,6 +12,7 @@
   "main": "index.js",
   "author": "Igor Kamyshev <igor@kamyshev.me>",
   "license": "MIT",
+  "packageManager": "pnpm@7.28.0",
   "scripts": {
     "test": "jest",
     "docs:prepare": "node ./docs/scripts/prepare-toc.js && node ./docs/scripts/prepare-presets.js && node ./docs/scripts/prepare-changelog.js",
