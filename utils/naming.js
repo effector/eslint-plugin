@@ -14,7 +14,7 @@ function isStoreNameValid({ name, context }) {
   const storeNameConvention = getStoreNameConvention(context);
 
   // validate edge case
-  if (name?.startsWith("$") && name?.endsWith("$")) {
+  if (name?.length > 1 && name?.startsWith("$") && name?.endsWith("$")) {
     return false;
   }
 
