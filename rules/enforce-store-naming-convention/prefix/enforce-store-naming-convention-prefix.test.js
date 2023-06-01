@@ -75,5 +75,26 @@ const $store = createStore(null);
         },
       ],
     },
+    {
+      code: `
+import {createStore} from 'effector';
+const $store$ = createStore(null);
+          `,
+      errors: [
+        {
+          messageId: "invalidName",
+          suggestions: [
+            {
+              messageId: "renameStore",
+              data: { storeName: "$store$", correctedStoreName: "$store" },
+              output: `
+import {createStore} from 'effector';
+const $store = createStore(null);
+          `,
+            },
+          ],
+        },
+      ],
+    },
   ],
 });
