@@ -20,6 +20,7 @@ module.exports = {
     "no-patronum-debug": require("./rules/no-patronum-debug/no-patronum-debug"),
   },
   configs: {
+    all: require("./config/all"),
     recommended: require("./config/recommended"),
     scope: require("./config/scope"),
     react: require("./config/react"),
