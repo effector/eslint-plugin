@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.11.0
+
+- Add support of Node.js 19 and Node.js 20 ([PR #146](https://github.com/effector/eslint-plugin/pull/146)) by @xarety
+- Fixed edge-case of rule `enforce-store-naming-convention` ([PR #140](https://github.com/effector/eslint-plugin/pull/140)) by @raidenmiro
+
 ## v0.10.5
 
 - Fix false-positive in `no-ambiguity-target` rule
