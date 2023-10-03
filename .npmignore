@@ -5,3 +5,4 @@ coverage
 *.md
 tsconfig.json
 pnpm-lock.yaml
+docs
