@@ -36,7 +36,7 @@ Add `effector` to the plugins section of your `.eslintrc` configuration file. Yo
 ```json
 {
   "plugins": ["effector"],
-  "extends": ["plugin:effector/recommended", "plugin:effector/scope"]
+  "extends": ["plugin:effector/recommended", "plugin:effector/scope"] // or ["plugin:effector/all"] to use all rules
 }
 ```
 
