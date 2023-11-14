@@ -1,5 +1,4 @@
-const { RuleTester } =
-  require("@typescript-eslint/experimental-utils").ESLintUtils;
+const { RuleTester } = require("@typescript-eslint/rule-tester");
 const { join } = require("path");
 
 const { readExample } = require("../../utils/read-example");

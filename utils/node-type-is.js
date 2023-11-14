@@ -1,7 +1,10 @@
+const { ESLintUtils } = require('@typescript-eslint/utils');
+
 function hasType({ node, possibleTypes, context, from }) {
   try {
-    const checker = context.parserServices.program.getTypeChecker();
-    const originalNode = context.parserServices.esTreeNodeToTSNodeMap.get(node);
+    const parserServices = ESLintUtils.getParserServices(context);
+    const checker = parserServices.program.getTypeChecker();
+    const originalNode = parserServices.esTreeNodeToTSNodeMap.get(node);
     const type = checker.getTypeAtLocation(
       originalNode?.initializer ?? originalNode
     );

@@ -1,3 +1,5 @@
+const { ESLintUtils } = require("@typescript-eslint/utils");
+
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { namingOf } = require("../../utils/naming");
 const {
@@ -32,12 +34,17 @@ module.exports = {
     hasSuggestions: true,
   },
   create(context) {
-    const { parserServices } = context;
+    let parserServices;
+    try {
+      parserServices = ESLintUtils.getParserServices(context);
+    } catch (err) {
+      // no types information
+    }
 
     validateStoreNameConvention(context);
 
     // TypeScript-way
-    if (parserServices.hasFullTypeInformation) {
+    if (parserServices?.program) {
       return {
         VariableDeclarator(node) {
           const isEffectorStore = nodeTypeIs.store({

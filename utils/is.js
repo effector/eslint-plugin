@@ -1,9 +1,18 @@
+const { ESLintUtils } = require("@typescript-eslint/utils");
+
 const { nodeTypeIs } = require("./node-type-is");
 const { namingOf } = require("./naming");
 
 function isSomething({ isValidNaming, isTypeCorrect }) {
   return ({ node, context }) => {
-    if (context.parserServices.hasFullTypeInformation) {
+    let parserServices;
+    try {
+      parserServices = ESLintUtils.getParserServices(context);
+    } catch (e) {
+      // no types info
+    }
+
+    if (parserServices?.program) {
       return isTypeCorrect({ node, context });
     }
 

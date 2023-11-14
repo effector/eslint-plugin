@@ -1,3 +1,5 @@
+const { ESLintUtils } = require("@typescript-eslint/utils");
+
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { isInsideReactComponent } = require("../../utils/react");
 const { nodeTypeIs } = require("../../utils/node-type-is");
@@ -21,10 +23,15 @@ module.exports = {
     schema: [],
   },
   create(context) {
-    const parserServices = context.parserServices;
+    let parserServices;
+    try {
+      parserServices = ESLintUtils.getParserServices(context);
+    } catch (err) {
+      // no types information
+    }
 
     // TypeScript-only rule, since units can be imported from anywhere
-    if (!parserServices.hasFullTypeInformation) {
+    if (!parserServices?.program) {
       return {};
     }
 

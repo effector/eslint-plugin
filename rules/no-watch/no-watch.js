@@ -1,3 +1,5 @@
+const { ESLintUtils } = require("@typescript-eslint/utils");
+
 const {
   traverseNestedObjectNode,
 } = require("../../utils/traverse-nested-object-node");
@@ -20,8 +22,14 @@ module.exports = {
     schema: [],
   },
   create(context) {
-    const { parserServices } = context;
-    if (!parserServices.hasFullTypeInformation) {
+    let parserServices;
+    try {
+      parserServices = ESLintUtils.getParserServices(context);
+    } catch (err) {
+      // no types information
+    }
+
+    if (!parserServices?.program) {
       // JavaScript-way https://github.com/effector/eslint-plugin/issues/48#issuecomment-931107829
       return {};
     }

@@ -1,3 +1,5 @@
+const { ESLintUtils } = require("@typescript-eslint/utils");
+
 const { extractImportedFrom } = require("../../utils/extract-imported-from");
 const { nodeTypeIs } = require("../../utils/node-type-is");
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
@@ -21,9 +23,15 @@ module.exports = {
     hasSuggestions: true,
   },
   create(context) {
-    const parserServices = context.parserServices;
+    let parserServices;
+    try {
+      parserServices = ESLintUtils.getParserServices(context);
+    } catch (err) {
+      // no types information
+    }
+
     // TypeScript-way
-    if (parserServices.hasFullTypeInformation) {
+    if (parserServices?.program) {
       return {
         VariableDeclarator(node) {
           const isEffectorGate = nodeTypeIs.gate({
