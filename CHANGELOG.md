@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.12.0
+
+- Migrate to TypeScript v5 and `@typescript-eslint/*` v6 ([PR #151](https://github.com/effector/eslint-plugin/pull/151)) by @7rulnik
+- Drop support of Node.js 14 and Node.js 15 since its support is dropped by Node.js itself 2 years ago and new versions of TypeScript and `@typescript-eslint/*` don't support it as well
+
 ## v0.11.0
 
 - Add support of Node.js 19 and Node.js 20 ([PR #146](https://github.com/effector/eslint-plugin/pull/146)) by @xarety
