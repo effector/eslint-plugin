@@ -26,11 +26,11 @@ devDependencies:
     specifier: ^3.2.0
     version: 3.4.5
   effector:
-    specifier: ^22.0.0
-    version: 22.3.0
+    specifier: ^23
+    version: 23.1.0
   effector-react:
-    specifier: ^22.0.6
-    version: 22.0.6(effector@22.3.0)(react@17.0.2)
+    specifier: ^23
+    version: 23.1.0(effector@23.1.0)(react@17.0.2)
   eslint:
     specifier: ^8.0.0
     version: 8.17.0
@@ -1956,19 +1956,20 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /effector-react@22.0.6(effector@22.3.0)(react@17.0.2):
-    resolution: {integrity: sha512-uzVjrh5S94eMeihu8N8eQvLFnZA56VT00etMVovnSyZxujo0f8gtZZebIYOKyYFkGcYUyfiOHRRzBhYpIfAIhg==}
+  /effector-react@23.1.0(effector@23.1.0)(react@17.0.2):
+    resolution: {integrity: sha512-RrCyu45zhxzIwzy6azjgPjXENRM2AM4y3TJF4faj5vN6z0u8ItR9W91wokHu5+BwFj6MKg2NxQkL4r4jWtIRoQ==}
     engines: {node: '>=11.0.0'}
     peerDependencies:
-      effector: ^22.0.2
+      effector: ^23.0.0
       react: '>=16.8.0 <19.0.0'
     dependencies:
-      effector: 22.3.0
+      effector: 23.1.0
       react: 17.0.2
+      use-sync-external-store: 1.2.0(react@17.0.2)
     dev: true
 
-  /effector@22.3.0:
-    resolution: {integrity: sha512-Nh7IXn8U4emq8YtAZf2+y2Rs6n4W/gjPaNZpZLFOXOIAsRZSNBFjtK1vHTWNKxxmNFZOaZN6XUXdT8FDs0mAdQ==}
+  /effector@23.1.0:
+    resolution: {integrity: sha512-PsiNE2UmEnS/xmyshISjMwqqGcUKF0upnA/8o1qXafyfrV1kYkOwhs9fuDfUKIAbgZVSZb+bowymPpfrNu7jFw==}
     engines: {node: '>=11.0.0'}
     dev: true
 
@@ -3668,6 +3669,14 @@ packages:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
     dependencies:
       punycode: 2.1.1
+    dev: true
+
+  /use-sync-external-store@1.2.0(react@17.0.2):
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 17.0.2
     dev: true
 
   /v8-compile-cache@2.3.0:
