@@ -1,4 +1,4 @@
-const { ESLintUtils } = require('@typescript-eslint/utils');
+const { ESLintUtils } = require("@typescript-eslint/utils");
 
 function hasType({ node, possibleTypes, context, from }) {
   try {
@@ -24,13 +24,27 @@ const nodeTypeIs = {
   effect: (opts) =>
     hasType({ ...opts, possibleTypes: ["Effect"], from: "effector" }),
   store: (opts) =>
-    hasType({ ...opts, possibleTypes: ["Store"], from: "effector" }),
+    hasType({
+      ...opts,
+      possibleTypes: ["Store", "StoreWritable"],
+      from: "effector",
+    }),
   event: (opts) =>
-    hasType({ ...opts, possibleTypes: ["Event"], from: "effector" }),
+    hasType({
+      ...opts,
+      possibleTypes: ["Event", "EventCallable"],
+      from: "effector",
+    }),
   unit: (opts) =>
     hasType({
       ...opts,
-      possibleTypes: ["Effect", "Store", "Event"],
+      possibleTypes: [
+        "Effect",
+        "Store",
+        "Event",
+        "EventCallable",
+        "StoreWritable",
+      ],
       from: "effector",
     }),
   gate: (opts) =>
@@ -58,13 +72,27 @@ const nodeTypeIs = {
         from: "effector",
       }),
     store: (opts) =>
-      !hasType({ ...opts, possibleTypes: ["Store"], from: "effector" }),
+      !hasType({
+        ...opts,
+        possibleTypes: ["Store", "StoreWritable"],
+        from: "effector",
+      }),
     event: (opts) =>
-      !hasType({ ...opts, possibleTypes: ["Event"], from: "effector" }),
+      !hasType({
+        ...opts,
+        possibleTypes: ["Event", "EventCallable"],
+        from: "effector",
+      }),
     unit: (opts) =>
       !hasType({
         ...opts,
-        possibleTypes: ["Effect", "Store", "Event"],
+        possibleTypes: [
+          "Effect",
+          "Store",
+          "Event",
+          "EventCallable",
+          "StoreWritable",
+        ],
         from: "effector",
       }),
     gate: (opts) =>
