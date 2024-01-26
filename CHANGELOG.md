@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.13.0
+
+- Support new types `EventCallable` and `StoreWritable` in all rules
+- Drop support of Effector 22
+
 ## v0.12.0
 
 - Migrate to TypeScript v5 and `@typescript-eslint/*` v6 ([PR #151](https://github.com/effector/eslint-plugin/pull/151)) by @7rulnik
