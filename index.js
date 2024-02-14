@@ -18,6 +18,7 @@ module.exports = {
     "mandatory-scope-binding": require("./rules/mandatory-scope-binding/mandatory-scope-binding"),
     "prefer-useUnit": require("./rules/prefer-useUnit/prefer-useUnit"),
     "no-patronum-debug": require("./rules/no-patronum-debug/no-patronum-debug"),
+    "no-on": require("./rules/no-on/no-on"),
   },
   configs: {
     recommended: require("./config/recommended"),
