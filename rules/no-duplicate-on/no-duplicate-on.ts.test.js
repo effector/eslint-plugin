@@ -23,6 +23,7 @@ ruleTester.run("effector/no-duplicate-on.ts.test", rule, {
   valid: [
     "correct.ts",
     "correct-with-scopes.ts",
+    "correct-with-factories.ts",
     "correct-with-nesting.ts",
     "correct-with-empty-on.ts",
   ].map(readExampleForTheRule),
