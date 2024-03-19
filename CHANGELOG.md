@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.14.0
+
+- Add new rule `no-duplicate-clock-or-source-array-values` ([PR #155](https://github.com/effector/eslint-plugin/pull/155)) by @gearonix
+- Add support of Node.js 21
+- Fix false-positive in `enforce-store-naming-convention` rule ([PR #159](https://github.com/effector/eslint-plugin/pull/159)) by @kireevmp
+
 ## v0.13.0
 
 - Support new types `EventCallable` and `StoreWritable` in all rules
