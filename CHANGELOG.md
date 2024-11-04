@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.15.0
+
+- Add new rule `require-pickup-in-persist` ([PR #163](https://github.com/effector/eslint-plugin/pull/163)) by @kireevmp
+- Add support of Node.js 22
+
 ## v0.14.0
 
 - Add new rule `no-duplicate-clock-or-source-array-values` ([PR #155](https://github.com/effector/eslint-plugin/pull/155)) by @gearonix
