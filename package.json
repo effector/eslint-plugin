@@ -23,7 +23,7 @@
     "access": "public"
   },
   "engines": {
-    "node": "^16 || ^17 || ^18 || ^19 || ^20 || ^21"
+    "node": "^16 || ^17 || ^18 || ^19 || ^20 || ^21 || ^22"
   },
   "devDependencies": {
     "@types/react": "^17.0.37",
