@@ -15,6 +15,9 @@ const GoodButton = () => {
 
 // 👎 Event is not wrapped with `useUnit` - component is not suitable for isomorphic SSR app
 const BadButton = () => {
-  return <button onClick={increment}>+</button>;
+  const onClick = () => {
+    increment()
+  }
+  return <button onClick={onClick}>+</button>;
 };
 ```
