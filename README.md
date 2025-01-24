@@ -31,6 +31,8 @@ $ npm install --dev eslint-plugin-effector
 
 ## Usage
 
+### ESLint <= 8
+
 Add `effector` to the plugins section of your `.eslintrc` configuration file. You can omit the `eslint-plugin-` prefix:
 
 ```json
@@ -38,6 +40,25 @@ Add `effector` to the plugins section of your `.eslintrc` configuration file. Yo
   "plugins": ["effector"],
   "extends": ["plugin:effector/recommended", "plugin:effector/scope"]
 }
+```
+
+### ESLint 9
+
+```mjs
+import { fixupPluginRules } from "@eslint/compat";
+import effector from "eslint-plugin-effector";
+
+export default [
+  {
+    plugins: {
+      effector: fixupPluginRules(effector),
+    },
+    rules: {
+      ...effector.configs.recommended.rules,
+      ...effector.configs.scope.rules,
+    },
+  },
+];
 ```
 
 Read more detailed docs on [eslint.effector.dev](https://eslint.effector.dev/)
