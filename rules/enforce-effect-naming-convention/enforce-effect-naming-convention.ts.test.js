@@ -6,12 +6,16 @@ const { readExample } = require("../../utils/read-example");
 const rule = require("./enforce-effect-naming-convention");
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    project: "./tsconfig.json",
-    tsconfigRootDir: join(__dirname, ".."),
+  languageOptions: {
+    parser: require("@typescript-eslint/parser"),
+    parserOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      projectService: {
+        allowDefaultProject: ["*.ts", "*.tsx"],
+      },
+      tsconfigRootDir: join(__dirname, "../.."),
+    },
   },
 });
 
@@ -20,7 +24,7 @@ const readExampleForTheRule = (name) => ({
   filename: join(__dirname, "examples", name),
 });
 
-ruleTester.run("effector/enforce-effect-naming-convention.ts.test", rule, {
+ruleTester.run("enforce-effect-naming-convention.ts.test", rule, {
   valid: ["correct-effect-naming.ts"].map(readExampleForTheRule),
 
   invalid: [
@@ -33,6 +37,12 @@ ruleTester.run("effector/enforce-effect-naming-convention.ts.test", rule, {
           {
             messageId: "invalidName",
             type: "VariableDeclarator",
+            suggestions: [
+              {
+                messageId: "renameEffect",
+                output: result.code.replace("justEffect", "justEffectFx"),
+              },
+            ],
           },
         ],
       })),

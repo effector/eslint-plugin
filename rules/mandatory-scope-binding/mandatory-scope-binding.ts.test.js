@@ -10,12 +10,16 @@ const {
 const rule = require("./mandatory-scope-binding");
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    project: "./tsconfig.json",
-    tsconfigRootDir: join(__dirname, ".."),
+  languageOptions: {
+    parser: require("@typescript-eslint/parser"),
+    parserOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      projectService: {
+        allowDefaultProject: ["*.ts", "*.tsx"],
+      },
+      tsconfigRootDir: join(__dirname, "../.."),
+    },
   },
 });
 
@@ -24,7 +28,7 @@ const readExampleForTheRule = (name) => ({
   filename: join(__dirname, "examples", name),
 });
 
-ruleTester.run("effector/mandatory-scope-binding.ts.test", rule, {
+ruleTester.run("mandatory-scope-binding.ts.test", rule, {
   valid: getCorrectExamples(__dirname, { ext: ["tsx", "ts"] }).map(
     readExampleForTheRule
   ),

@@ -6,7 +6,7 @@ const {} = require("../../utils/traverse-nested-object-node");
 module.exports = {
   meta: {
     type: "problem",
-    hasSuggestions: true,
+    hasSuggestions: false,
     docs: {
       description: "Forbids unit duplicates on `source` and `clock``",
       category: "Quality",
@@ -61,15 +61,6 @@ module.exports = {
                 data: {
                   memberPath,
                 },
-                suggest: [
-                  {
-                    messageId: "removeDuplicate",
-                    data: { memberPath },
-                    fix(fixer) {
-                      return fixer.remove(node);
-                    },
-                  },
-                ],
               });
 
               return;

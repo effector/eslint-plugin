@@ -5,12 +5,16 @@ const { readExample } = require("../../utils/read-example");
 const rule = require("./no-duplicate-on");
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    project: "./tsconfig.json",
-    tsconfigRootDir: join(__dirname, ".."),
+  languageOptions: {
+    parser: require("@typescript-eslint/parser"),
+    parserOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      projectService: {
+        allowDefaultProject: ["*.ts", "*.tsx"],
+      },
+      tsconfigRootDir: join(__dirname, "../.."),
+    },
   },
 });
 
@@ -19,7 +23,7 @@ const readExampleForTheRule = (name) => ({
   filename: join(__dirname, "examples", name),
 });
 
-ruleTester.run("effector/no-duplicate-on.ts.test", rule, {
+ruleTester.run("no-duplicate-on.ts.test", rule, {
   valid: [
     "correct.ts",
     "correct-with-scopes.ts",

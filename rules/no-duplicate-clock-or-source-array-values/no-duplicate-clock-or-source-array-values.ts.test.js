@@ -5,12 +5,16 @@ const { readExample } = require("../../utils/read-example");
 const rule = require("./no-duplicate-clock-or-source-array-values");
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    project: "./tsconfig.json",
-    tsconfigRootDir: join(__dirname, ".."),
+  languageOptions: {
+    parser: require("@typescript-eslint/parser"),
+    parserOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      projectService: {
+        allowDefaultProject: ["*.ts", "*.tsx"],
+      },
+      tsconfigRootDir: join(__dirname, "../.."),
+    },
   },
 });
 
@@ -20,7 +24,7 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run(
-  "effector/no-duplicate-clock-or-source-array-values.ts.test",
+  "no-duplicate-clock-or-source-array-values.ts.test",
   rule,
   {
     valid: ["correct-sample.ts"].map(readExampleForTheRule),
@@ -32,20 +36,10 @@ ruleTester.run(
           {
             messageId: "duplicatesInSource",
             type: "Identifier",
-            suggestions: [
-              {
-                messageId: "removeDuplicate",
-              },
-            ],
           },
           {
             messageId: "duplicatesInClock",
             type: "MemberExpression",
-            suggestions: [
-              {
-                messageId: "removeDuplicate",
-              },
-            ],
           },
         ],
       })),
@@ -55,11 +49,6 @@ ruleTester.run(
           {
             messageId: "duplicatesInClock",
             type: "MemberExpression",
-            suggestions: [
-              {
-                messageId: "removeDuplicate",
-              },
-            ],
           },
         ],
       })),

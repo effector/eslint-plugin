@@ -5,12 +5,16 @@ const { readExample } = require("../../utils/read-example");
 const rule = require("./no-useless-methods");
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    project: "./tsconfig.json",
-    tsconfigRootDir: join(__dirname, ".."),
+  languageOptions: {
+    parser: require("@typescript-eslint/parser"),
+    parserOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      projectService: {
+        allowDefaultProject: ["*.ts", "*.tsx"],
+      },
+      tsconfigRootDir: join(__dirname, "../.."),
+    },
   },
 });
 
@@ -19,7 +23,7 @@ const readExampleForTheRule = (name) => ({
   filename: join(__dirname, "examples", name),
 });
 
-ruleTester.run("effector/no-useless-methods.ts.test", rule, {
+ruleTester.run("no-useless-methods.ts.test", rule, {
   valid: ["correct.ts", "correct-nested.ts"].map(readExampleForTheRule),
 
   invalid: [
