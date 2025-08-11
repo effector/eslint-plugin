@@ -6,7 +6,7 @@ const {} = require("../../utils/traverse-nested-object-node");
 module.exports = {
   meta: {
     type: "problem",
-    hasSuggestions: false,
+    hasSuggestions: true,
     docs: {
       description: "Forbids unit duplicates on `source` and `clock``",
       category: "Quality",
@@ -61,6 +61,15 @@ module.exports = {
                 data: {
                   memberPath,
                 },
+                suggest: [
+                  {
+                    messageId: "removeDuplicate",
+                    data: { memberPath },
+                    fix(fixer) {
+                      return fixer.remove(node);
+                    },
+                  },
+                ],
               });
 
               return;
@@ -76,6 +85,10 @@ module.exports = {
 
 function createMemberExpressionPath(node, chain = "") {
   const compactStrings = (...args) => args.filter(Boolean).join(".");
+
+  if (!node) {
+    return chain;
+  }
 
   if (node.type === "MemberExpression") {
     const propertyName = node.property.name;

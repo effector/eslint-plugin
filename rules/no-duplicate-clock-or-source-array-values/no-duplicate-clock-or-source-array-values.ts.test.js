@@ -36,10 +36,22 @@ ruleTester.run(
           {
             messageId: "duplicatesInSource",
             type: "Identifier",
+            suggestions: [
+              {
+                messageId: "removeDuplicate",
+                output: result.code.replace("$store, $store", "$store, "), // ESLint removes node but leaves trailing comma
+              },
+            ],
           },
           {
             messageId: "duplicatesInClock",
             type: "MemberExpression",
+            suggestions: [
+              {
+                messageId: "removeDuplicate",
+                output: result.code.replace("setUnloadDeliveryDateFx.doneData,\n  ],", ",\n  ],"), // Remove duplicate but leave comma
+              },
+            ],
           },
         ],
       })),
@@ -47,8 +59,14 @@ ruleTester.run(
         ...result,
         errors: [
           {
-            messageId: "duplicatesInClock",
+            messageId: "duplicatesInClock", 
             type: "MemberExpression",
+            suggestions: [
+              {
+                messageId: "removeDuplicate",
+                output: result.code.replace("    clickOnBtn,\n    setUnloadDeliveryDateFx.doneData,", "    clickOnBtn,\n    ,"), // Remove duplicate, leave comma
+              },
+            ],
           },
         ],
       })),
