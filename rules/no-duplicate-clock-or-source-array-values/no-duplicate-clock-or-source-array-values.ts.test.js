@@ -5,12 +5,10 @@ const { readExample } = require("../../utils/read-example");
 const rule = require("./no-duplicate-clock-or-source-array-values");
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    project: "./tsconfig.json",
-    tsconfigRootDir: join(__dirname, ".."),
+  languageOptions: {
+    parserOptions: {
+      projectService: true,
+    },
   },
 });
 
@@ -20,7 +18,7 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run(
-  "effector/no-duplicate-clock-or-source-array-values.ts.test",
+  "no-duplicate-clock-or-source-array-values.ts.test",
   rule,
   {
     valid: ["correct-sample.ts"].map(readExampleForTheRule),
@@ -35,6 +33,7 @@ ruleTester.run(
             suggestions: [
               {
                 messageId: "removeDuplicate",
+                output: result.code.replace("$store, $store", "$store, "), // ESLint removes node but leaves trailing comma
               },
             ],
           },
@@ -44,6 +43,7 @@ ruleTester.run(
             suggestions: [
               {
                 messageId: "removeDuplicate",
+                output: result.code.replace("setUnloadDeliveryDateFx.doneData,\n  ],", ",\n  ],"), // Remove duplicate but leave comma
               },
             ],
           },
@@ -53,11 +53,12 @@ ruleTester.run(
         ...result,
         errors: [
           {
-            messageId: "duplicatesInClock",
+            messageId: "duplicatesInClock", 
             type: "MemberExpression",
             suggestions: [
               {
                 messageId: "removeDuplicate",
+                output: result.code.replace("    clickOnBtn,\n    setUnloadDeliveryDateFx.doneData,", "    clickOnBtn,\n    ,"), // Remove duplicate, leave comma
               },
             ],
           },

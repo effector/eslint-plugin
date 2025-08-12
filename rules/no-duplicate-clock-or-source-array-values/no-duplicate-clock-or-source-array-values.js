@@ -86,6 +86,10 @@ module.exports = {
 function createMemberExpressionPath(node, chain = "") {
   const compactStrings = (...args) => args.filter(Boolean).join(".");
 
+  if (!node) {
+    return chain;
+  }
+
   if (node.type === "MemberExpression") {
     const propertyName = node.property.name;
 

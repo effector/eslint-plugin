@@ -5,12 +5,10 @@ const { readExample } = require("../../utils/read-example");
 const rule = require("./no-patronum-debug");
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    project: "./tsconfig.json",
-    tsconfigRootDir: join(__dirname, ".."),
+  languageOptions: {
+    parserOptions: {
+      projectService: true,
+    },
   },
 });
 
@@ -19,7 +17,7 @@ const readExampleForTheRule = (name) => ({
   filename: join(__dirname, "examples", name),
 });
 
-ruleTester.run("effector/no-patronum-debug", rule, {
+ruleTester.run("no-patronum-debug", rule, {
   valid: ["correct.ts", "correct-issue-127.ts"].map(readExampleForTheRule),
   invalid: [
     ...["incorrect-with-debug.ts"]

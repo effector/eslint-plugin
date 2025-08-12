@@ -6,12 +6,10 @@ const { readExample } = require("../../../utils/read-example");
 const rule = require("../enforce-store-naming-convention");
 
 const ruleTester = new RuleTester({
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    project: "./tsconfig.json",
-    tsconfigRootDir: join(__dirname, "../.."),
+  languageOptions: {
+    parserOptions: {
+      projectService: true,
+    },
   },
 });
 
@@ -26,7 +24,7 @@ const readExampleForTheRule = (name) => ({
 });
 
 ruleTester.run(
-  "effector/enforce-store-naming-convention-postfix.ts.test",
+  "enforce-store-naming-convention-postfix.ts.test",
   rule,
   {
     valid: ["correct-store-naming.ts"].map(readExampleForTheRule),
@@ -41,6 +39,12 @@ ruleTester.run(
             {
               messageId: "invalidName",
               type: "VariableDeclarator",
+              suggestions: [
+                {
+                  messageId: "renameStore",
+                  output: result.code.replace("justStore", "justStore$"),
+                },
+              ],
             },
           ],
         })),
