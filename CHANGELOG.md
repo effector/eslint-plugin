@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.16.0
+
+- Support typescript-eslint@8 ([PR #180](https://github.com/effector/eslint-plugin/pull/170/files)) by @7rulnik
+
 ## v0.15.0
 
 - Add new rule `require-pickup-in-persist` ([PR #163](https://github.com/effector/eslint-plugin/pull/163)) by @kireevmp
