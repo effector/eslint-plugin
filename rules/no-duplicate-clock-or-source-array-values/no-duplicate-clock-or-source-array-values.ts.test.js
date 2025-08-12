@@ -6,14 +6,8 @@ const rule = require("./no-duplicate-clock-or-source-array-values");
 
 const ruleTester = new RuleTester({
   languageOptions: {
-    parser: require("@typescript-eslint/parser"),
     parserOptions: {
-      ecmaVersion: 2020,
-      sourceType: "module",
-      projectService: {
-        allowDefaultProject: ["*.ts", "*.tsx"],
-      },
-      tsconfigRootDir: join(__dirname, "../.."),
+      projectService: true,
     },
   },
 });
