@@ -18,33 +18,29 @@ const readExampleForTheRule = (name) => ({
   filename: join(__dirname, "examples", name),
 });
 
-ruleTester.run(
-  "enforce-store-naming-convention-prefix.ts.test",
-  rule,
-  {
-    valid: ["correct-store-naming.ts", "correct-issue-139.ts"].map(
-      readExampleForTheRule
-    ),
+ruleTester.run("enforce-store-naming-convention-prefix.ts.test", rule, {
+  valid: ["correct-store-naming.ts", "correct-issue-139.ts"].map(
+    readExampleForTheRule
+  ),
 
-    invalid: [
-      // Errors
-      ...["incorrect-store-naming.ts"]
-        .map(readExampleForTheRule)
-        .map((result) => ({
-          ...result,
-          errors: [
-            {
-              messageId: "invalidName",
-              type: "VariableDeclarator",
-              suggestions: [
-                {
-                  messageId: "renameStore",
-                  output: result.code.replace("justStore", "$justStore"),
-                },
-              ],
-            },
-          ],
-        })),
-    ],
-  }
-);
+  invalid: [
+    // Errors
+    ...["incorrect-store-naming.ts", "incorrect-store-after-destruction.ts"]
+      .map(readExampleForTheRule)
+      .map((result) => ({
+        ...result,
+        errors: [
+          {
+            messageId: "invalidName",
+            type: "VariableDeclarator",
+            suggestions: [
+              {
+                messageId: "renameStore",
+                output: result.code.replace("justStore", "$justStore"),
+              },
+            ],
+          },
+        ],
+      })),
+  ],
+});
