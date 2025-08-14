@@ -25,7 +25,7 @@ ruleTester.run("enforce-store-naming-convention-prefix.ts.test", rule, {
 
   invalid: [
     // Errors
-    ...["incorrect-store-naming.ts", "incorrect-store-after-destruction.ts"]
+    ...["incorrect-store-naming.ts"]
       .map(readExampleForTheRule)
       .map((result) => ({
         ...result,
@@ -33,6 +33,23 @@ ruleTester.run("enforce-store-naming-convention-prefix.ts.test", rule, {
           {
             messageId: "invalidName",
             type: "VariableDeclarator",
+            suggestions: [
+              {
+                messageId: "renameStore",
+                output: result.code.replace("justStore", "$justStore"),
+              },
+            ],
+          },
+        ],
+      })),
+    ...["incorrect-store-after-destruction.ts"]
+      .map(readExampleForTheRule)
+      .map((result) => ({
+        ...result,
+        errors: [
+          {
+            messageId: "invalidName",
+            type: "Identifier",
             suggestions: [
               {
                 messageId: "renameStore",
