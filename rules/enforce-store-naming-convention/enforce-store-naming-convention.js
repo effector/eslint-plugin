@@ -14,6 +14,11 @@ const {
 const { createLinkToRule } = require("../../utils/create-link-to-rule");
 const { nodeTypeIs } = require("../../utils/node-type-is");
 const { traverseParentByType } = require("../../utils/traverse-parent-by-type");
+const {
+  traverseRealDeclaration,
+} = require("../../utils/traverse-real-declaration");
+const { nodeName } = require("../../utils/node-name");
+const { nodeRange } = require("../../utils/node-range");
 
 module.exports = {
   meta: {
@@ -47,23 +52,27 @@ module.exports = {
     if (parserServices?.program) {
       return {
         VariableDeclarator(node) {
-          const isEffectorStore = nodeTypeIs.store({
-            node,
-            context,
-          });
+          const realNodes = traverseRealDeclaration(node);
 
-          if (!isEffectorStore) {
-            return;
-          }
-
-          const storeName = node.id.name;
-
-          if (namingOf.store.isInvalid({ name: storeName, context })) {
-            reportStoreNameConventionViolation({
+          for (const realNode of realNodes) {
+            const isEffectorStore = nodeTypeIs.store({
+              node: realNode,
               context,
-              node,
-              storeName,
             });
+
+            if (!isEffectorStore) {
+              continue;
+            }
+
+            const storeName = nodeName(realNode);
+
+            if (namingOf.store.isInvalid({ name: storeName, context })) {
+              reportStoreNameConventionViolation({
+                context,
+                node: realNode,
+                storeName,
+              });
+            }
           }
         },
       };
@@ -197,7 +206,7 @@ function reportStoreNameConventionViolation({ context, node, storeName }) {
         messageId: "renameStore",
         data: { storeName, correctedStoreName },
         fix(fixer) {
-          return fixer.replaceTextRange(node.id.range, correctedStoreName);
+          return fixer.replaceTextRange(nodeRange(node), correctedStoreName);
         },
       },
     ],
