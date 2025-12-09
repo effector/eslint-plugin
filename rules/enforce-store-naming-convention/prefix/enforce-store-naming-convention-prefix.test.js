@@ -27,6 +27,7 @@ ruleTester.run("effector/enforce-store-naming-convention-prefix.test", rule, {
     "correct-store-naming-with-handlers.js",
     "correct-store-naming-in-domain-with-handlers.js",
     "correct-factory.js",
+    "correct-store-array-return-and-combine.js",
   ]
     .map(readExampleForTheRule)
     .map((code) => ({ code })),
