@@ -5,3 +5,5 @@ docs/.vitepress/dist
 docs/**/__*.md
 docs/changelog.md
 docs/.vitepress/cache
+.idea
+**/*.xml
