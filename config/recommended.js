@@ -11,5 +11,6 @@ module.exports = {
     "effector/no-unnecessary-combination": "warn",
     "effector/no-duplicate-on": "error",
     "effector/keep-options-order": "warn",
+    "effector/prefer-single-binding": "warn",
   },
 };
