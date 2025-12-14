@@ -20,6 +20,7 @@ module.exports = {
     "prefer-useUnit": require("./rules/prefer-useUnit/prefer-useUnit"),
     "require-pickup-in-persist": require("./rules/require-pickup-in-persist/require-pickup-in-persist"),
     "no-patronum-debug": require("./rules/no-patronum-debug/no-patronum-debug"),
+    "prefer-single-binding": require("./rules/prefer-single-binding/prefer-single-binding"),
   },
   configs: {
     recommended: require("./config/recommended"),
