@@ -1,4 +1,4 @@
-# effector/no-multiple-use-unit
+# effector/prefer-single-binding
 
 [Related documentation](https://effector.dev/en/api/effector-react/useunit/)
 
@@ -61,7 +61,7 @@ The rule uses heuristics to determine whether a unit is a store or an event:
 // .eslintrc.js
 module.exports = {
   rules: {
-    'effector/no-multiple-use-unit': ['warn', {
+    'effector/prefer-single-binding': ['warn', {
       allowSeparateStoresAndEvents: true
     }]
   }
@@ -122,7 +122,7 @@ This is useful when you want to maintain clear logical separation between state 
 // .eslintrc.js
 module.exports = {
   rules: {
-    'effector/no-multiple-use-unit': ['warn', {
+    'effector/prefer-single-binding': ['warn', {
       enforceStoresAndEventsSeparation: true
     }]
   }
@@ -180,7 +180,7 @@ You can use both options together to enforce a specific code style:
 // .eslintrc.js
 module.exports = {
   rules: {
-    'effector/no-multiple-use-unit': ['warn', {
+    'effector/prefer-single-binding': ['warn', {
       allowSeparateStoresAndEvents: true,
       enforceStoresAndEventsSeparation: true
     }]
@@ -518,7 +518,7 @@ const [handler, handler2] = useUnit([event1, event2]);
 // .eslintrc.js
 module.exports = {
   rules: {
-    'effector/no-multiple-use-unit': 'warn'
+    'effector/prefer-single-binding': 'warn'
   }
 };
 ```
@@ -528,7 +528,7 @@ module.exports = {
 // .eslintrc.js
 module.exports = {
   rules: {
-    'effector/no-multiple-use-unit': ['warn', {
+    'effector/prefer-single-binding': ['warn', {
       allowSeparateStoresAndEvents: true
     }]
   }
@@ -540,7 +540,7 @@ module.exports = {
 // .eslintrc.js
 module.exports = {
   rules: {
-    'effector/no-multiple-use-unit': ['warn', {
+    'effector/prefer-single-binding': ['warn', {
       enforceStoresAndEventsSeparation: true
     }]
   }
@@ -552,7 +552,7 @@ module.exports = {
 // .eslintrc.js
 module.exports = {
   rules: {
-    'effector/no-multiple-use-unit': ['warn', {
+    'effector/prefer-single-binding': ['warn', {
       allowSeparateStoresAndEvents: true,
       enforceStoresAndEventsSeparation: true
     }]
@@ -565,7 +565,7 @@ module.exports = {
 In rare cases, you might want to keep `useUnit` calls separate for specific reasons:
 
 ```tsx
-/* eslint-disable effector/no-multiple-use-unit */
+/* eslint-disable effector/prefer-single-binding */
 const Component = () => {
   const [userStore] = useUnit([$userStore]);
   
@@ -576,7 +576,7 @@ const Component = () => {
   
   return null;
 };
-/* eslint-enable effector/no-multiple-use-unit */
+/* eslint-enable effector/prefer-single-binding */
 ```
 
 However, even in these cases, consider refactoring to use a single `useUnit` call (or enabling the appropriate options) for better performance and clarity.

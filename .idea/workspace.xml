@@ -7,8 +7,6 @@
     <list default="true" id="698c7401-8c22-499e-8d8e-b2be1446ed6c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/rules/prefer-single-binding.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/rules/prefer-single-binding.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rules/prefer-single-binding/prefer-single-binding.js" beforeDir="false" afterPath="$PROJECT_DIR$/rules/prefer-single-binding/prefer-single-binding.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rules/prefer-single-binding/prefer-single-binding.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/rules/prefer-single-binding/prefer-single-binding.test.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +122,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1765274057645</updated>
-      <workItem from="1765274058707" duration="7034000" />
+      <workItem from="1765274058707" duration="7670000" />
     </task>
     <servers />
   </component>
