@@ -33,6 +33,7 @@
     "tsdown": "^0.18.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.1",
+    "vitepress": "2.0.0-alpha.15",
     "vitest": "^4.0.16"
   },
   "packageManager": "pnpm@10.26.2"
