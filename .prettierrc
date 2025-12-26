@@ -1,0 +1,8 @@
+{
+  "semi": false,
+  "quoteProps": "consistent",
+  "singleQuote": false,
+  "printWidth": 120,
+
+  "plugins": ["prettier-plugin-embed"]
+}
