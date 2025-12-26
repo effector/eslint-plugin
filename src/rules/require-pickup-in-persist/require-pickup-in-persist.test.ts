@@ -1,11 +1,11 @@
-import tseslint from "typescript-eslint"
 import { RuleTester } from "@typescript-eslint/rule-tester"
+import { parser } from "typescript-eslint"
 
-import { rule } from "./require-pickup-in-persist"
+import rule from "./require-pickup-in-persist"
 
 const ruleTester = new RuleTester({
   languageOptions: {
-    parser: tseslint.parser,
+    parser,
     parserOptions: {
       projectService: { allowDefaultProject: ["*.ts"], defaultProject: "tsconfig.fixture.json" },
     },

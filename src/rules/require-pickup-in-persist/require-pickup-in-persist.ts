@@ -1,7 +1,8 @@
-import { createRule } from "@/shared/create"
-import { AST_NODE_TYPES as NodeType, type TSESTree as Node } from "@typescript-eslint/utils"
+import { type TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-eslint/utils"
 
-export const rule = createRule({
+import { createRule } from "@/shared/create"
+
+export default createRule({
   name: "require-pickup-in-persist",
   meta: {
     type: "problem",

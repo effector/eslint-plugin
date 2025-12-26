@@ -1,4 +1,4 @@
-import { resolveModuleNameFromCache, SymbolFlags, type Symbol } from "typescript"
+import { type Symbol } from "typescript"
 
 const createTypeCheck = (types: string[], from: string) => (symbol: Symbol) => {
   const name = symbol.getName()

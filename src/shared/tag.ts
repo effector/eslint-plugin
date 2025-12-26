@@ -1,4 +1,2 @@
-export const ts = (code: TemplateStringsArray, ...insert: string[]) =>
-  code.flatMap((part, index) => [part, insert[index] ?? ""]).join("")
-
-export const tsx = (code: TemplateStringsArray) => code.join("")
+export const ts = (code: TemplateStringsArray, ...insert: string[]) => String.raw({ raw: code.raw }, ...insert)
+export const tsx = (code: TemplateStringsArray, ...insert: string[]) => String.raw({ raw: code.raw }, ...insert)

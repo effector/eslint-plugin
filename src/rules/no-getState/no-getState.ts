@@ -1,9 +1,10 @@
+import { ESLintUtils, type TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-eslint/utils"
+import { SymbolFlags } from "typescript"
+
 import { createRule } from "@/shared/create"
 import { isType } from "@/shared/is"
-import { AST_NODE_TYPES as NodeType, ESLintUtils, type TSESTree as Node } from "@typescript-eslint/utils"
-import { resolveModuleNameFromCache, SymbolFlags } from "typescript"
 
-export const rule = createRule({
+export default createRule({
   name: "no-getState",
   meta: {
     type: "problem",

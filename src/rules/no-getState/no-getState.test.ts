@@ -1,14 +1,15 @@
-import tseslint from "typescript-eslint"
+import path from "node:path"
+
 import { RuleTester } from "@typescript-eslint/rule-tester"
+import { parser } from "typescript-eslint"
 
 import { ts } from "@/shared/tag"
 
-import { rule } from "./no-getState"
-import path from "node:path"
+import rule from "./no-getState"
 
 const ruleTester = new RuleTester({
   languageOptions: {
-    parser: tseslint.parser,
+    parser,
     parserOptions: {
       projectService: { allowDefaultProject: ["*.ts"], defaultProject: "tsconfig.fixture.json" },
     },

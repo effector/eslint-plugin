@@ -17,17 +17,44 @@
     }
   ],
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsdown",
+    "lint": "eslint",
+    "prepack": "pnpm build",
     "test": "vitest run"
   },
   "dependencies": {
     "@typescript-eslint/utils": "^8.50.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/node": "^25.0.3",
     "@typescript-eslint/rule-tester": "^8.50.1",
     "effector": "^23.4.4",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import-x": "^4.16.1",
+    "eslint-plugin-prettier": "^5.5.4",
     "prettier": "^3.7.4",
     "prettier-plugin-embed": "^0.5.1",
     "tsdown": "^0.18.2",
@@ -35,6 +62,10 @@
     "typescript-eslint": "^8.50.1",
     "vitepress": "2.0.0-alpha.15",
     "vitest": "^4.0.16"
+  },
+  "peerDependencies": {
+    "eslint": ">=9.0.0",
+    "typescript": ">=5.0.0"
   },
   "packageManager": "pnpm@10.26.2"
 }
