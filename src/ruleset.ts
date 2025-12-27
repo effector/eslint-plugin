@@ -8,7 +8,7 @@ const recommended = {
   // "effector/no-duplicate-on": "error",
   // "effector/no-forward": "error",
   "effector/no-getState": "error",
-  // "effector/no-guard": "error",
+  "effector/no-guard": "error",
   // "effector/no-patronum-debug": "warn",
   // "effector/no-unnecessary-combination": "warn",
   // "effector/no-unnecessary-duplication": "warn",

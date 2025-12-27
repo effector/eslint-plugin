@@ -106,7 +106,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
 
         persist({ store: $store, adapter: localAdapter })
       `,
-      errors: [{ line: 6, column: 9, messageId: "missing" }],
+      errors: [{ line: 6, column: 1, messageId: "missing" }],
     },
     {
       name: "scoped package without pickup",
@@ -118,7 +118,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
 
         persistAsync({ store: $store })
       `,
-      errors: [{ line: 6, column: 9, messageId: "missing" }],
+      errors: [{ line: 6, column: 1, messageId: "missing" }],
     },
     {
       name: "local storage without pickup",
@@ -131,7 +131,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
 
         persist({ source: $store, target: updated, key: "store", keyPrefix: "local" })
       `,
-      errors: [{ line: 7, column: 9, messageId: "missing" }],
+      errors: [{ line: 7, column: 1, messageId: "missing" }],
     },
     {
       name: "unrelated pickup",
@@ -144,7 +144,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
           param: { pickup: "yes" },
         })
       `,
-      errors: [{ line: 4, column: 9, messageId: "missing" }],
+      errors: [{ line: 4, column: 1, messageId: "missing" }],
     },
   ],
 })

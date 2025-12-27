@@ -9,5 +9,5 @@ export default defineConfig({
 
   minify: "dce-only",
 
-  external: ["typescript", "@typescript-eslint/utils"],
+  external: ["typescript", "esquery", "@typescript-eslint/utils"],
 })

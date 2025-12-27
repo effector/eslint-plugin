@@ -62,8 +62,8 @@ ruleTester.run("no-watch", rule, {
         $watchable.updates.watch(watcher)
       `,
       errors: [
-        { line: 6, column: 9, messageId: "restricted" },
-        { line: 7, column: 9, messageId: "restricted" },
+        { line: 6, column: 1, messageId: "restricted" },
+        { line: 7, column: 1, messageId: "restricted" },
       ],
     },
     {
@@ -79,8 +79,8 @@ ruleTester.run("no-watch", rule, {
         derived.watch(watcher)
       `,
       errors: [
-        { line: 7, column: 9, messageId: "restricted" },
-        { line: 8, column: 9, messageId: "restricted" },
+        { line: 7, column: 1, messageId: "restricted" },
+        { line: 8, column: 1, messageId: "restricted" },
       ],
     },
     {
@@ -93,7 +93,7 @@ ruleTester.run("no-watch", rule, {
 
         guard({ clock, filter: () => Math.random() > 0.5 }).watch(watcher)
       `,
-      errors: [{ line: 6, column: 9, messageId: "restricted" }],
+      errors: [{ line: 6, column: 1, messageId: "restricted" }],
     },
     {
       name: "event",
@@ -105,7 +105,7 @@ ruleTester.run("no-watch", rule, {
 
         event.watch(watcher)
       `,
-      errors: [{ line: 6, column: 9, messageId: "restricted" }],
+      errors: [{ line: 6, column: 1, messageId: "restricted" }],
     },
     {
       name: "effect",
@@ -126,12 +126,12 @@ ruleTester.run("no-watch", rule, {
         effectFx.finally.watch(watcher)
       `,
       errors: [
-        { line: 6, column: 9, messageId: "restricted" },
-        { line: 8, column: 9, messageId: "restricted" },
-        { line: 9, column: 9, messageId: "restricted" },
-        { line: 11, column: 9, messageId: "restricted" },
-        { line: 12, column: 9, messageId: "restricted" },
-        { line: 14, column: 9, messageId: "restricted" },
+        { line: 6, column: 1, messageId: "restricted" },
+        { line: 8, column: 1, messageId: "restricted" },
+        { line: 9, column: 1, messageId: "restricted" },
+        { line: 11, column: 1, messageId: "restricted" },
+        { line: 12, column: 1, messageId: "restricted" },
+        { line: 14, column: 1, messageId: "restricted" },
       ],
     },
     {
@@ -143,8 +143,8 @@ ruleTester.run("no-watch", rule, {
         event.watch(console.log)
       `,
       errors: [
-        { line: 3, column: 9, messageId: "restricted" },
-        { line: 4, column: 9, messageId: "restricted" },
+        { line: 3, column: 1, messageId: "restricted" },
+        { line: 4, column: 1, messageId: "restricted" },
       ],
     },
   ],
