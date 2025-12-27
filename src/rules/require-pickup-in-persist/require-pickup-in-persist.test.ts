@@ -1,6 +1,8 @@
 import { RuleTester } from "@typescript-eslint/rule-tester"
 import { parser } from "typescript-eslint"
 
+import { ts } from "@/shared/tag"
+
 import rule from "./require-pickup-in-persist"
 
 const ruleTester = new RuleTester({
@@ -16,7 +18,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
   valid: [
     {
       name: "core package with pickup",
-      code: /* ts */ `
+      code: ts`
         import { createStore, createEvent } from "effector"
         import { persist } from "effector-storage"
         import { local as localAdapter } from "effector-storage/local"
@@ -29,7 +31,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
     },
     {
       name: "local storage with pickup",
-      code: /* ts */ `
+      code: ts`
         import { createStore, createEvent } from "effector"
         import { persist } from "effector-storage/local"
 
@@ -43,7 +45,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
     },
     {
       name: "query package with pickup",
-      code: /* ts */ `
+      code: ts`
         import { createStore, createEvent } from "effector"
         import { persist as persistQuery } from "effector-storage/query"
 
@@ -55,7 +57,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
     },
     {
       name: "scoped package with pickup",
-      code: /* ts */ `
+      code: ts`
         import { createStore, createEvent } from "effector"
         import { persist as persistAsync } from "@effector-storage/react-native-async-storage"
 
@@ -67,7 +69,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
     },
     {
       name: "other packages",
-      code: /* ts */ `
+      code: ts`
         import { createStore } from "effector"
         import { persist } from "other-persist"
         import { persist as persistNested } from "other-persist/nested"
@@ -80,7 +82,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
     },
     {
       name: "skips misconfigured calls",
-      code: /* ts */ `
+      code: ts`
         import { createStore } from "effector"
 
         import { persist } from "effector-storage"
@@ -96,7 +98,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
   invalid: [
     {
       name: "core package without pickup",
-      code: /* ts */ `
+      code: ts`
         import { createStore } from "effector"
         import { persist } from "effector-storage"
 
@@ -104,11 +106,11 @@ ruleTester.run("require-pickup-in-persist", rule, {
 
         persist({ store: $store, adapter: localAdapter })
       `,
-      errors: [{ line: 7, column: 9, messageId: "missing" }],
+      errors: [{ line: 6, column: 9, messageId: "missing" }],
     },
     {
       name: "scoped package without pickup",
-      code: /* ts */ `
+      code: ts`
         import { createStore } from "effector"
         import { persist as persistAsync } from "@effector-storage/react-native-async-storage"
 
@@ -116,11 +118,11 @@ ruleTester.run("require-pickup-in-persist", rule, {
 
         persistAsync({ store: $store })
       `,
-      errors: [{ line: 7, column: 9, messageId: "missing" }],
+      errors: [{ line: 6, column: 9, messageId: "missing" }],
     },
     {
       name: "local storage without pickup",
-      code: /* ts */ `
+      code: ts`
         import { createStore, createEvent } from "effector"
         import { persist } from "effector-storage/local"
 
@@ -129,11 +131,11 @@ ruleTester.run("require-pickup-in-persist", rule, {
 
         persist({ source: $store, target: updated, key: "store", keyPrefix: "local" })
       `,
-      errors: [{ line: 8, column: 9, messageId: "missing" }],
+      errors: [{ line: 7, column: 9, messageId: "missing" }],
     },
     {
       name: "unrelated pickup",
-      code: /* ts */ `
+      code: ts`
         import { combine } from "effector"
         import { persist } from "effector-storage/local"
 
@@ -142,7 +144,7 @@ ruleTester.run("require-pickup-in-persist", rule, {
           param: { pickup: "yes" },
         })
       `,
-      errors: [{ line: 5, column: 9, messageId: "missing" }],
+      errors: [{ line: 4, column: 9, messageId: "missing" }],
     },
   ],
 })

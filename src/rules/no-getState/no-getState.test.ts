@@ -49,7 +49,7 @@ ruleTester.run("no-getState", rule, {
 
         const value = $store.getState()
       `,
-      errors: [{ line: 5, column: 23, messageId: "named", data: { name: "$store" } }],
+      errors: [{ line: 4, column: 23, messageId: "named", data: { name: "$store" } }],
     },
     {
       name: "once nested object",
@@ -60,7 +60,7 @@ ruleTester.run("no-getState", rule, {
 
         const value = some.store.getState()
       `,
-      errors: [{ line: 6, column: 23, messageId: "named", data: { name: "store" } }],
+      errors: [{ line: 5, column: 23, messageId: "named", data: { name: "store" } }],
     },
     {
       name: "deep nested object",
@@ -72,7 +72,7 @@ ruleTester.run("no-getState", rule, {
 
         const value = some.store.$data.getState()
       `,
-      errors: [{ line: 7, column: 23, messageId: "named", data: { name: "$data" } }],
+      errors: [{ line: 6, column: 23, messageId: "named", data: { name: "$data" } }],
     },
     {
       name: "anonymous expression",
@@ -81,7 +81,7 @@ ruleTester.run("no-getState", rule, {
 
         const value = createStore(null).getState()
       `,
-      errors: [{ line: 4, column: 23, messageId: "anonymous" }],
+      errors: [{ line: 3, column: 23, messageId: "anonymous" }],
     },
     {
       name: "domain store",
@@ -93,7 +93,7 @@ ruleTester.run("no-getState", rule, {
 
         const value = $store.getState()
       `,
-      errors: [{ line: 7, column: 23, messageId: "named", data: { name: "$store" } }],
+      errors: [{ line: 6, column: 23, messageId: "named", data: { name: "$store" } }],
     },
     {
       name: "imported store",
@@ -102,7 +102,7 @@ ruleTester.run("no-getState", rule, {
 
         const value = $store.getState()
       `,
-      errors: [{ line: 4, column: 23, messageId: "named", data: { name: "$store" } }],
+      errors: [{ line: 3, column: 23, messageId: "named", data: { name: "$store" } }],
     },
   ],
 })

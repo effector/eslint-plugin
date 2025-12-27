@@ -13,7 +13,7 @@ const recommended = {
   // "effector/no-unnecessary-combination": "warn",
   // "effector/no-unnecessary-duplication": "warn",
   // "effector/no-useless-methods": "error",
-  // "effector/no-watch": "warn",
+  "effector/no-watch": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
 const scope = {

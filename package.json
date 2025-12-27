@@ -8,6 +8,7 @@
     "eslint-plugin",
     "effector"
   ],
+  "homepage": "https://eslint.effector.dev",
   "license": "MIT",
   "author": "Igor Kamyshev <igor@kamyshev.me>",
   "contributors": [
@@ -38,6 +39,8 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "docs:build": "vitepress build docs",
+    "docs:dev": "vitepress dev docs",
     "lint": "eslint",
     "prepack": "pnpm build",
     "test": "vitest run"

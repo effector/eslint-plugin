@@ -15,4 +15,11 @@ const createTypeCheck = (types: string[], from: string) => (symbol: Symbol) => {
 export const isType = {
   store: createTypeCheck(["Store", "StoreWritable"], "effector"),
   storeWriteable: createTypeCheck(["StoreWritable"], "effector"),
+
+  event: createTypeCheck(["Event", "EventCallable"], "effector"),
+  eventCallable: createTypeCheck(["EventCallable"], "effector"),
+
+  effect: createTypeCheck(["Effect"], "effector"),
+
+  unit: createTypeCheck(["Store", "StoreWritable", "Event", "EventCallable", "Effect"], "effector"),
 }

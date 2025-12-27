@@ -1,2 +1,4 @@
-export const ts = (code: TemplateStringsArray, ...insert: string[]) => String.raw({ raw: code.raw }, ...insert)
-export const tsx = (code: TemplateStringsArray, ...insert: string[]) => String.raw({ raw: code.raw }, ...insert)
+const code = (code: TemplateStringsArray, ...insert: string[]) =>
+  String.raw({ raw: code.raw }, ...insert).replaceAll(/(^\n*|\n*$)/g, "")
+
+export { code as ts, code as tsx }
