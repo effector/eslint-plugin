@@ -1,3 +1,7 @@
+---
+aside: false
+---
+
 <script setup>
 import { data } from "./index.data"
 </script>

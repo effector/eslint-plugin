@@ -22,4 +22,6 @@ export const isType = {
   effect: createTypeCheck(["Effect"], "effector"),
 
   unit: createTypeCheck(["Store", "StoreWritable", "Event", "EventCallable", "Effect"], "effector"),
+
+  gate: createTypeCheck(["Gate"], "effector-react"),
 }
