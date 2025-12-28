@@ -1,3 +1,7 @@
+---
+description: Prefer sample over guard
+---
+
 # effector/no-guard
 
 Any `guard` call could be replaced with `sample` call.

@@ -1,3 +1,7 @@
+---
+description: Prefer sample over forward
+---
+
 # effector/no-forward
 
 Any `forward` call could be replaced with `sample` call.

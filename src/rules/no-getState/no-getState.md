@@ -1,3 +1,7 @@
+---
+description: Forbid .getState calls on Effector stores
+---
+
 # effector/no-getState
 
 `.getState` gives rise too difficult to debug imperative code and kind of race condition. Prefer declarative `sample` to pass data from store and `attach` for effects.

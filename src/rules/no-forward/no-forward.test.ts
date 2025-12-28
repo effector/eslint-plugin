@@ -283,5 +283,27 @@ ruleTester.run("no-forward", rule, {
         },
       ],
     },
+    {
+      name: "renamed import",
+      code: ts`
+        import { forward as legacy, sample as link } from "effector"
+        legacy({ from: a, to: b })
+      `,
+      errors: [
+        {
+          messageId: "noForward",
+          line: 2,
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: ts`
+                import { forward as legacy, sample as link } from "effector"
+                link({ clock: a, target: b })
+              `,
+            },
+          ],
+        },
+      ],
+    },
   ],
 })

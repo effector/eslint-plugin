@@ -194,5 +194,27 @@ ruleTester.run("no-guard", rule, {
         },
       ],
     },
+    {
+      name: "renamed import",
+      code: ts`
+        import { guard as legacy, sample as link } from "effector"
+        legacy({ clock: eventOne, filter: Boolean })
+      `,
+      errors: [
+        {
+          messageId: "noGuard",
+          line: 2,
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: ts`
+                import { guard as legacy, sample as link } from "effector"
+                link({ clock: eventOne, filter: Boolean })
+              `,
+            },
+          ],
+        },
+      ],
+    },
   ],
 })

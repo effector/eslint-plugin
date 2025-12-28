@@ -7,7 +7,7 @@ export default createRule({
   meta: {
     type: "problem",
     docs: {
-      description: "Requires every `persist` call of `effector-storage` to use `pickup`.",
+      description: "Require every `persist` call of `effector-storage` to use `pickup`.",
     },
     messages: {
       missing:

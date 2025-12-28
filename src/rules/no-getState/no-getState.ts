@@ -9,7 +9,7 @@ export default createRule({
   meta: {
     type: "problem",
     docs: {
-      description: "Forbids `.getState` calls on Effector stores.",
+      description: "Forbid `.getState` calls on Effector stores.",
     },
     messages: {
       named:

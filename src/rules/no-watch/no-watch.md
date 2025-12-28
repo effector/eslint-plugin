@@ -1,3 +1,7 @@
+---
+description: Restrict usage of .watch on any Effector Unit
+---
+
 # effector/no-watch
 
 Using `.watch` method generally leads to imperative code. Replace it with an operator `sample` or use the `target` parameter of `sample` (or other) operator.
