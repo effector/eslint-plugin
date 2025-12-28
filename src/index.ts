@@ -2,6 +2,7 @@ import type { TSESLint } from "@typescript-eslint/utils"
 
 import { name, version } from "../package.json"
 
+import enforceStoreNamingConvention from "./rules/enforce-store-naming-convention/enforce-store-naming-convention"
 import keepOptionsOrder from "./rules/keep-options-order/keep-options-order"
 import noForward from "./rules/no-forward/no-forward"
 import noGetState from "./rules/no-getState/no-getState"
@@ -14,6 +15,7 @@ import { ruleset } from "./ruleset"
 const base = {
   meta: { name, version, namespace: "effector" },
   rules: {
+    "enforce-store-naming-convention": enforceStoreNamingConvention,
     "keep-options-order": keepOptionsOrder,
     "no-forward": noForward,
     "no-getState": noGetState,

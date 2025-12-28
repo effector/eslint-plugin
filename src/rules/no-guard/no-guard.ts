@@ -1,5 +1,5 @@
 import { type TSESTree as Node, AST_NODE_TYPES as NodeType, type TSESLint } from "@typescript-eslint/utils"
-import { match, parse } from "esquery"
+import esquery from "esquery"
 import type { Node as ESNode } from "estree"
 
 import { createRule } from "@/shared/create"
@@ -44,12 +44,12 @@ export default createRule({
     type GuardParameterValue = Node.Property["value"]
 
     const query = {
-      clock: parse("Property.properties:has(> Identifier.key[name=clock]) > .value"),
-      source: parse("Property.properties:has(> Identifier.key[name=source]) > .value"),
-      filter: parse("Property.properties:has(> Identifier.key[name=filter]) > .value"),
-      target: parse("Property.properties:has(> Identifier.key[name=target]) > .value"),
+      clock: esquery.parse("Property.properties:has(> Identifier.key[name=clock]) > .value"),
+      source: esquery.parse("Property.properties:has(> Identifier.key[name=source]) > .value"),
+      filter: esquery.parse("Property.properties:has(> Identifier.key[name=filter]) > .value"),
+      target: esquery.parse("Property.properties:has(> Identifier.key[name=target]) > .value"),
 
-      prepend: parse(
+      prepend: esquery.parse(
         "CallExpression[arguments.length=1]" + // CallExpression with single argument
           ":has(:first-child:expression.arguments)" + // whose first argument is of type Expression
           ":has(> MemberExpression.callee:has(Identifier.property[name='prepend']))", // with callee of form object.prepend
@@ -70,19 +70,20 @@ export default createRule({
           const [arg] = node.arguments
 
           for (const key of ["clock", "source", "filter", "target"] as const)
-            [config[key]] = match(arg as ESNode, query[key], { visitorKeys }) as GuardParameterValue[]
+            [config[key]] = esquery.match(arg as ESNode, query[key], { visitorKeys }) as GuardParameterValue[]
         } else if (node.arguments.length === 2 && node.arguments[1]!.type === NodeType.ObjectExpression) {
           const [clock, arg] = node.arguments as [GuardParameterValue, Node.ObjectExpression]
 
           config.clock = clock
 
           for (const key of ["source", "filter", "target"] as const)
-            [config[key]] = match(arg as ESNode, query[key], { visitorKeys }) as GuardParameterValue[]
+            [config[key]] = esquery.match(arg as ESNode, query[key], { visitorKeys }) as GuardParameterValue[]
         } else return
 
         // transform prepend -> sample fn
         if (config.target) {
-          const [call] = match(config.target as ESNode, query.prepend, { visitorKeys })
+          const [call] = esquery
+            .match(config.target as ESNode, query.prepend, { visitorKeys })
             .map((node) => node as MappingCall)
             .filter((node) => node === config.target)
 

@@ -25,6 +25,7 @@ const config = [
       "import-x/no-default-export": "error",
       "import-x/no-duplicates": ["error", { "prefer-inline": true }],
       "import-x/newline-after-import": "error",
+      "import-x/no-named-as-default-member": "off",
 
       "import-x/order": [
         "error",

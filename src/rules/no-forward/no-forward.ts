@@ -1,11 +1,11 @@
 import { type TSESTree as Node, type TSESLint } from "@typescript-eslint/utils"
-import { match, parse } from "esquery"
+import esquery from "esquery"
 import type { Node as ESNode } from "estree"
 
 import { createRule } from "@/shared/create"
 
 export default createRule({
-  name: "no-guard",
+  name: "no-forward",
   meta: {
     type: "problem",
     docs: {
@@ -45,16 +45,16 @@ export default createRule({
     type ForwardParameterValue = Node.Property["value"]
 
     const query = {
-      from: parse("Property.properties:has(> Identifier.key[name=from]) > .value"),
-      to: parse("Property.properties:has(> Identifier.key[name=to]) > .value"),
+      from: esquery.parse("Property.properties:has(> Identifier.key[name=from]) > .value"),
+      to: esquery.parse("Property.properties:has(> Identifier.key[name=to]) > .value"),
 
-      map: parse(
+      map: esquery.parse(
         "CallExpression[arguments.length=1]" + // CallExpression with single argument
           ":has(> :first-child:expression.arguments)" + // whose first argument is of type Expression
           ":has(> MemberExpression.callee:has(Identifier.property[name='map']))", // with callee of form object.map
       ),
 
-      prepend: parse(
+      prepend: esquery.parse(
         "CallExpression[arguments.length=1]" + // CallExpression with single argument
           ":has(> :first-child:expression.arguments)" + // whose first argument is of type Expression
           ":has(> MemberExpression.callee:has(Identifier.property[name='prepend']))", // with callee of form object.prepend
@@ -70,12 +70,14 @@ export default createRule({
 
         const config: { [k in ForwardParameter]?: ForwardParameterValue } = {}
 
-        config.clock = match(node.arguments[0] as ESNode, query.from, { visitorKeys })[0] as ForwardParameterValue
-        config.target = match(node.arguments[0] as ESNode, query.to, { visitorKeys })[0] as ForwardParameterValue
+        const arg = node.arguments[0]
+        config.clock = esquery.match(arg as ESNode, query.from, { visitorKeys })[0] as ForwardParameterValue
+        config.target = esquery.match(arg as ESNode, query.to, { visitorKeys })[0] as ForwardParameterValue
 
         // transform target prepend -> sample fn
         if (config.target) {
-          const [call] = match(config.target as ESNode, query.prepend, { visitorKeys })
+          const [call] = esquery
+            .match(config.target as ESNode, query.prepend, { visitorKeys })
             .map((node) => node as MappingCall)
             .filter((node) => node === config.target)
 
@@ -84,7 +86,8 @@ export default createRule({
 
         // transform clock map -> sample fn (if no mapping yet)
         if (config.clock && !config.fn) {
-          const [call] = match(config.clock as ESNode, query.map, { visitorKeys })
+          const [call] = esquery
+            .match(config.clock as ESNode, query.map, { visitorKeys })
             .map((node) => node as MappingCall)
             .filter((node) => node === config.clock)
 

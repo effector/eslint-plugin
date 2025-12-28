@@ -1,5 +1,5 @@
 import { TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-eslint/utils"
-import { match, matches, parse } from "esquery"
+import esquery from "esquery"
 import type { Node as ESNode } from "estree"
 
 import { createRule } from "@/shared/create"
@@ -30,9 +30,11 @@ export default createRule({
     const methodSelector = `ImportSpecifier[imported.name=/(sample|guard)/]`
 
     const query = {
-      target: parse("!Property.properties > Identifier.key[name=target]"),
+      target: esquery.parse("!Property.properties > Identifier.key[name=target]"),
       // https://github.com/estools/esquery/pull/146
-      watch: parse("CallExpression:has(> MemberExpression.callee[property.name=watch]:has(> CallExpression.object))"),
+      watch: esquery.parse(
+        "CallExpression:has(> MemberExpression.callee[property.name=watch]:has(> CallExpression.object))",
+      ),
     }
 
     const usageStack: boolean[] = []
@@ -66,7 +68,8 @@ export default createRule({
         const [config] = node.arguments
 
         if (config?.type === NodeType.ObjectExpression) {
-          const [target] = match(config as ESNode, query.target, { visitorKeys })
+          const [target] = esquery
+            .match(config as ESNode, query.target, { visitorKeys })
             .map((node) => node as Node.Property)
             .filter((prop) => prop.parent === config)
 
@@ -76,7 +79,7 @@ export default createRule({
         const grandparent = node.parent.parent
         if (grandparent) {
           const ancestry = source.getAncestors(grandparent) as ESNode[]
-          const isWatched = matches(grandparent as ESNode, query.watch, ancestry, { visitorKeys })
+          const isWatched = esquery.matches(grandparent as ESNode, query.watch, ancestry, { visitorKeys })
 
           if (isWatched) return
         }

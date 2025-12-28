@@ -2,7 +2,7 @@ import type { TSESLint } from "@typescript-eslint/utils"
 
 const recommended = {
   // "effector/enforce-effect-naming-convention": "error",
-  // "effector/enforce-store-naming-convention": "error",
+  "effector/enforce-store-naming-convention": "error",
   "effector/keep-options-order": "warn",
   // "effector/no-ambiguity-target": "warn",
   // "effector/no-duplicate-on": "error",
