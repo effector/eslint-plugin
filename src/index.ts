@@ -2,6 +2,7 @@ import type { TSESLint } from "@typescript-eslint/utils"
 
 import { name, version } from "../package.json"
 
+import enforceEffectNamingConvention from "./rules/enforce-effect-naming-convention/enforce-effect-naming-convention"
 import enforceGateNamingConvention from "./rules/enforce-gate-naming-convention/enforce-gate-naming-convention"
 import enforceStoreNamingConvention from "./rules/enforce-store-naming-convention/enforce-store-naming-convention"
 import keepOptionsOrder from "./rules/keep-options-order/keep-options-order"
@@ -16,6 +17,7 @@ import { ruleset } from "./ruleset"
 const base = {
   meta: { name, version, namespace: "effector" },
   rules: {
+    "enforce-effect-naming-convention": enforceEffectNamingConvention,
     "enforce-gate-naming-convention": enforceGateNamingConvention,
     "enforce-store-naming-convention": enforceStoreNamingConvention,
     "keep-options-order": keepOptionsOrder,

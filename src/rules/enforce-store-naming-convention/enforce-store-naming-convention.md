@@ -33,7 +33,7 @@ You may also configure this rule to enforce a postfix convention by providing op
 ```js
 const config = {
   rules: {
-    "effector/enforce-store-naming-convention": ["error", { mode: "postfix" }],
+    "effector/enforce-store-naming-convention": ["error", { mode: "postfix" }], // [!code focus]
   },
 }
 ```
