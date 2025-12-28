@@ -305,5 +305,31 @@ ruleTester.run("no-forward", rule, {
         },
       ],
     },
+    {
+      name: "nested call",
+      code: ts`
+        import { forward, sample } from "effector"
+
+        const fn = (v: string) => v.length
+        forward({ from: sample({ clock: eventOne.map(fn), fn: (l) => l * 2 }), to: eventTwo })
+      `,
+      errors: [
+        {
+          messageId: "noForward",
+          line: 4,
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: ts`
+                import { forward, sample } from "effector"
+
+                const fn = (v: string) => v.length
+                sample({ clock: sample({ clock: eventOne.map(fn), fn: (l) => l * 2 }), target: eventTwo })
+              `,
+            },
+          ],
+        },
+      ],
+    },
   ],
 })

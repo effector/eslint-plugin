@@ -45,18 +45,18 @@ export default createRule({
     type ForwardParameterValue = Node.Property["value"]
 
     const query = {
-      from: parse("Property.properties:has(Identifier.key[name=from]) > .value"),
-      to: parse("Property.properties:has(Identifier.key[name=to]) > .value"),
+      from: parse("Property.properties:has(> Identifier.key[name=from]) > .value"),
+      to: parse("Property.properties:has(> Identifier.key[name=to]) > .value"),
 
       map: parse(
         "CallExpression[arguments.length=1]" + // CallExpression with single argument
-          ":has(:first-child:expression.arguments)" + // whose first argument is of type Expression
+          ":has(> :first-child:expression.arguments)" + // whose first argument is of type Expression
           ":has(> MemberExpression.callee:has(Identifier.property[name='map']))", // with callee of form object.map
       ),
 
       prepend: parse(
         "CallExpression[arguments.length=1]" + // CallExpression with single argument
-          ":has(:first-child:expression.arguments)" + // whose first argument is of type Expression
+          ":has(> :first-child:expression.arguments)" + // whose first argument is of type Expression
           ":has(> MemberExpression.callee:has(Identifier.property[name='prepend']))", // with callee of form object.prepend
       ),
     }
@@ -75,13 +75,19 @@ export default createRule({
 
         // transform target prepend -> sample fn
         if (config.target) {
-          const [call] = match(config.target as ESNode, query.prepend, { visitorKeys }) as MappingCall[]
+          const [call] = match(config.target as ESNode, query.prepend, { visitorKeys })
+            .map((node) => node as MappingCall)
+            .filter((node) => node === config.target)
+
           if (call) [config.target, config.fn] = [call.callee.object, call.arguments[0]]
         }
 
         // transform clock map -> sample fn (if no mapping yet)
         if (config.clock && !config.fn) {
-          const [call] = match(config.clock as ESNode, query.map, { visitorKeys }) as MappingCall[]
+          const [call] = match(config.clock as ESNode, query.map, { visitorKeys })
+            .map((node) => node as MappingCall)
+            .filter((node) => node === config.clock)
+
           if (call) [config.clock, config.fn] = [call.callee.object, call.arguments[0]]
         }
 

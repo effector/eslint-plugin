@@ -216,5 +216,31 @@ ruleTester.run("no-guard", rule, {
         },
       ],
     },
+    {
+      name: "nested call",
+      code: ts`
+        import { guard, sample } from "effector"
+
+        const fn = (v: string) => v.length
+        guard({ clock: event, target: sample({ target: target.prepend(fn), fn: (l) => l * 2 }) })
+      `,
+      errors: [
+        {
+          messageId: "noGuard",
+          line: 4,
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: ts`
+                import { guard, sample } from "effector"
+
+                const fn = (v: string) => v.length
+                sample({ clock: event, target: sample({ target: target.prepend(fn), fn: (l) => l * 2 }) })
+              `,
+            },
+          ],
+        },
+      ],
+    },
   ],
 })

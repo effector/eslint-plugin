@@ -35,7 +35,7 @@ export default createRule({
     const callSelector = `[callee.type="Identifier"]`
 
     type GuardCall = Node.CallExpression & { callee: Node.Identifier }
-    type PrependCall = Node.CallExpression & {
+    type MappingCall = Node.CallExpression & {
       arguments: [Node.Expression]
       callee: Node.MemberExpression & { property: Node.Identifier }
     }
@@ -44,10 +44,10 @@ export default createRule({
     type GuardParameterValue = Node.Property["value"]
 
     const query = {
-      clock: parse("Property.properties:has(Identifier.key[name=clock]) > .value"),
-      source: parse("Property.properties:has(Identifier.key[name=source]) > .value"),
-      filter: parse("Property.properties:has(Identifier.key[name=filter]) > .value"),
-      target: parse("Property.properties:has(Identifier.key[name=target]) > .value"),
+      clock: parse("Property.properties:has(> Identifier.key[name=clock]) > .value"),
+      source: parse("Property.properties:has(> Identifier.key[name=source]) > .value"),
+      filter: parse("Property.properties:has(> Identifier.key[name=filter]) > .value"),
+      target: parse("Property.properties:has(> Identifier.key[name=target]) > .value"),
 
       prepend: parse(
         "CallExpression[arguments.length=1]" + // CallExpression with single argument
@@ -82,7 +82,10 @@ export default createRule({
 
         // transform prepend -> sample fn
         if (config.target) {
-          const [call] = match(config.target as ESNode, query.prepend, { visitorKeys }) as PrependCall[]
+          const [call] = match(config.target as ESNode, query.prepend, { visitorKeys })
+            .map((node) => node as MappingCall)
+            .filter((node) => node === config.target)
+
           if (call) [config.target, config.fn] = [call.callee.object, call.arguments[0]]
         }
 
