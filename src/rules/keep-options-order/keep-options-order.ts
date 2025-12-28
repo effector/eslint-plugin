@@ -19,7 +19,7 @@ export default createRule({
   defaultOptions: [],
   create: (context) => {
     const source = context.sourceCode
-    const imports = new Map<string, Node.ImportSpecifier>()
+    const imports = new Set<string>()
 
     const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
@@ -32,7 +32,7 @@ export default createRule({
     type MethodCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
 
     return {
-      [`${importSelector} > ${methodSelector}`]: (node: Node.ImportSpecifier) => imports.set(node.local.name, node),
+      [`${importSelector} > ${methodSelector}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
 
       [`CallExpression${callSelector}:has(${argumentSelector})`]: (node: MethodCall) => {
         if (!imports.has(node.callee.name)) return

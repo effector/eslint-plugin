@@ -6,6 +6,7 @@ import keepOptionsOrder from "./rules/keep-options-order/keep-options-order"
 import noForward from "./rules/no-forward/no-forward"
 import noGetState from "./rules/no-getState/no-getState"
 import noGuard from "./rules/no-guard/no-guard"
+import noUselessMethods from "./rules/no-useless-methods/no-useless-methods"
 import noWatch from "./rules/no-watch/no-watch"
 import requirePickupInPersist from "./rules/require-pickup-in-persist/require-pickup-in-persist"
 import { ruleset } from "./ruleset"
@@ -17,6 +18,7 @@ const base = {
     "no-forward": noForward,
     "no-getState": noGetState,
     "no-guard": noGuard,
+    "no-useless-methods": noUselessMethods,
     "no-watch": noWatch,
     "require-pickup-in-persist": requirePickupInPersist,
   },

@@ -12,7 +12,7 @@ const recommended = {
   // "effector/no-patronum-debug": "warn",
   // "effector/no-unnecessary-combination": "warn",
   // "effector/no-unnecessary-duplication": "warn",
-  // "effector/no-useless-methods": "error",
+  "effector/no-useless-methods": "error",
   "effector/no-watch": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
