@@ -23,9 +23,45 @@ ruleTester.run("no-guard", rule, {
         sample({ clock: eventOne, target: eventTwo })
       `,
     },
+    {
+      name: "guard from other package",
+      code: ts`
+        import { guard } from "some-other-package"
+        guard({ clock: eventOne, target: eventTwo })
+      `,
+    },
+    {
+      name: "malformed call",
+      code: ts`
+        import { guard } from "effector"
+        guard()
+        guard(1, 2, 3)
+      `,
+    },
   ],
-
   invalid: [
+    {
+      name: "incomplete call",
+      code: ts`
+        import { guard } from "effector"
+        guard({ clock: eventOne })
+      `,
+      errors: [
+        {
+          messageId: "noGuard",
+          line: 2,
+          suggestions: [
+            {
+              messageId: "replaceWithSample",
+              output: ts`
+                import { guard, sample } from "effector"
+                sample({ clock: eventOne })
+              `,
+            },
+          ],
+        },
+      ],
+    },
     {
       name: "clock + target",
       code: ts`

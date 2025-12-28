@@ -58,7 +58,6 @@ export default createRule({
 
     return {
       [`${importSelector} > ${guardSelector}`]: (node: Node.ImportSpecifier) => guards.set(node.local.name, node),
-
       [`${importSelector} > ${sampleSelector}`]: (node: Node.ImportSpecifier) => (sample = node.local.name),
 
       [`CallExpression${callSelector}`]: (node: GuardCall) => {

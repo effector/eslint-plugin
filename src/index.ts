@@ -2,6 +2,7 @@ import type { TSESLint } from "@typescript-eslint/utils"
 
 import { name, version } from "../package.json"
 
+import noForward from "./rules/no-forward/no-forward"
 import noGetState from "./rules/no-getState/no-getState"
 import noGuard from "./rules/no-guard/no-guard"
 import noWatch from "./rules/no-watch/no-watch"
@@ -14,6 +15,7 @@ const base = {
     "no-getState": noGetState,
     "no-watch": noWatch,
     "no-guard": noGuard,
+    "no-forward": noForward,
     "require-pickup-in-persist": requirePickupInPersist,
   },
 }
