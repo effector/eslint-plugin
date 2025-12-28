@@ -1,4 +1,12 @@
-import { defineConfig } from "vitepress"
+import { resolve } from "node:path"
+import { defineConfig, Plugin } from "vitepress"
+
+const watch: Plugin = {
+  name: "watch-source",
+  configureServer(server) {
+    server.watcher.add(resolve(__dirname, "../../src"))
+  },
+}
 
 export default defineConfig({
   lang: "en-US",
@@ -15,6 +23,8 @@ export default defineConfig({
   ],
 
   appearance: "force-dark",
+
+  vite: { plugins: [watch] },
 
   themeConfig: {
     logo: "/comet.svg",
