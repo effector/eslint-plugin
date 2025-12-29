@@ -164,5 +164,16 @@ ruleTester.run("no-useless-methods", rule, {
       `,
       errors: [{ messageId: "uselessMethod", line: 6, data: { method: "sample" } }],
     },
+    {
+      name: "sample in for loop",
+      code: ts`
+        import { sample, createEvent } from "effector"
+
+        const source = createEvent()
+
+        for (const i = 0; i < 10; i++) sample({ source })
+      `,
+      errors: [{ messageId: "uselessMethod", line: 5, column: 32, data: { method: "sample" } }],
+    },
   ],
 })

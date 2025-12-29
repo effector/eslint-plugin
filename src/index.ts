@@ -7,6 +7,7 @@ import enforceGateNamingConvention from "./rules/enforce-gate-naming-convention/
 import enforceStoreNamingConvention from "./rules/enforce-store-naming-convention/enforce-store-naming-convention"
 import keepOptionsOrder from "./rules/keep-options-order/keep-options-order"
 import mandatoryScopeBinding from "./rules/mandatory-scope-binding/mandatory-scope-binding"
+import noAmbiguityTarget from "./rules/no-ambiguity-target/no-ambiguity-target"
 import noForward from "./rules/no-forward/no-forward"
 import noGetState from "./rules/no-getState/no-getState"
 import noGuard from "./rules/no-guard/no-guard"
@@ -26,6 +27,7 @@ const base = {
     "enforce-store-naming-convention": enforceStoreNamingConvention,
     "keep-options-order": keepOptionsOrder,
     "mandatory-scope-binding": mandatoryScopeBinding,
+    "no-ambiguity-target": noAmbiguityTarget,
     "no-forward": noForward,
     "no-getState": noGetState,
     "no-guard": noGuard,
