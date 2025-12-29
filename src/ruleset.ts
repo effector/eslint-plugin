@@ -18,7 +18,7 @@ const recommended = {
 
 const scope = {
   "effector/require-pickup-in-persist": "error",
-  // "effector/strict-effect-handlers": "error",
+  "effector/strict-effect-handlers": "error",
 } satisfies TSESLint.Linter.RulesRecord
 
 const react = {
