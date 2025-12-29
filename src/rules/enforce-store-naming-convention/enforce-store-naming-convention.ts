@@ -1,5 +1,4 @@
 import { ESLintUtils, type TSESTree as Node, type TSESLint } from "@typescript-eslint/utils"
-import { SymbolFlags } from "typescript"
 
 import { createRule } from "@/shared/create"
 import { isType } from "@/shared/is"
@@ -23,7 +22,6 @@ export default createRule<[Options], "invalid" | "rename">({
   defaultOptions: [{ mode: "prefix" }],
   create: (context, [options]) => {
     const services = ESLintUtils.getParserServices(context)
-    const checker = services.program.getTypeChecker()
 
     type VariableDeclarator = Node.VariableDeclarator & { id: Node.Identifier }
 
@@ -32,10 +30,9 @@ export default createRule<[Options], "invalid" | "rename">({
     return {
       [`VariableDeclarator[id.name=${regex}]`]: (node: VariableDeclarator) => {
         const type = services.getTypeAtLocation(node)
-        if (!type.symbol) return
 
-        const symbol = type.symbol.flags & SymbolFlags.Alias ? checker.getAliasedSymbol(type.symbol) : type.symbol
-        if (!isType.store(symbol)) return
+        const isStore = isType.store(type, services.program)
+        if (!isStore) return
 
         const current = node.id.name
         const trimmed = current.replaceAll(options.mode === "prefix" ? /\$+$/g : /^\$+/g, "")

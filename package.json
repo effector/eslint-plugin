@@ -46,6 +46,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@typescript-eslint/type-utils": "^8.50.1",
     "@typescript-eslint/utils": "^8.50.1",
     "esquery": "^1.6.0"
   },
@@ -75,5 +76,8 @@
     "eslint": ">=9.0.0",
     "typescript": ">=5.0.0"
   },
-  "packageManager": "pnpm@10.26.2"
+  "packageManager": "pnpm@10.26.2",
+  "engines": {
+    "node": "^20.9.0 || >=21.1.0"
+  }
 }

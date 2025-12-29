@@ -28,10 +28,9 @@ export default createRule({
     return {
       [`VariableDeclarator[id.name=${regex}]`]: (node: VariableDeclarator) => {
         const type = services.getTypeAtLocation(node)
-        const symbol = type.symbol ?? type.aliasSymbol
 
-        if (!symbol) return
-        if (!isType.gate(symbol)) return
+        const isGate = isType.gate(type)
+        if (!isGate) return
 
         const current = node.id.name
         const fixed = current[0]!.toUpperCase() + current.slice(1)

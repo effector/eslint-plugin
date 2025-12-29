@@ -28,10 +28,9 @@ export default createRule({
     return {
       [`VariableDeclarator[id.name=${regex}]`]: (node: VariableDeclarator) => {
         const type = services.getTypeAtLocation(node)
-        const symbol = type.symbol ?? type.aliasSymbol
 
-        if (!symbol) return
-        if (!isType.effect(symbol)) return
+        const isEffect = isType.effect(type, services.program)
+        if (!isEffect) return
 
         const current = node.id.name
         const fixed = current + "Fx"

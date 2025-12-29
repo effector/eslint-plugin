@@ -1,6 +1,7 @@
-import { type Symbol } from "typescript"
+import { typeMatchesSpecifier } from "@typescript-eslint/type-utils"
+import { type Program, type Symbol, type Type } from "typescript"
 
-const createTypeCheck = (types: string[], from: string) => (symbol: Symbol) => {
+const check = (symbol: Symbol, types: string[], from: string) => {
   const name = symbol.getName()
   const declarations = symbol.declarations ?? []
 
@@ -13,15 +14,33 @@ const createTypeCheck = (types: string[], from: string) => (symbol: Symbol) => {
 }
 
 export const isType = {
-  store: createTypeCheck(["Store", "StoreWritable"], "effector"),
-  storeWriteable: createTypeCheck(["StoreWritable"], "effector"),
+  store: (type: Type, program: Program) =>
+    typeMatchesSpecifier(type, { from: "package", package: "effector", name: ["Store", "StoreWritable"] }, program),
 
-  event: createTypeCheck(["Event", "EventCallable"], "effector"),
-  eventCallable: createTypeCheck(["EventCallable"], "effector"),
+  event: (type: Type, program: Program) =>
+    typeMatchesSpecifier(type, { from: "package", package: "effector", name: ["Event", "EventCallable"] }, program),
 
-  effect: createTypeCheck(["Effect"], "effector"),
+  effect: (type: Type, program: Program) =>
+    typeMatchesSpecifier(type, { from: "package", package: "effector", name: "Effect" }, program),
 
-  unit: createTypeCheck(["Store", "StoreWritable", "Event", "EventCallable", "Effect"], "effector"),
+  unit: (type: Type, program: Program) => {
+    const name = ["Store", "StoreWritable", "Event", "EventCallable", "Effect"]
+    return typeMatchesSpecifier(type, { from: "package", package: "effector", name }, program)
+  },
 
-  gate: createTypeCheck(["Gate"], "effector-react"),
+  // gate is itself an alias to react component, so `typeMatchesSpecifier` doesn't work here
+  gate: (type: Type) => {
+    const symbol = type.getSymbol() ?? type.aliasSymbol
+    return symbol ? check(symbol, ["Gate"], "effector") : false
+  },
+
+  jsx: (type: Type, program: Program) => {
+    const name = ["Element", "ReactNode", "ReactElement"]
+    return typeMatchesSpecifier(type, { from: "package", package: "react", name }, program)
+  },
+
+  component: (type: Type, program: Program) => {
+    const name = ["FC", "FunctionComponent", "ComponentType", "ComponentClass", "ForwardRefRenderFunction"]
+    return typeMatchesSpecifier(type, { from: "package", package: "react", name }, program)
+  },
 }

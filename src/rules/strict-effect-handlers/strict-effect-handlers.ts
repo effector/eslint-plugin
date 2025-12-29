@@ -31,11 +31,8 @@ export default createRule({
 
       const callee = node.argument.callee
       const type = services.getTypeAtLocation(callee)
-      const symbol = type.symbol ?? type.aliasSymbol
 
-      if (!symbol) return (current.regular = true)
-
-      const isEffect = isType.effect(symbol)
+      const isEffect = isType.effect(type, services.program)
 
       if (isEffect) return (current.effect = true)
       else return (current.regular = true)

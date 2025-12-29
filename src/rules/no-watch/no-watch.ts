@@ -1,5 +1,4 @@
 import { ESLintUtils, type TSESTree as Node } from "@typescript-eslint/utils"
-import { SymbolFlags } from "typescript"
 
 import { createRule } from "@/shared/create"
 import { isType } from "@/shared/is"
@@ -20,17 +19,15 @@ export default createRule({
   defaultOptions: [],
   create: (context) => {
     const services = ESLintUtils.getParserServices(context)
-    const checker = services.program.getTypeChecker()
 
     type WatchCall = Node.CallExpression & { callee: Node.MemberExpression & { property: Node.Identifier } }
 
     return {
       [`CallExpression[callee.type="MemberExpression"][callee.property.name="watch"]`]: (node: WatchCall) => {
         const type = services.getTypeAtLocation(node.callee.object)
-        if (!type.symbol) return
 
-        const symbol = type.symbol.flags & SymbolFlags.Alias ? checker.getAliasedSymbol(type.symbol) : type.symbol
-        if (!isType.unit(symbol)) return
+        const isUnit = isType.unit(type, services.program)
+        if (!isUnit) return
 
         context.report({ node, messageId: "restricted" })
       },

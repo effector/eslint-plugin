@@ -1,5 +1,4 @@
 import { ESLintUtils, type TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-eslint/utils"
-import { SymbolFlags } from "typescript"
 
 import { createRule } from "@/shared/create"
 import { isType } from "@/shared/is"
@@ -22,7 +21,6 @@ export default createRule({
   defaultOptions: [],
   create: (context) => {
     const services = ESLintUtils.getParserServices(context)
-    const checker = services.program.getTypeChecker()
 
     type GetStateCall = Node.CallExpression & { callee: Node.MemberExpression & { property: Node.Identifier } }
 
@@ -35,10 +33,9 @@ export default createRule({
     return {
       [`CallExpression[callee.type="MemberExpression"][callee.property.name="getState"]`]: (node: GetStateCall) => {
         const type = services.getTypeAtLocation(node.callee.object)
-        if (!type.symbol) return
 
-        const symbol = type.symbol.flags & SymbolFlags.Alias ? checker.getAliasedSymbol(type.symbol) : type.symbol
-        if (!isType.store(symbol)) return
+        const isStore = isType.store(type, services.program)
+        if (!isStore) return
 
         const name = nameOf(node.callee.object)
 
