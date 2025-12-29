@@ -13,6 +13,7 @@ import noGuard from "./rules/no-guard/no-guard"
 import noPatronumDebug from "./rules/no-patronum-debug/no-patronum-debug"
 import noUselessMethods from "./rules/no-useless-methods/no-useless-methods"
 import noWatch from "./rules/no-watch/no-watch"
+import preferUseUnit from "./rules/prefer-useUnit/prefer-useUnit"
 import requirePickupInPersist from "./rules/require-pickup-in-persist/require-pickup-in-persist"
 import strictEffectHandlers from "./rules/strict-effect-handlers/strict-effect-handlers"
 import { ruleset } from "./ruleset"
@@ -31,6 +32,7 @@ const base = {
     "no-patronum-debug": noPatronumDebug,
     "no-useless-methods": noUselessMethods,
     "no-watch": noWatch,
+    "prefer-useUnit": preferUseUnit,
     "require-pickup-in-persist": requirePickupInPersist,
     "strict-effect-handlers": strictEffectHandlers,
   },

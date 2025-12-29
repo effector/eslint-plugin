@@ -24,7 +24,7 @@ const scope = {
 const react = {
   "effector/enforce-gate-naming-convention": "error",
   "effector/mandatory-scope-binding": "error",
-  // "effector/prefer-useUnit": "warn",
+  "effector/prefer-useUnit": "error",
 } satisfies TSESLint.Linter.RulesRecord
 
 export const ruleset = { recommended, scope, react }
