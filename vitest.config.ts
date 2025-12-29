@@ -3,4 +3,10 @@ import { defineConfig } from "vitest/config"
 
 const resolve = (segment: string) => path.resolve(__dirname, segment)
 
-export default defineConfig({ test: { setupFiles: ["src/setup.ts"] }, resolve: { alias: { "@": resolve("src") } } })
+export default defineConfig({
+  test: {
+    setupFiles: ["src/setup.ts"],
+    testTimeout: 10_000, // account for long first ast parse
+  },
+  resolve: { alias: { "@": resolve("src") } },
+})
