@@ -23,10 +23,8 @@ export default createRule({
 
     type VariableDeclarator = Node.VariableDeclarator & { id: Node.Identifier }
 
-    const regex = /^[^A-Z]/
-
     return {
-      [`VariableDeclarator[id.name=${regex}]`]: (node: VariableDeclarator) => {
+      [`VariableDeclarator[id.name=${GateRegex}]`]: (node: VariableDeclarator) => {
         const type = services.getTypeAtLocation(node)
 
         const isGate = isType.gate(type)
@@ -48,3 +46,5 @@ export default createRule({
     }
   },
 })
+
+const GateRegex = /^[^A-Z]/

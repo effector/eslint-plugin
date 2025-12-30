@@ -1,8 +1,7 @@
 import { type TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-eslint/utils"
-import esquery from "esquery"
-import type { Node as ESNode } from "estree"
 
 import { createRule } from "@/shared/create"
+import { locate } from "@/shared/locate"
 
 export default createRule({
   name: "no-ambiguity-target",
@@ -21,19 +20,10 @@ export default createRule({
   create: (context) => {
     const imports = new Set<string>()
 
-    const source = context.sourceCode
-    const visitorKeys = source.visitorKeys
-
     const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
-
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
-    const methodSelector = `ImportSpecifier[imported.name=/(sample|guard)/]`
 
     const usageStack: boolean[] = []
-
-    const query = {
-      target: esquery.parse("!Property.properties > Identifier.key[name=target]"),
-    }
 
     type MethodCall = Node.CallExpression & { callee: Node.Identifier }
 
@@ -51,7 +41,7 @@ export default createRule({
       "BlockStatement": () => usageStack.push(false),
       "BlockStatement:exit": () => usageStack.pop(),
 
-      [`${importSelector} > ${methodSelector}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
+      [`${importSelector} > ${selector.method}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
 
       [`CallExpression[callee.type="Identifier"]`]: (node: MethodCall) => {
         const isTracked = imports.has(node.callee.name)
@@ -64,11 +54,7 @@ export default createRule({
 
         if (config?.type !== NodeType.ObjectExpression) /* can't have a target */ return
 
-        const [target] = esquery
-          .match(config as ESNode, query.target, { visitorKeys })
-          .map((node) => node as Node.Property)
-          .filter((prop) => prop.parent === config)
-
+        const target = locate.property("target", config)
         if (!target) return
 
         context.report({ node, messageId: "ambiguous", data: { method: node.callee.name } })
@@ -76,3 +62,7 @@ export default createRule({
     }
   },
 })
+
+const selector = {
+  method: `ImportSpecifier[imported.name=/(sample|guard)/]`,
+}

@@ -23,31 +23,23 @@ export default createRule({
     const combinators = new Map<string, CombinatorOperator>()
 
     const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
-
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
-    const operatorSelector = `ImportSpecifier[imported.name=/(sample|guard)/]`
-    const combinatorSelector = `ImportSpecifier[imported.name=/(combine|merge)/]`
-
-    const callSelector = `[callee.type="Identifier"][arguments.length=1]`
-    const argumentSelector = `ObjectExpression.arguments`
-
-    const query = { source: locate.property("source"), clock: locate.property("clock") }
 
     type MethodCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
 
     return {
-      [`${importSelector} > ${operatorSelector}`]: (node: Node.ImportSpecifier) => operators.add(node.local.name),
+      [`${importSelector} > ${selector.operator}`]: (node: Node.ImportSpecifier) => operators.add(node.local.name),
 
-      [`${importSelector} > ${combinatorSelector}`]: (node: Node.ImportSpecifier & { imported: { name: string } }) =>
+      [`${importSelector} > ${selector.combinator}`]: (node: Node.ImportSpecifier & { imported: { name: string } }) =>
         combinators.set(node.local.name, node.imported.name as CombinatorOperator),
 
-      [`CallExpression${callSelector}:has(${argumentSelector})`]: (node: MethodCall) => {
+      [`CallExpression${selector.call}:has(${selector.argument})`]: (node: MethodCall) => {
         if (!operators.has(node.callee.name)) return
 
         const [config] = node.arguments
 
-        const clock = query.clock(config)?.value
-        const source = query.source(config)?.value
+        const clock = locate.property("clock", config)?.value
+        const source = locate.property("source", config)?.value
 
         if (clock?.type === NodeType.CallExpression && clock.callee.type === NodeType.Identifier) {
           const method = combinators.get(clock.callee.name)
@@ -71,3 +63,11 @@ export default createRule({
     }
   },
 })
+
+const selector = {
+  operator: `ImportSpecifier[imported.name=/(sample|guard)/]`,
+  combinator: `ImportSpecifier[imported.name=/(combine|merge)/]`,
+
+  call: `[callee.type="Identifier"][arguments.length=1]`,
+  argument: `ObjectExpression.arguments`,
+}

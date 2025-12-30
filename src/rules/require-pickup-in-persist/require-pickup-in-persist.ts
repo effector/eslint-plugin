@@ -24,19 +24,14 @@ export default createRule({
      * contents of these packages. See examples for a full list.
      */
     const PACKAGE_NAME = /^@?effector-storage(\u002F[\w-]+)*$/
-
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
-    const persistSelector = `ImportSpecifier[imported.name="persist"]`
-
-    const callSelector = `[callee.type="Identifier"]`
-    const configSelector = `[arguments.length=1][arguments.0.type="ObjectExpression"]`
 
     type PersistCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
 
     return {
-      [`${importSelector} > ${persistSelector}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
+      [`${importSelector} > ${selector.persist}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
 
-      [`CallExpression${callSelector}${configSelector}`]: (node: PersistCall) => {
+      [`CallExpression${selector.call}${selector.config}`]: (node: PersistCall) => {
         if (!imports.has(node.callee.name)) return
 
         const config = node.arguments[0]
@@ -55,3 +50,9 @@ export default createRule({
     }
   },
 })
+
+const selector = {
+  persist: `ImportSpecifier[imported.name="persist"]`,
+  call: `[callee.type="Identifier"]`,
+  config: `[arguments.length=1][arguments.0.type="ObjectExpression"]`,
+}

@@ -3,6 +3,7 @@ import esquery from "esquery"
 import type { Node as ESNode } from "estree"
 
 import { createRule } from "@/shared/create"
+import { locate } from "@/shared/locate"
 
 export default createRule({
   name: "no-forward",
@@ -27,13 +28,7 @@ export default createRule({
     const visitorKeys = source.visitorKeys
 
     const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
-
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
-    const forwardSelector = `ImportSpecifier[imported.name="forward"]`
-    const sampleSelector = `ImportSpecifier[imported.name="sample"]`
-
-    const callSelector = `[callee.type="Identifier"][arguments.length=1]`
-    const argumentSelector = `ObjectExpression.arguments`
 
     type ForwardCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
     type MappingCall = Node.CallExpression & {
@@ -44,35 +39,18 @@ export default createRule({
     type ForwardParameter = "clock" | "fn" | "target"
     type ForwardParameterValue = Node.Property["value"]
 
-    const query = {
-      from: esquery.parse("Property.properties:has(> Identifier.key[name=from]) > .value"),
-      to: esquery.parse("Property.properties:has(> Identifier.key[name=to]) > .value"),
-
-      map: esquery.parse(
-        "CallExpression[arguments.length=1]" + // CallExpression with single argument
-          ":has(> :first-child:expression.arguments)" + // whose first argument is of type Expression
-          ":has(> MemberExpression.callee:has(Identifier.property[name='map']))", // with callee of form object.map
-      ),
-
-      prepend: esquery.parse(
-        "CallExpression[arguments.length=1]" + // CallExpression with single argument
-          ":has(> :first-child:expression.arguments)" + // whose first argument is of type Expression
-          ":has(> MemberExpression.callee:has(Identifier.property[name='prepend']))", // with callee of form object.prepend
-      ),
-    }
-
     return {
-      [`${importSelector} > ${forwardSelector}`]: (node: Node.ImportSpecifier) => forwards.set(node.local.name, node),
-      [`${importSelector} > ${sampleSelector}`]: (node: Node.ImportSpecifier) => (sample = node.local.name),
+      [`${importSelector} > ${selector.forward}`]: (node: Node.ImportSpecifier) => forwards.set(node.local.name, node),
+      [`${importSelector} > ${selector.sample}`]: (node: Node.ImportSpecifier) => (sample = node.local.name),
 
-      [`CallExpression${callSelector}:has(${argumentSelector})`]: (node: ForwardCall) => {
+      [`CallExpression${selector.call}:has(${selector.argument})`]: (node: ForwardCall) => {
         if (!forwards.has(node.callee.name)) return
 
         const config: { [k in ForwardParameter]?: ForwardParameterValue } = {}
 
         const arg = node.arguments[0]
-        config.clock = esquery.match(arg as ESNode, query.from, { visitorKeys })[0] as ForwardParameterValue
-        config.target = esquery.match(arg as ESNode, query.to, { visitorKeys })[0] as ForwardParameterValue
+        config.clock = locate.property("from", arg)?.value as ForwardParameterValue
+        config.target = locate.property("to", arg)?.value as ForwardParameterValue
 
         // transform target prepend -> sample fn
         if (config.target) {
@@ -114,3 +92,25 @@ export default createRule({
     }
   },
 })
+
+const selector = {
+  forward: `ImportSpecifier[imported.name="forward"]`,
+  sample: `ImportSpecifier[imported.name="sample"]`,
+
+  call: `[callee.type="Identifier"][arguments.length=1]`,
+  argument: `ObjectExpression.arguments`,
+}
+
+const query = {
+  map: esquery.parse(
+    "CallExpression[arguments.length=1]" + // CallExpression with single argument
+      ":has(> :first-child:expression.arguments)" + // whose first argument is of type Expression
+      ":has(> MemberExpression.callee:has(Identifier.property[name='map']))", // with callee of form object.map
+  ),
+
+  prepend: esquery.parse(
+    "CallExpression[arguments.length=1]" + // CallExpression with single argument
+      ":has(> :first-child:expression.arguments)" + // whose first argument is of type Expression
+      ":has(> MemberExpression.callee:has(Identifier.property[name='prepend']))", // with callee of form object.prepend
+  ),
+}

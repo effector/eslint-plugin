@@ -24,12 +24,6 @@ export default createRule({
 
     type GetStateCall = Node.CallExpression & { callee: Node.MemberExpression & { property: Node.Identifier } }
 
-    const nameOf = (node: Node.Expression) => {
-      if (node.type === NodeType.Identifier) return node.name
-      if (node.type === NodeType.MemberExpression && !node.computed) return node.property.name
-      return null
-    }
-
     return {
       [`CallExpression[callee.type="MemberExpression"][callee.property.name="getState"]`]: (node: GetStateCall) => {
         const type = services.getTypeAtLocation(node.callee.object)
@@ -37,7 +31,7 @@ export default createRule({
         const isStore = isType.store(type, services.program)
         if (!isStore) return
 
-        const name = nameOf(node.callee.object)
+        const name = toName(node.callee.object)
 
         if (name) context.report({ node, messageId: "named", data: { name } })
         else context.report({ node, messageId: "anonymous" })
@@ -45,3 +39,9 @@ export default createRule({
     }
   },
 })
+
+const toName = (node: Node.Expression) => {
+  if (node.type === NodeType.Identifier) return node.name
+  if (node.type === NodeType.MemberExpression && !node.computed) return node.property.name
+  return null
+}

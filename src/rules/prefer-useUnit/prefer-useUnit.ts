@@ -23,18 +23,13 @@ export default createRule({
     const PACKAGE_NAME = /^effector-react$/
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
 
-    const legacySelector = {
-      useStore: `ImportSpecifier[imported.name=useStore]`,
-      useEvent: `ImportSpecifier[imported.name=useEvent]`,
-    }
-
     type HookCall = Node.CallExpression & { callee: Node.Identifier }
 
     return {
-      [`${importSelector} > ${legacySelector.useStore}`]: (node: Node.ImportSpecifier) =>
+      [`${importSelector} > ${selector.useStore}`]: (node: Node.ImportSpecifier) =>
         void imports.set(node.local.name, "useStore"),
 
-      [`${importSelector} > ${legacySelector.useEvent}`]: (node: Node.ImportSpecifier) =>
+      [`${importSelector} > ${selector.useEvent}`]: (node: Node.ImportSpecifier) =>
         void imports.set(node.local.name, "useEvent"),
 
       [`CallExpression[callee.type="Identifier"]`]: (node: HookCall) => {
@@ -46,3 +41,8 @@ export default createRule({
     }
   },
 })
+
+const selector = {
+  useStore: `ImportSpecifier[imported.name=useStore]`,
+  useEvent: `ImportSpecifier[imported.name=useEvent]`,
+}

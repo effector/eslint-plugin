@@ -2,6 +2,9 @@ import { type TSESTree as Node, AST_NODE_TYPES as NodeType, type TSESLint } from
 
 import { createRule } from "@/shared/create"
 
+type DebugMember = Node.MemberExpression & { object: Node.Identifier }
+type DebugCall = Node.CallExpression & { callee: /* debug */ Node.Identifier | /* debug.some */ DebugMember }
+
 export default createRule({
   name: "no-patronum-debug",
   meta: {
@@ -21,28 +24,12 @@ export default createRule({
     const debugs = new Set<string>()
 
     const PACKAGE_NAME = /^patronum(?:\u002Fdebug)?$/
-
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
-    const debugSelector = `ImportSpecifier[imported.name="debug"]`
-
-    const callSelector = `[callee.type=Identifier], [callee.object.type=Identifier]`
-
-    type DebugMember = Node.MemberExpression & { object: Node.Identifier }
-    type DebugCall = Node.CallExpression & { callee: /* debug */ Node.Identifier | /* debug.some */ DebugMember }
-
-    const toName = (node: DebugCall) => {
-      switch (node.callee.type) {
-        case NodeType.Identifier:
-          return node.callee.name
-        case NodeType.MemberExpression:
-          return node.callee.object.name
-      }
-    }
 
     return {
-      [`${importSelector} > ${debugSelector}`]: (node: Node.ImportSpecifier) => debugs.add(node.local.name),
+      [`${importSelector} > ${selector.debug}`]: (node: Node.ImportSpecifier) => debugs.add(node.local.name),
 
-      [`CallExpression:matches(${callSelector})`]: (node: DebugCall) => {
+      [`CallExpression:matches(${selector.call})`]: (node: DebugCall) => {
         const name = toName(node)
         if (!debugs.has(name)) return
 
@@ -59,3 +46,17 @@ export default createRule({
     }
   },
 })
+
+const selector = {
+  debug: `ImportSpecifier[imported.name="debug"]`,
+  call: `[callee.type=Identifier], [callee.object.type=Identifier]`,
+}
+
+const toName = (node: DebugCall) => {
+  switch (node.callee.type) {
+    case NodeType.Identifier:
+      return node.callee.name
+    case NodeType.MemberExpression:
+      return node.callee.object.name
+  }
+}

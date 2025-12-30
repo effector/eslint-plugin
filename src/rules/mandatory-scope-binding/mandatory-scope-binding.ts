@@ -28,8 +28,6 @@ export default createRule({
 
     type ComponentFunction = Node.FunctionDeclaration | Node.FunctionExpression | Node.ArrowFunctionExpression
 
-    const USE_REGEX = /^use[A-Z0-9].*$/
-
     return {
       // detect react render contexts
       [`FunctionDeclaration, FunctionExpression, ArrowFunctionExpression`]: (node: ComponentFunction) => {
@@ -38,7 +36,7 @@ export default createRule({
         if (current) return void stack.render.push(true)
 
         const name = nameOf.function(node) // detect a react hook
-        if (name && USE_REGEX.test(name.name)) return void stack.render.push(true)
+        if (name && UseRegex.test(name.name)) return void stack.render.push(true)
 
         const tsnode = services.esTreeNodeToTSNodeMap.get(node)
 
@@ -89,3 +87,5 @@ export default createRule({
     }
   },
 })
+
+const UseRegex = /^use[A-Z0-9].*$/

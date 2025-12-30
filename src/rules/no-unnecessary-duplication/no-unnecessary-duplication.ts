@@ -23,32 +23,23 @@ export default createRule({
   create: (context) => {
     const imports = new Set<string>()
 
-    const sourceCode = context.sourceCode
-
     const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
-
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
-    const methodSelector = `ImportSpecifier[imported.name=/(sample|guard)/]`
-
-    const callSelector = `[callee.type="Identifier"][arguments.length=1]`
-    const argumentSelector = `ObjectExpression.arguments`
-
-    const query = { source: locate.property("source"), clock: locate.property("clock") }
 
     type MethodCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
 
     return {
-      [`${importSelector} > ${methodSelector}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
+      [`${importSelector} > ${selector.method}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
 
-      [`CallExpression${callSelector}:has(${argumentSelector})`]: (node: MethodCall) => {
+      [`CallExpression${selector.call}:has(${selector.argument})`]: (node: MethodCall) => {
         if (!imports.has(node.callee.name)) return
 
         const [config] = node.arguments
 
-        const source = query.source(config)?.value
+        const source = locate.property("source", config)?.value
         if (!source) return
 
-        const clock = query.clock(config)?.value
+        const clock = locate.property("clock", config)?.value
         if (!clock) return
 
         const equal = compare(clock, source)
@@ -60,7 +51,7 @@ export default createRule({
             fix: function* (fixer: TSESLint.RuleFixer) {
               yield fixer.remove(clock.parent)
 
-              const after = sourceCode.getTokenAfter(clock.parent)
+              const after = context.sourceCode.getTokenAfter(clock.parent)
               if (after?.value === ",") yield fixer.remove(after)
             },
           },
@@ -69,7 +60,7 @@ export default createRule({
             fix: function* (fixer: TSESLint.RuleFixer) {
               yield fixer.remove(source.parent)
 
-              const after = sourceCode.getTokenAfter(source.parent)
+              const after = context.sourceCode.getTokenAfter(source.parent)
               if (after?.value === ",") yield fixer.remove(after)
             },
           },
@@ -82,7 +73,13 @@ export default createRule({
   },
 })
 
-const compare = (clock: Node.Node, source: Node.Node, limit = 5): boolean => {
+const selector = {
+  method: `ImportSpecifier[imported.name=/(sample|guard)/]`,
+  call: `[callee.type="Identifier"][arguments.length=1]`,
+  argument: `ObjectExpression.arguments`,
+}
+
+function compare(clock: Node.Node, source: Node.Node, limit = 5): boolean {
   if (limit <= 0) return false
 
   if (clock.type === NodeType.Identifier)
@@ -109,6 +106,5 @@ const compare = (clock: Node.Node, source: Node.Node, limit = 5): boolean => {
   }
 
   // other expressions can't be guaranteed to be equal
-
   return false
 }

@@ -22,19 +22,14 @@ export default createRule({
     const imports = new Set<string>()
 
     const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
-
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
-    const methodSelector = `ImportSpecifier[imported.name=/(sample|guard)/]`
-
-    const callSelector = `[callee.type="Identifier"][arguments.length=1]`
-    const argumentSelector = `ObjectExpression.arguments`
 
     type MethodCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
 
     return {
-      [`${importSelector} > ${methodSelector}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
+      [`${importSelector} > ${selector.method}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
 
-      [`CallExpression${callSelector}:has(${argumentSelector})`]: (node: MethodCall) => {
+      [`CallExpression${selector.call}:has(${selector.argument})`]: (node: MethodCall) => {
         if (!imports.has(node.callee.name)) return
 
         const [config] = node.arguments
@@ -68,6 +63,12 @@ export default createRule({
     }
   },
 })
+
+const selector = {
+  method: `ImportSpecifier[imported.name=/(sample|guard)/]`,
+  call: `[callee.type="Identifier"][arguments.length=1]`,
+  argument: `ObjectExpression.arguments`,
+}
 
 const TRUE_ORDER = ["clock", "source", "filter", "fn", "target", "greedy", "batch", "name"]
 

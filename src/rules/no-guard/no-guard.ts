@@ -3,6 +3,7 @@ import esquery from "esquery"
 import type { Node as ESNode } from "estree"
 
 import { createRule } from "@/shared/create"
+import { locate } from "@/shared/locate"
 
 export default createRule({
   name: "no-guard",
@@ -27,12 +28,7 @@ export default createRule({
     const visitorKeys = source.visitorKeys
 
     const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
-
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
-    const guardSelector = `ImportSpecifier[imported.name="guard"]`
-    const sampleSelector = `ImportSpecifier[imported.name="sample"]`
-
-    const callSelector = `[callee.type="Identifier"]`
 
     type GuardCall = Node.CallExpression & { callee: Node.Identifier }
     type MappingCall = Node.CallExpression & {
@@ -43,24 +39,11 @@ export default createRule({
     type GuardParameter = "clock" | "source" | "filter" | "fn" | "target"
     type GuardParameterValue = Node.Property["value"]
 
-    const query = {
-      clock: esquery.parse("Property.properties:has(> Identifier.key[name=clock]) > .value"),
-      source: esquery.parse("Property.properties:has(> Identifier.key[name=source]) > .value"),
-      filter: esquery.parse("Property.properties:has(> Identifier.key[name=filter]) > .value"),
-      target: esquery.parse("Property.properties:has(> Identifier.key[name=target]) > .value"),
-
-      prepend: esquery.parse(
-        "CallExpression[arguments.length=1]" + // CallExpression with single argument
-          ":has(:first-child:expression.arguments)" + // whose first argument is of type Expression
-          ":has(> MemberExpression.callee:has(Identifier.property[name='prepend']))", // with callee of form object.prepend
-      ),
-    }
-
     return {
-      [`${importSelector} > ${guardSelector}`]: (node: Node.ImportSpecifier) => guards.set(node.local.name, node),
-      [`${importSelector} > ${sampleSelector}`]: (node: Node.ImportSpecifier) => (sample = node.local.name),
+      [`${importSelector} > ${selector.guard}`]: (node: Node.ImportSpecifier) => guards.set(node.local.name, node),
+      [`${importSelector} > ${selector.sample}`]: (node: Node.ImportSpecifier) => (sample = node.local.name),
 
-      [`CallExpression${callSelector}`]: (node: GuardCall) => {
+      [`CallExpression${selector.call}`]: (node: GuardCall) => {
         if (!guards.has(node.callee.name)) return
 
         const config: { [k in GuardParameter]?: GuardParameterValue } = {}
@@ -70,14 +53,14 @@ export default createRule({
           const [arg] = node.arguments
 
           for (const key of ["clock", "source", "filter", "target"] as const)
-            [config[key]] = esquery.match(arg as ESNode, query[key], { visitorKeys }) as GuardParameterValue[]
+            config[key] = locate.property(key, arg)?.value as GuardParameterValue
         } else if (node.arguments.length === 2 && node.arguments[1]!.type === NodeType.ObjectExpression) {
           const [clock, arg] = node.arguments as [GuardParameterValue, Node.ObjectExpression]
 
           config.clock = clock
 
           for (const key of ["source", "filter", "target"] as const)
-            [config[key]] = esquery.match(arg as ESNode, query[key], { visitorKeys }) as GuardParameterValue[]
+            config[key] = locate.property(key, arg)?.value as GuardParameterValue
         } else return
 
         // transform prepend -> sample fn
@@ -110,3 +93,18 @@ export default createRule({
     }
   },
 })
+
+const selector = {
+  guard: `ImportSpecifier[imported.name="guard"]`,
+  sample: `ImportSpecifier[imported.name="sample"]`,
+
+  call: `[callee.type="Identifier"]`,
+}
+
+const query = {
+  prepend: esquery.parse(
+    "CallExpression[arguments.length=1]" + // CallExpression with single argument
+      ":has(:first-child:expression.arguments)" + // whose first argument is of type Expression
+      ":has(> MemberExpression.callee:has(Identifier.property[name='prepend']))", // with callee of form object.prepend
+  ),
+}

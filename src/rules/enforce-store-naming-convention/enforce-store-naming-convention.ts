@@ -25,7 +25,7 @@ export default createRule<[Options], "invalid" | "rename">({
 
     type VariableDeclarator = Node.VariableDeclarator & { id: Node.Identifier }
 
-    const regex = options.mode === "prefix" ? /^[^$]/ : /[^$]$/
+    const regex = options.mode === "prefix" ? PrefixRegex : PostfixRegex
 
     return {
       [`VariableDeclarator[id.name=${regex}]`]: (node: VariableDeclarator) => {
@@ -51,3 +51,6 @@ export default createRule<[Options], "invalid" | "rename">({
     }
   },
 })
+
+const PrefixRegex = /^[^$]/
+const PostfixRegex = /[^$]$/

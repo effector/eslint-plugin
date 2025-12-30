@@ -3,6 +3,7 @@ import esquery from "esquery"
 import type { Node as ESNode } from "estree"
 
 import { createRule } from "@/shared/create"
+import { locate } from "@/shared/locate"
 
 export default createRule({
   name: "no-useless-methods",
@@ -25,17 +26,7 @@ export default createRule({
     const visitorKeys = source.visitorKeys
 
     const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
-
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
-    const methodSelector = `ImportSpecifier[imported.name=/(sample|guard)/]`
-
-    const query = {
-      target: esquery.parse("!Property.properties > Identifier.key[name=target]"),
-      // https://github.com/estools/esquery/pull/146
-      watch: esquery.parse(
-        "CallExpression:has(> MemberExpression.callee[property.name=watch]:has(> CallExpression.object))",
-      ),
-    }
 
     const usageStack: boolean[] = []
 
@@ -54,7 +45,7 @@ export default createRule({
       "BlockStatement": () => usageStack.push(false),
       "BlockStatement:exit": () => usageStack.pop(),
 
-      [`${importSelector} > ${methodSelector}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
+      [`${importSelector} > ${selector.method}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
 
       [`CallExpression[callee.type="Identifier"]`]: (node: MethodCall) => {
         const isTracked = imports.has(node.callee.name)
@@ -68,10 +59,7 @@ export default createRule({
         const [config] = node.arguments
 
         if (config?.type === NodeType.ObjectExpression) {
-          const [target] = esquery
-            .match(config as ESNode, query.target, { visitorKeys })
-            .map((node) => node as Node.Property)
-            .filter((prop) => prop.parent === config)
+          const target = locate.property("target", config)?.value
 
           if (target) return
         }
@@ -90,3 +78,14 @@ export default createRule({
     }
   },
 })
+
+const selector = {
+  method: `ImportSpecifier[imported.name=/(sample|guard)/]`,
+}
+
+const query = {
+  // https://github.com/estools/esquery/pull/146
+  watch: esquery.parse(
+    "CallExpression:has(> MemberExpression.callee[property.name=watch]:has(> CallExpression.object))",
+  ),
+}
