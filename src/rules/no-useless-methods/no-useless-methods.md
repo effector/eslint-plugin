@@ -1,5 +1,5 @@
 ---
-description: Forbid useless calls of `sample` and `guard`
+description: Forbid useless calls of sample and guard
 ---
 
 # effector/no-useless-methods

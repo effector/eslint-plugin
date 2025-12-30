@@ -10,7 +10,7 @@ const recommended = {
   "effector/no-getState": "error",
   "effector/no-guard": "error",
   "effector/no-patronum-debug": "warn",
-  // "effector/no-unnecessary-combination": "warn",
+  "effector/no-unnecessary-combination": "warn",
   "effector/no-unnecessary-duplication": "warn",
   "effector/no-useless-methods": "error",
   "effector/no-watch": "warn",
