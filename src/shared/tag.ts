@@ -7,4 +7,6 @@ const code = (strings: TemplateStringsArray, ...insert: string[]) => {
   return lines.map((line) => line.slice(indent)).join("\n")
 }
 
+code.noformat = code // prevents auto-formatting in test cases
+
 export { code as ts, code as tsx }

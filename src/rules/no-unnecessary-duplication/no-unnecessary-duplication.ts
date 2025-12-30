@@ -1,0 +1,114 @@
+import { TSESTree as Node, AST_NODE_TYPES as NodeType, TSESLint } from "@typescript-eslint/utils"
+
+import { createRule } from "@/shared/create"
+import { locate } from "@/shared/locate"
+
+export default createRule({
+  name: "no-unnecessary-duplication",
+  meta: {
+    type: "problem",
+    docs: {
+      description: "Forbid duplicate `source` and `clock` in `sample` and `guard`.",
+    },
+    messages: {
+      duplicate: "Method `{{ method }}` has the same value for `source` and `clock`. Consider using only one of them.",
+
+      removeClock: "Remove the `clock`",
+      removeSource: "Remove the `source`",
+    },
+    schema: [],
+    hasSuggestions: true,
+  },
+  defaultOptions: [],
+  create: (context) => {
+    const imports = new Set<string>()
+
+    const sourceCode = context.sourceCode
+
+    const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
+
+    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
+    const methodSelector = `ImportSpecifier[imported.name=/(sample|guard)/]`
+
+    const callSelector = `[callee.type="Identifier"][arguments.length=1]`
+    const argumentSelector = `ObjectExpression.arguments`
+
+    const query = { source: locate.property("source"), clock: locate.property("clock") }
+
+    type MethodCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
+
+    return {
+      [`${importSelector} > ${methodSelector}`]: (node: Node.ImportSpecifier) => imports.add(node.local.name),
+
+      [`CallExpression${callSelector}:has(${argumentSelector})`]: (node: MethodCall) => {
+        if (!imports.has(node.callee.name)) return
+
+        const [config] = node.arguments
+
+        const source = query.source(config)?.value
+        if (!source) return
+
+        const clock = query.clock(config)?.value
+        if (!clock) return
+
+        const equal = compare(clock, source)
+        if (!equal) return
+
+        const suggestions = [
+          {
+            messageId: "removeClock" as const,
+            fix: function* (fixer: TSESLint.RuleFixer) {
+              yield fixer.remove(clock.parent)
+
+              const after = sourceCode.getTokenAfter(clock.parent)
+              if (after?.value === ",") yield fixer.remove(after)
+            },
+          },
+          {
+            messageId: "removeSource" as const,
+            fix: function* (fixer: TSESLint.RuleFixer) {
+              yield fixer.remove(source.parent)
+
+              const after = sourceCode.getTokenAfter(source.parent)
+              if (after?.value === ",") yield fixer.remove(after)
+            },
+          },
+        ]
+
+        const data = { method: node.callee.name }
+        context.report({ node: config, messageId: "duplicate", data, suggest: suggestions })
+      },
+    }
+  },
+})
+
+const compare = (clock: Node.Node, source: Node.Node, limit = 5): boolean => {
+  if (limit <= 0) return false
+
+  if (clock.type === NodeType.Identifier)
+    // clock: a, source: a
+    return source.type === NodeType.Identifier && clock.name === source.name
+
+  if (clock.type === NodeType.ArrayExpression) {
+    if (clock.elements.length !== 1) return false // clock: [a, b] !== source: [a, b]
+    if (source.type !== NodeType.ArrayExpression || source.elements.length !== 1) return false // clock: [a], source: a
+
+    const a = clock.elements[0]!,
+      b = source.elements[0]!
+
+    return a.type === NodeType.Identifier && b.type === NodeType.Identifier && a.name === b.name
+  }
+
+  if (clock.type === NodeType.MemberExpression) {
+    // clock: obj.a, source: obj.a
+    if (source.type !== NodeType.MemberExpression) return false
+    if (clock.computed || source.computed) return false
+    if (clock.property.name !== source.property.name) return false
+
+    return compare(clock.object, source.object, limit - 1)
+  }
+
+  // other expressions can't be guaranteed to be equal
+
+  return false
+}
