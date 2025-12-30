@@ -8,6 +8,7 @@ import enforceStoreNamingConvention from "./rules/enforce-store-naming-conventio
 import keepOptionsOrder from "./rules/keep-options-order/keep-options-order"
 import mandatoryScopeBinding from "./rules/mandatory-scope-binding/mandatory-scope-binding"
 import noAmbiguityTarget from "./rules/no-ambiguity-target/no-ambiguity-target"
+import noDuplicateOn from "./rules/no-duplicate-on/no-duplicate-on"
 import noForward from "./rules/no-forward/no-forward"
 import noGetState from "./rules/no-getState/no-getState"
 import noGuard from "./rules/no-guard/no-guard"
@@ -30,6 +31,7 @@ const base = {
     "keep-options-order": keepOptionsOrder,
     "mandatory-scope-binding": mandatoryScopeBinding,
     "no-ambiguity-target": noAmbiguityTarget,
+    "no-duplicate-on": noDuplicateOn,
     "no-forward": noForward,
     "no-getState": noGetState,
     "no-guard": noGuard,
@@ -48,6 +50,7 @@ const configs = {
   recommended: { plugins: { effector: base as TSESLint.FlatConfig.Plugin }, rules: ruleset.recommended },
   scope: { plugins: { effector: base as TSESLint.FlatConfig.Plugin }, rules: ruleset.scope },
   react: { plugins: { effector: base as TSESLint.FlatConfig.Plugin }, rules: ruleset.react },
+  future: { plugins: { effector: base as TSESLint.FlatConfig.Plugin }, rules: ruleset.future },
 }
 
 const plugin = base as typeof base & { configs: typeof configs }

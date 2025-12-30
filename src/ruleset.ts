@@ -5,7 +5,7 @@ const recommended = {
   "effector/enforce-store-naming-convention": "error",
   "effector/keep-options-order": "warn",
   "effector/no-ambiguity-target": "warn",
-  // "effector/no-duplicate-on": "error",
+  "effector/no-duplicate-on": "error",
   "effector/no-forward": "error",
   "effector/no-getState": "error",
   "effector/no-guard": "error",
@@ -27,4 +27,6 @@ const react = {
   "effector/prefer-useUnit": "error",
 } satisfies TSESLint.Linter.RulesRecord
 
-export const ruleset = { recommended, scope, react }
+const future = {} satisfies TSESLint.Linter.RulesRecord
+
+export const ruleset = { recommended, scope, react, future }
