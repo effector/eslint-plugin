@@ -7,23 +7,23 @@ hero:
   tagline: Enforcing best practices for Effector
   actions:
     - theme: brand
-      text: All Rules
-      link: /rules/
+      text: See Rules
+      link: /rules
     - theme: alt
-      text: All Presets
-      link: /presets/
+      text: Install Plugin
+      link: /installation
 
 features:
   - icon: ☄️
     title: Recommended preset
     details: Config preset that is recommended for all projects using Effector
-    link: /presets/recommended
+    link: /rules#recommended
   - icon: 🔮
     title: Future preset
     details: Effector is evolving, this preset enforces best-practices for future releases of Effector
-    link: /presets/future
+    link: /rules#future
   - icon: ⚛️
     title: React preset
     details: This preset is recommended for projects that use React with Effector.
-    link: /presets/react
+    link: /rules#react
 ---

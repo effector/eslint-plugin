@@ -36,8 +36,8 @@ export default defineConfig({
     ],
 
     nav: [
-      { text: "Presets", link: "/presets/", activeMatch: "^/presets/" },
-      { text: "Rules", link: "/rules/", activeMatch: "^/rules/" },
+      { text: "Installation", link: "/installation"},
+      { text: "Rules", link: "/rules", activeMatch: "^/rules/" },
       { text: "Changelog", link: "/changelog" },
       { text: "effector.dev", link: "https://effector.dev" },
     ],
