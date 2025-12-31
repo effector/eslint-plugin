@@ -9,11 +9,14 @@ const recommended = {
   "effector/no-forward": "error",
   "effector/no-getState": "error",
   "effector/no-guard": "error",
-  "effector/no-patronum-debug": "warn",
   "effector/no-unnecessary-combination": "warn",
   "effector/no-unnecessary-duplication": "warn",
   "effector/no-useless-methods": "error",
   "effector/no-watch": "warn",
+} satisfies TSESLint.Linter.RulesRecord
+
+const patronum = {
+  "effector/no-patronum-debug": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
 const scope = {
@@ -29,4 +32,4 @@ const react = {
 
 const future = {} satisfies TSESLint.Linter.RulesRecord
 
-export const ruleset = { recommended, scope, react, future }
+export const ruleset = { recommended, patronum, scope, react, future }
