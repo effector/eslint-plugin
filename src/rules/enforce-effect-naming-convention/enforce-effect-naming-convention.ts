@@ -24,7 +24,7 @@ export default createRule({
     type VariableDeclarator = Node.VariableDeclarator & { id: Node.Identifier }
 
     return {
-      [`VariableDeclarator[id.name=${FxRegex}]`]: (node: VariableDeclarator) => {
+      [`VariableDeclarator[id.name!=${FxRegex}]`]: (node: VariableDeclarator) => {
         const type = services.getTypeAtLocation(node)
 
         const isEffect = isType.effect(type, services.program)
@@ -47,4 +47,4 @@ export default createRule({
   },
 })
 
-const FxRegex = /(?<!Fx)$/
+const FxRegex = /Fx$/
