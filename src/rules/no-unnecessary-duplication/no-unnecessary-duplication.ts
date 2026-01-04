@@ -23,7 +23,6 @@ export default createRule({
   create: (context) => {
     const imports = new Set<string>()
 
-    const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
 
     type MethodCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
@@ -72,6 +71,8 @@ export default createRule({
     }
   },
 })
+
+const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
 const selector = {
   method: `ImportSpecifier[imported.name=/(sample|guard)/]`,

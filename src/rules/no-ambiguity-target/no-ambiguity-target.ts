@@ -20,7 +20,6 @@ export default createRule({
   create: (context) => {
     const imports = new Set<string>()
 
-    const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
 
     const usageStack: boolean[] = []
@@ -62,6 +61,8 @@ export default createRule({
     }
   },
 })
+
+const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
 const selector = {
   method: `ImportSpecifier[imported.name=/(sample|guard)/]`,

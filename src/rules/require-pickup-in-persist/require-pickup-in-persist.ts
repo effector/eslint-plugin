@@ -19,11 +19,6 @@ export default createRule({
   create: (context) => {
     const imports = new Set<string>()
 
-    /**
-     * Finds `effector-storage` packages, scoped and unscoped, including
-     * contents of these packages. See examples for a full list.
-     */
-    const PACKAGE_NAME = /^@?effector-storage(\u002F[\w-]+)*$/
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
 
     type PersistCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
@@ -50,6 +45,12 @@ export default createRule({
     }
   },
 })
+
+/**
+ * Finds `effector-storage` packages, scoped and unscoped, including
+ * contents of these packages. See examples for a full list.
+ */
+const PACKAGE_NAME = /^@?effector-storage(\u002F[\w-]+)*$/
 
 const selector = {
   persist: `ImportSpecifier[imported.name="persist"]`,

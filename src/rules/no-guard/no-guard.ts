@@ -27,7 +27,6 @@ export default createRule({
     const source = context.sourceCode
     const visitorKeys = source.visitorKeys
 
-    const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
 
     type GuardCall = Node.CallExpression & { callee: Node.Identifier }
@@ -93,6 +92,8 @@ export default createRule({
     }
   },
 })
+
+const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
 const selector = {
   guard: `ImportSpecifier[imported.name="guard"]`,

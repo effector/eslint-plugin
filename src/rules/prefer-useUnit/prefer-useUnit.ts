@@ -20,7 +20,6 @@ export default createRule({
   create: (context) => {
     const imports = new Map<string, LegacyHook>()
 
-    const PACKAGE_NAME = /^effector-react$/
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
 
     type HookCall = Node.CallExpression & { callee: Node.Identifier }
@@ -41,6 +40,8 @@ export default createRule({
     }
   },
 })
+
+const PACKAGE_NAME = /^effector-react$/
 
 const selector = {
   useStore: `ImportSpecifier[imported.name=useStore]`,

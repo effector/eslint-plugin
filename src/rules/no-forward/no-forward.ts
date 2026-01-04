@@ -27,7 +27,6 @@ export default createRule({
     const source = context.sourceCode
     const visitorKeys = source.visitorKeys
 
-    const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
 
     type ForwardCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
@@ -92,6 +91,8 @@ export default createRule({
     }
   },
 })
+
+const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
 const selector = {
   forward: `ImportSpecifier[imported.name="forward"]`,

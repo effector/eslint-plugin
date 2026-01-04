@@ -23,7 +23,6 @@ export default createRule({
   create: (context) => {
     const debugs = new Set<string>()
 
-    const PACKAGE_NAME = /^patronum(?:\u002Fdebug)?$/
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
 
     return {
@@ -46,6 +45,8 @@ export default createRule({
     }
   },
 })
+
+const PACKAGE_NAME = /^patronum(?:\u002Fdebug)?$/
 
 const selector = {
   debug: `ImportSpecifier[imported.name="debug"]`,
