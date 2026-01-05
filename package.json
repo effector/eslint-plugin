@@ -46,9 +46,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@typescript-eslint/type-utils": "^8.50.1",
-    "@typescript-eslint/utils": "^8.50.1",
-    "esquery": "^1.6.0"
+    "@typescript-eslint/type-utils": "^8.51.0",
+    "@typescript-eslint/utils": "^8.51.0",
+    "esquery": "^1.7.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
@@ -56,7 +56,7 @@
     "@types/estree": "^1.0.8",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
-    "@typescript-eslint/rule-tester": "^8.50.1",
+    "@typescript-eslint/rule-tester": "^8.51.0",
     "effector": "^23.4.4",
     "effector-react": "^23.3.0",
     "eslint": "^9.39.2",
@@ -66,9 +66,9 @@
     "eslint-plugin-prettier": "^5.5.4",
     "prettier": "^3.7.4",
     "prettier-plugin-embed": "^0.5.1",
-    "tsdown": "^0.18.2",
+    "tsdown": "^0.18.4",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.50.1",
+    "typescript-eslint": "^8.51.0",
     "vitepress": "2.0.0-alpha.15",
     "vitest": "^4.0.16"
   },
