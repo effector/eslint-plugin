@@ -107,6 +107,17 @@ ruleTester.run("enforce-store-naming-convention", rule, {
       `,
       options: [postfix],
     },
+    {
+      name: "store as argument",
+      code: ts`
+        import { type Store, createStore } from "effector"
+
+        type QueryParams = { body: Store<unknown> }
+
+        const createQuery = ({ body = createStore({}) }: QueryParams) => undefined
+        const createMutation = (body = createStore(null)) => undefined
+      `,
+    },
   ],
   invalid: [
     {
