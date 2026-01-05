@@ -1,4 +1,9 @@
-import { type TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-eslint/utils"
+import {
+  ESLintUtils,
+  type TSESTree as Node,
+  AST_NODE_TYPES as NodeType,
+  type ParserServicesWithTypeInformation,
+} from "@typescript-eslint/utils"
 
 import { createRule } from "@/shared/create"
 import { locate } from "@/shared/locate"
@@ -19,6 +24,8 @@ export default createRule({
   },
   defaultOptions: [],
   create: (context) => {
+    const services = ESLintUtils.getParserServices(context)
+
     const operators = new Set<string>()
     const combinators = new Map<string, CombinatorOperator>()
 
@@ -52,11 +59,15 @@ export default createRule({
         if (source?.type === NodeType.CallExpression && source.callee.type === NodeType.Identifier) {
           const method = combinators.get(source.callee.name)
 
-          // both "combine" and "merge" match
-          if (method) {
-            const data = { method: source.callee.name, property: "source", operator: node.callee.name }
-            context.report({ node: source, messageId: "unnecessary", data })
-          }
+          // both "combine" and "merge" match here
+          if (!method) return
+
+          // skip if `combine` has fn specified
+          if (method === "combine" && source.arguments.length > 1 && isFunction(source.arguments.at(-1)!, services))
+            return
+
+          const data = { method: source.callee.name, property: "source", operator: node.callee.name }
+          context.report({ node: source, messageId: "unnecessary", data })
         }
       },
     }
@@ -71,4 +82,18 @@ const selector = {
 
   call: `[callee.type="Identifier"][arguments.length=1]`,
   argument: `ObjectExpression.arguments`,
+}
+
+function isFunction(node: Node.Node, services: ParserServicesWithTypeInformation) {
+  if (node.type === NodeType.ArrowFunctionExpression) return true
+  else if (node.type === NodeType.FunctionExpression) return true
+  else if (node.type === NodeType.Identifier) {
+    const checker = services.program.getTypeChecker()
+    const tsnode = services.esTreeNodeToTSNodeMap.get(node)
+
+    const type = checker.getTypeAtLocation(tsnode)
+    const signatures = type.getCallSignatures()
+
+    return signatures.length > 0
+  } else return false
 }

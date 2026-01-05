@@ -73,6 +73,23 @@ ruleTester.run("no-unnecessary-combination", rule, {
         sample({ source: sample({ clock: combine({ $x, $y }) }) })
       `,
     },
+    {
+      name: "combine with fn",
+      code: ts`
+        import { combine, createStore, sample } from "effector"
+
+        const $x = createStore(null)
+
+        // inline arrow
+        sample({ source: combine({ y: $x }, ({ y }) => y) })
+        sample({ source: combine([$x, $x], (value) => value) })
+
+        // separate
+        const fn = (arg: unknown) => arg
+        sample({ source: combine({ y: $x }, fn) })
+        sample({ source: combine($x, $x, fn) })
+      `,
+    },
   ],
   invalid: [
     {
