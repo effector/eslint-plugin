@@ -26,7 +26,7 @@ pnpm install --save-dev eslint-plugin-effector eslint
 
 If you are using the flat config format, import the plugin and apply its `recommended` configuration. Here's an example:
 
-```ts
+```ts [eslint.config.js]
 import effector from "eslint-plugin-effector" // [!code focus]
 
 const config = [

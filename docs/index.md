@@ -16,14 +16,14 @@ hero:
 features:
   - icon: ☄️
     title: Recommended preset
-    details: Config preset that is recommended for all projects using Effector
-    link: /rules#recommended
-  - icon: 🔮
-    title: Future preset
-    details: Effector is evolving, this preset enforces best-practices for future releases of Effector
-    link: /rules#future
+    details: The default preset for consistent best practices in all Effector projects.
+    link: /rules/#recommended
   - icon: ⚛️
     title: React preset
-    details: This preset is recommended for projects that use React with Effector.
-    link: /rules#react
+    details: Recommended for projects using Effector with React to enforce React-specific best practices.
+    link: /rules/#react
+  - icon: 🪄
+    title: Scope preset
+    details: Recommended for apps using Effector's Scope to enforce Fork API rules and best practices.
+    link: /rules/#scope
 ---
