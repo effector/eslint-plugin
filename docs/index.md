@@ -24,6 +24,6 @@ features:
     link: /rules/#react
   - icon: 🪄
     title: Scope preset
-    details: Recommended for apps using Effector's Scope to enforce Fork API rules and best practices.
+    details: Recommended for apps using Scope to enforce Fork API rules and best practices.
     link: /rules/#scope
 ---

@@ -81,3 +81,21 @@ const config = [
 :::
 
 <RuleTable :rules='rulesByCategory("scope")' />
+
+## `future`
+
+Effector is evolving! Future-proof your code with this preset, which enforces best practices for future releases of Effector.
+
+::: code-group
+
+```ts [eslint.config.mjs]
+import effector from "eslint-plugin-effector" // [!code focus]
+
+const config = [
+  effector.configs.future, // [!code focus]
+]
+```
+
+:::
+
+<RuleTable :rules='rulesByCategory("future")' />

@@ -30,6 +30,8 @@ const react = {
   "effector/prefer-useUnit": "error",
 } satisfies TSESLint.Linter.RulesRecord
 
-const future = {} satisfies TSESLint.Linter.RulesRecord
+const future = {
+  "effector/no-domain-unit-creators": "warn",
+} satisfies TSESLint.Linter.RulesRecord
 
 export const ruleset = { recommended, patronum, scope, react, future }

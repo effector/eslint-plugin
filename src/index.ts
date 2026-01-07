@@ -8,6 +8,7 @@ import enforceStoreNamingConvention from "./rules/enforce-store-naming-conventio
 import keepOptionsOrder from "./rules/keep-options-order/keep-options-order"
 import mandatoryScopeBinding from "./rules/mandatory-scope-binding/mandatory-scope-binding"
 import noAmbiguityTarget from "./rules/no-ambiguity-target/no-ambiguity-target"
+import noDomainUnitCreators from "./rules/no-domain-unit-creators/no-domain-unit-creators"
 import noDuplicateOn from "./rules/no-duplicate-on/no-duplicate-on"
 import noForward from "./rules/no-forward/no-forward"
 import noGetState from "./rules/no-getState/no-getState"
@@ -31,6 +32,7 @@ const base = {
     "keep-options-order": keepOptionsOrder,
     "mandatory-scope-binding": mandatoryScopeBinding,
     "no-ambiguity-target": noAmbiguityTarget,
+    "no-domain-unit-creators": noDomainUnitCreators,
     "no-duplicate-on": noDuplicateOn,
     "no-forward": noForward,
     "no-getState": noGetState,

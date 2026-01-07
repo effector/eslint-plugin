@@ -28,6 +28,9 @@ export const isType = {
     return typeMatchesSpecifier(type, { from: "package", package: "effector", name }, program)
   },
 
+  domain: (type: Type, program: Program) =>
+    typeMatchesSpecifier(type, { from: "package", package: "effector", name: "Domain" }, program),
+
   // gate is itself an alias to react component, so `typeMatchesSpecifier` doesn't work here
   gate: (type: Type) => {
     const symbol = type.getSymbol() ?? type.aliasSymbol
