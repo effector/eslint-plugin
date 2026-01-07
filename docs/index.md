@@ -5,6 +5,9 @@ hero:
   name: ESLint Plugin
   text: Effector's family
   tagline: Enforcing best practices for Effector
+  image:
+    src: /comet.svg
+    alt: Effector Comet
   actions:
     - theme: brand
       text: See Rules

@@ -22,21 +22,32 @@ export default defineConfig({
     ["link", { rel: "manifest", href: "/manifest.webmanifest" }],
   ],
 
-  appearance: "force-dark",
-
   vite: { plugins: [watch] },
+  sitemap: { hostname: "https://eslint.effector.dev" },
+
+  appearance: "force-dark",
 
   themeConfig: {
     logo: "/comet.svg",
     footer: { message: "Released under the MIT License" },
 
+    search: {
+      provider: "algolia",
+      options: {
+        appId: "NW4641ANOK",
+        apiKey: "82a2fcdc603a1de18478e1c461450168",
+        indexName: "eslint-effector",
+      },
+    },
+
     socialLinks: [
       { icon: "github", link: "https://github.com/effector/eslint-plugin" },
+      { icon: "npm", link: "https://www.npmjs.com/package/eslint-plugin-effector" },
       { icon: "telegram", link: "https://t.me/effector_ru" },
     ],
 
     nav: [
-      { text: "Installation", link: "/installation"},
+      { text: "Installation", link: "/installation" },
       { text: "Rules", link: "/rules", activeMatch: "^/rules/" },
       { text: "Changelog", link: "/changelog" },
       { text: "effector.dev", link: "https://effector.dev" },

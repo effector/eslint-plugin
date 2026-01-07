@@ -8,7 +8,7 @@
   --color-base-green: 158, 79%;
   --color-base-red: 351, 100%;
 
-  --color-background: hsla(240, 3%, 12%, 0.702);
+  --color-background: 240, 3%;
 
   --color-primary-50: var(--color-base-primary), 98%;
   --color-primary-100: var(--color-base-primary), 94%;
@@ -100,7 +100,10 @@
  * -------------------------------------------------------------------------- */
 
 :root {
-  --vp-c-background: var(--color-background);
+  --vp-c-bg: hsl(var(--color-background), 12%);
+  --vp-c-bg-alt: hsl(var(--color-background), 10%);
+  --vp-c-bg-elv: hsl(var(--color-background), 10%);
+  --vp-c-bg-soft: hsl(var(--color-background), 16%);
 
   --vp-c-default-1: var(--vp-c-gray-1);
   --vp-c-default-2: var(--vp-c-gray-2);
@@ -150,12 +153,12 @@
 
 :root {
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: -webkit-linear-gradient(140deg,
+  --vp-home-hero-name-background: -webkit-linear-gradient(100deg,
       hsl(var(--color-primary-400)) 30%,
       hsl(var(--color-primary-500)));
 
-  --vp-home-hero-image-background-image: transparent;
-  --vp-home-hero-image-filter: unset;
+  --vp-home-hero-image-background-image: none;
+  --vp-home-hero-image-filter: blur(44px);
 }
 
 @media (min-width: 640px) {
@@ -168,6 +171,10 @@
   :root {
     --vp-home-hero-image-filter: blur(68px);
   }
+}
+
+.VPHero .VPImage {
+  padding: 42px;
 }
 
 /**
@@ -187,4 +194,8 @@
 
 .DocSearch {
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
+}
+
+.DocSearch-Button {
+  --docsearch-search-button-background: var(--vp-c-bg-alt) !important;
 }
