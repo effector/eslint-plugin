@@ -87,6 +87,16 @@ ruleTester.run("strict-effect-handlers", rule, {
         }
       `,
     },
+    {
+      name: "top level await",
+      code: ts`
+        import { createEffect } from "effector"
+
+        const oneFx = createEffect()
+
+        await oneFx()
+      `,
+    },
   ],
   invalid: [
     {

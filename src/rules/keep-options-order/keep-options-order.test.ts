@@ -81,6 +81,27 @@ ruleTester.run("keep-options-order", rule, {
         sample({ filter, fn, batch, name })
       `,
     },
+    {
+      name: "ignores spread",
+      code: ts`
+        import { sample } from "effector"
+
+        const config = { filter: () => true, clock: createEvent() }
+
+        sample({ ...config })
+      `,
+    },
+    {
+      name: "extra properties at the end",
+      code: ts`
+        import { sample } from "effector"
+
+        const clock = createEvent()
+        const source = createEvent()
+
+        sample({ clock, source, other: 42 })
+      `,
+    },
   ],
   invalid: [
     {
@@ -249,6 +270,35 @@ ruleTester.run("keep-options-order", rule, {
               output: ts`
                 import { sample } from "effector"
                 sample({ clock, source: combine({ a: $a }), target })
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "extra properties in the middle",
+      code: ts`
+        import { sample } from "effector"
+
+        const clock = createEvent()
+        const source = createEvent()
+
+        sample({ clock, other: 42, source })
+      `,
+      errors: [
+        {
+          messageId: "invalidOrder",
+          suggestions: [
+            {
+              messageId: "changeOrder",
+              output: ts`
+                import { sample } from "effector"
+
+                const clock = createEvent()
+                const source = createEvent()
+
+                sample({ clock, source, other: 42 })
               `,
             },
           ],

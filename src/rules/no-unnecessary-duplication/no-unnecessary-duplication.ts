@@ -89,10 +89,13 @@ function compare(clock: Node.Node, source: Node.Node, limit = 5): boolean {
 
   if (clock.type === NodeType.ArrayExpression) {
     if (clock.elements.length !== 1) return false // clock: [a, b] !== source: [a, b]
-    if (source.type !== NodeType.ArrayExpression || source.elements.length !== 1) return false // clock: [a], source: a
 
-    const a = clock.elements[0]!,
-      b = source.elements[0]!
+    let a: Node.Node, b: Node.Node
+
+    if (source.type === NodeType.ArrayExpression)
+      if (source.elements.length !== 1 /* clock: [a], source: [a, b] */) return false
+      else /* clock: [a], source: [a] */ [a, b] = [clock.elements[0]!, source.elements[0]!]
+    else /* clock: [a], source: a */ [a, b] = [clock.elements[0]!, source]
 
     return a.type === NodeType.Identifier && b.type === NodeType.Identifier && a.name === b.name
   }

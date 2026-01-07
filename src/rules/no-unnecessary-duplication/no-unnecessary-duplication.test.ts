@@ -129,6 +129,13 @@ ruleTester.run("no-unnecessary-duplication", rule, {
       `,
     },
     {
+      name: "sample clock array + two sources",
+      code: ts`
+        import { sample } from "effector"
+        sample({ clock: [event], source: [event, other] })
+      `,
+    },
+    {
       name: "guard source + store filter",
       code: ts`
         import { guard } from "effector"
@@ -140,6 +147,24 @@ ruleTester.run("no-unnecessary-duplication", rule, {
       code: ts`
         import { guard } from "effector"
         guard({ source: event, filter: (v) => v > 0 })
+      `,
+    },
+    {
+      name: "sample different node type",
+      code: ts`
+        import { sample, createStore } from "effector"
+
+        sample({ clock: obj.$store, source: $store })
+      `,
+    },
+    {
+      name: "(false negative) member expression computed",
+      code: ts`
+        import { sample, createStore } from "effector"
+
+        sample({ clock: obj.$store, source: obj["$store"] })
+        sample({ clock: obj["$store"], source: obj.$store })
+        sample({ clock: obj["$store"], source: obj["$store"] })
       `,
     },
   ],
@@ -208,6 +233,36 @@ ruleTester.run("no-unnecessary-duplication", rule, {
               output: ts.noformat`
                 import { sample } from "effector"
                 sample({  clock: $store })
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "sample clock + source: same identifier with array in source",
+      code: ts`
+        import { sample } from "effector"
+        sample({ source: $store, clock: [$store] })
+      `,
+      errors: [
+        {
+          messageId: "duplicate",
+          line: 2,
+          column: 8,
+          suggestions: [
+            {
+              messageId: "removeClock",
+              output: ts.noformat`
+                import { sample } from "effector"
+                sample({ source: $store,  })
+              `,
+            },
+            {
+              messageId: "removeSource",
+              output: ts.noformat`
+                import { sample } from "effector"
+                sample({  clock: [$store] })
               `,
             },
           ],

@@ -360,5 +360,38 @@ ruleTester.run("mandatory-scope-binding", rule, {
       `,
       errors: [{ messageId: "useUnitNeeded", line: 6, column: 23, data: { name: "clicked" } }],
     },
+    {
+      name: "event inside hook",
+      code: tsx`
+        import { useEffect } from "react"
+
+        import { clicked } from "${fixture("model")}"
+
+        function useClicked() {
+          return () => clicked()
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 6, column: 16, data: { name: "clicked" } }],
+    },
+    {
+      name: "event inside weird hook (name inference)",
+      code: tsx`
+        import { useEffect } from "react"
+
+        import { clicked } from "${fixture("model")}"
+
+        let useOne
+        useOne = () => () => clicked()
+
+        const two = { useTwo: () => () => clicked() }
+
+        const [useThree = () => () => clicked()] = [undefined]
+      `,
+      errors: [
+        { messageId: "useUnitNeeded", line: 6, column: 22, data: { name: "clicked" } },
+        { messageId: "useUnitNeeded", line: 8, column: 35, data: { name: "clicked" } },
+        { messageId: "useUnitNeeded", line: 10, column: 31, data: { name: "clicked" } },
+      ],
+    },
   ],
 })

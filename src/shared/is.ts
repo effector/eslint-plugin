@@ -31,7 +31,7 @@ export const isType = {
   domain: (type: Type, program: Program) =>
     typeMatchesSpecifier(type, { from: "package", package: "effector", name: "Domain" }, program),
 
-  // gate is itself an alias to react component, so `typeMatchesSpecifier` doesn't work here
+  // Gate is an intersection type, which TypeScript erases from existence
   gate: (type: Type) => {
     const symbol = type.getSymbol() ?? type.aliasSymbol
     return symbol ? check(symbol, ["Gate"], "effector") : false

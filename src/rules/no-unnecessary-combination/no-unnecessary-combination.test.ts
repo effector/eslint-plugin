@@ -84,6 +84,13 @@ ruleTester.run("no-unnecessary-combination", rule, {
         sample({ source: combine({ y: $x }, ({ y }) => y) })
         sample({ source: combine([$x, $x], (value) => value) })
 
+        // inline function
+        sample({
+          source: combine({ y: $x }, function ({ y }) {
+            return y
+          }),
+        })
+
         // separate
         const fn = (arg: unknown) => arg
         sample({ source: combine({ y: $x }, fn) })

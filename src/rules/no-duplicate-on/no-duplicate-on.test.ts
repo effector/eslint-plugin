@@ -54,6 +54,56 @@ ruleTester.run("no-duplicate-on", rule, {
       `,
     },
     {
+      name: "unrelated call",
+      code: ts`
+        import { createEvent } from "effector"
+
+        const first = createEvent()
+        const $store = { on: () => {} }
+
+        $store.on(first, () => null).on(first, () => null)
+      `,
+    },
+    {
+      name: "spread",
+      code: ts`
+        import { createStore, createEvent } from "effector"
+
+        const first = createEvent()
+        const $store = createStore(null)
+        const call = [first, () => null]
+
+        $store.on(...call).on(...call)
+      `,
+    },
+    {
+      name: "unknown unit",
+      code: ts`
+        import { createStore } from "effector"
+
+        const $store = createStore(null)
+          .on(window.unknown, () => null)
+          .on(window.unknown, () => null)
+      `,
+    },
+    {
+      name: "store in separate scopes",
+      code: ts`
+        import { createStore, createEvent } from "effector"
+
+        const first = createEvent()
+        const $store = createStore(null).on(first, () => null)
+
+        const factory = () => {
+          const $store = createStore(null)
+
+          $store.on(first, () => null)
+
+          return $store
+        }
+      `,
+    },
+    {
       name: "(false negative) anonymous store",
       code: ts`
         import { createStore, createEvent } from "effector"
@@ -63,6 +113,52 @@ ruleTester.run("no-duplicate-on", rule, {
         createStore(null)
           .on(first, () => null)
           .on(first, () => null)
+      `,
+    },
+    {
+      name: "(false negative) broken variable attribution store",
+      code: ts`
+        import { createStore, createEvent } from "effector"
+
+        const first = createEvent()
+
+        const obj = { store: createStore(null) }
+
+        const on = createStore(null)
+          .on(first, () => null)
+          .on(first, () => null).on
+
+        const state = createStore(null)
+          .on(first, () => null)
+          .on(first, () => null).defaultState
+
+        obj["store"].on(first, () => null).on(first, () => null)
+      `,
+    },
+
+    {
+      name: "(false negative) broken variable attribution unit",
+      code: ts`
+        import { createStore, createEvent } from "effector"
+
+        const obj = { first: createEvent() }
+
+        const $store = createStore(null)
+          .on(obj["first"], () => null)
+          .on(obj["first"], () => null)
+      `,
+    },
+    {
+      name: "(false negative) computed property store",
+      code: ts`
+        import { createStore, createEvent } from "effector"
+
+        const first = createEvent()
+
+        const $store = createStore(null)
+          ["on"](first, () => null)
+          ["on"](first, () => null)
+          ["reset"](first)
       `,
     },
   ],

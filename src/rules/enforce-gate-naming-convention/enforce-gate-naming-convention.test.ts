@@ -46,6 +46,15 @@ ruleTester.run("enforce-gate-naming-convention", rule, {
         const RenamedGate = MyGate
       `,
     },
+    {
+      name: "unrelated type",
+      code: ts`
+        class Gate {}
+
+        const value = 42
+        const gate = value > 10 ? new Gate() : null
+      `,
+    },
   ],
   invalid: [
     {
