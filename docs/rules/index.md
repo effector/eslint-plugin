@@ -8,9 +8,9 @@ import { data } from "./index.data"
 const rulesByCategory = (category) => data.filter((rule) => rule.category === category)
 </script>
 
-# Rules
+# Rules & Presets
 
-## `recommended`
+## `recommended` preset {#recommended}
 
 This preset is recommended for most projects, so we suggest enabling it by default.
 
@@ -28,7 +28,7 @@ const config = [
 
 <RuleTable :rules='rulesByCategory("recommended")' />
 
-## `patronum`
+## `patronum` preset {#patronum}
 
 This preset is recommended for projects that use [`patronum`](https://patronum.effector.dev/).
 
@@ -46,7 +46,7 @@ const config = [
 
 <RuleTable :rules='rulesByCategory("patronum")' />
 
-## `react`
+## `react` preset {#react}
 
 This preset is recommended for projects that use React with Effector.
 
@@ -64,7 +64,7 @@ const config = [
 
 <RuleTable :rules='rulesByCategory("react")' />
 
-## `scope`
+## `scope` preset {#scope}
 
 This preset is recommended for projects that use [Fork API](https://effector.dev/docs/api/effector/scope).
 
@@ -82,7 +82,7 @@ const config = [
 
 <RuleTable :rules='rulesByCategory("scope")' />
 
-## `future`
+## `future` preset {#future}
 
 Effector is evolving! Future-proof your code with this preset, which enforces best practices for future releases of Effector.
 
