@@ -2,6 +2,7 @@ import { type TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-e
 
 import { createRule } from "@/shared/create"
 import { locate } from "@/shared/locate"
+import { PACKAGE_NAME } from "@/shared/package"
 
 export default createRule({
   name: "no-ambiguity-target",
@@ -20,7 +21,7 @@ export default createRule({
   create: (context) => {
     const imports = new Set<string>()
 
-    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
+    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME.core}]`
 
     const usageStack: boolean[] = []
 
@@ -61,8 +62,6 @@ export default createRule({
     }
   },
 })
-
-const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
 const selector = {
   method: `ImportSpecifier[imported.name=/(sample|guard)/]`,

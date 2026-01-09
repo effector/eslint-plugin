@@ -3,7 +3,7 @@ import {
   ESLintUtils,
   type TSESTree as Node,
   AST_NODE_TYPES as NodeType,
-  TSESLint,
+  type TSESLint,
 } from "@typescript-eslint/utils"
 
 import { createRule } from "@/shared/create"

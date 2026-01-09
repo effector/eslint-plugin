@@ -7,6 +7,7 @@ import {
 
 import { createRule } from "@/shared/create"
 import { locate } from "@/shared/locate"
+import { PACKAGE_NAME } from "@/shared/package"
 
 type CombinatorOperator = "combine" | "merge"
 
@@ -29,7 +30,7 @@ export default createRule({
     const operators = new Set<string>()
     const combinators = new Map<string, CombinatorOperator>()
 
-    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
+    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME.core}]`
 
     type MethodCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
 
@@ -73,8 +74,6 @@ export default createRule({
     }
   },
 })
-
-const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
 const selector = {
   operator: `ImportSpecifier[imported.name=/(sample|guard)/]`,

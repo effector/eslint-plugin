@@ -4,6 +4,7 @@ import type { Node as ESNode } from "estree"
 
 import { createRule } from "@/shared/create"
 import { locate } from "@/shared/locate"
+import { PACKAGE_NAME } from "@/shared/package"
 
 export default createRule({
   name: "no-forward",
@@ -27,7 +28,7 @@ export default createRule({
     const source = context.sourceCode
     const visitorKeys = source.visitorKeys
 
-    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
+    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME.core}]`
 
     type ForwardCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
     type MappingCall = Node.CallExpression & {
@@ -91,8 +92,6 @@ export default createRule({
     }
   },
 })
-
-const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
 const selector = {
   forward: `ImportSpecifier[imported.name="forward"]`,

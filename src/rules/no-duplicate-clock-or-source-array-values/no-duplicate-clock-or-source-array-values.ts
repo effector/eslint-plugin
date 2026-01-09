@@ -1,7 +1,8 @@
-import { type TSESTree as Node, AST_NODE_TYPES as NodeType, TSESLint } from "@typescript-eslint/utils"
+import { type TSESTree as Node, AST_NODE_TYPES as NodeType, type TSESLint } from "@typescript-eslint/utils"
 
 import { createRule } from "@/shared/create"
 import { locate } from "@/shared/locate"
+import { PACKAGE_NAME } from "@/shared/package"
 
 type FieldName = "clock" | "source"
 
@@ -23,7 +24,7 @@ export default createRule({
   create: (context) => {
     const imports = new Set<string>()
 
-    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
+    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME.core}]`
 
     type MethodCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
 
@@ -79,8 +80,6 @@ export default createRule({
     }
   },
 })
-
-const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
 const selector = {
   method: `ImportSpecifier[imported.name=/(sample|guard)/]`,

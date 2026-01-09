@@ -1,6 +1,7 @@
 import { type TSESTree as Node } from "@typescript-eslint/utils"
 
 import { createRule } from "@/shared/create"
+import { PACKAGE_NAME } from "@/shared/package"
 
 type LegacyHook = "useStore" | "useEvent"
 
@@ -20,7 +21,7 @@ export default createRule({
   create: (context) => {
     const imports = new Map<string, LegacyHook>()
 
-    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
+    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME.react}]`
 
     type HookCall = Node.CallExpression & { callee: Node.Identifier }
 
@@ -40,8 +41,6 @@ export default createRule({
     }
   },
 })
-
-const PACKAGE_NAME = /^effector-react$/
 
 const selector = {
   useStore: `ImportSpecifier[imported.name=useStore]`,

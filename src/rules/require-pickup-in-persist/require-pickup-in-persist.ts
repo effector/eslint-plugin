@@ -1,6 +1,7 @@
 import { type TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-eslint/utils"
 
 import { createRule } from "@/shared/create"
+import { PACKAGE_NAME } from "@/shared/package"
 
 export default createRule({
   name: "require-pickup-in-persist",
@@ -19,7 +20,7 @@ export default createRule({
   create: (context) => {
     const imports = new Set<string>()
 
-    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
+    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME.storage}]`
 
     type PersistCall = Node.CallExpression & { callee: Node.Identifier; arguments: [Node.ObjectExpression] }
 
@@ -45,12 +46,6 @@ export default createRule({
     }
   },
 })
-
-/**
- * Finds `effector-storage` packages, scoped and unscoped, including
- * contents of these packages. See examples for a full list.
- */
-const PACKAGE_NAME = /^@?effector-storage(\u002F[\w-]+)*$/
 
 const selector = {
   persist: `ImportSpecifier[imported.name="persist"]`,

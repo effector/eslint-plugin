@@ -4,6 +4,7 @@ import type { Node as ESNode } from "estree"
 
 import { createRule } from "@/shared/create"
 import { locate } from "@/shared/locate"
+import { PACKAGE_NAME } from "@/shared/package"
 
 export default createRule({
   name: "no-useless-methods",
@@ -25,7 +26,7 @@ export default createRule({
     const source = context.sourceCode
     const visitorKeys = source.visitorKeys
 
-    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME}]`
+    const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME.core}]`
 
     const usageStack: boolean[] = []
 
@@ -77,8 +78,6 @@ export default createRule({
     }
   },
 })
-
-const PACKAGE_NAME = /^effector(?:\u002Fcompat)?$/
 
 const selector = {
   method: `ImportSpecifier[imported.name=/(sample|guard)/]`,
