@@ -99,3 +99,9 @@ const config = [
 :::
 
 <RuleTable :rules='rulesByCategory("future")' />
+
+## Other Rules
+
+Some ESLint rules are yet to be included in any preset but can be enabled individually if they suit your project's needs.
+
+<RuleTable :rules='rulesByCategory(undefined)' />
