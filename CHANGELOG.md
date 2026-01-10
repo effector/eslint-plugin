@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.17.0
+
+### Breaking Changes
+
+- Minimum Node.js version is now `^20.9.0 || >=21.1.0` (matches ESLint requirements)
+- Codebase rewritten in TypeScript; 19 of 20 existing + 1 new rule (re)implemented using modern `@typescript-eslint` APIs
+- Now requires type-aware linting with `@typescript-eslint`
+
+### Core Changes
+
+- Native ESLint v9 flat config support
+- Public TypeScript type definitions (passes `publint` & `attw`)
+
+### Rule Changes
+
+- `no-forward` promoted from `future` to `recommended` preset
+- `no-guard` promoted from `future` to `recommended` preset
+- `no-domain-unit-creators` added to `future` preset (new rule)
+- `prefer-sample-over-forward-with-mapping` removed in favor of `no-forward`
+- `enforce-effect-naming-convention` now handles `combine + fn` correctly
+
+### Internal
+
+- Added bundling via `tsdown`
+- Replaced Jest with Vitest v4; switched to `@typescript-eslint/rule-tester`
+- Documentation upgraded to VitePress v2 with colocated markdown rule documentation
+- Fixed `package.json` dependency declarations
+
 ## v0.16.0
 
 - Support typescript-eslint@8 ([PR #180](https://github.com/effector/eslint-plugin/pull/170/files)) by @7rulnik
