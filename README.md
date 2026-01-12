@@ -21,7 +21,7 @@ npm install --save-dev eslint eslint-plugin-effector
 
 ## Usage
 
-This plugin only supports the new [flat config format](https://eslint.org/docs/latest/use/configure/configuration-files) for ESLint. Start by adding the `recommended` preset to your `eslint.config.js`:
+This plugin supports the new [flat config format](https://eslint.org/docs/latest/use/configure/configuration-files) for ESLint. Start by adding the `recommended` preset to your `eslint.config.js`:
 
 ```js
 // eslint.config.js
@@ -31,11 +31,11 @@ export default [
   /* ... */
 
   // Include the recommended preset:
-  effector.configs.recommended,
+  effector.flatConfigs.recommended,
 ]
 ```
 
-To explore all available presets, refer to the [Rules](https://eslint.effector.dev/rules/) section of the documentation.
+To explore all available presets, refer to the [Rules](https://eslint.effector.dev/rules/) section of the documentation. For more details or legacy config usage, see the [Installation](https://eslint.effector.dev/installation/) section.
 
 ### TypeScript Requirement
 

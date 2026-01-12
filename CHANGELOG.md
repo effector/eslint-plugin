@@ -5,12 +5,13 @@
 ### Breaking Changes
 
 - Minimum Node.js version is now `^20.9.0 || >=21.1.0` (matches ESLint requirements)
+- Supports ESLint `^8.57.0 || ^9.0.0`
 - Codebase rewritten in TypeScript; 19 of 20 existing + 1 new rule (re)implemented using modern `@typescript-eslint` APIs
 - Now requires type-aware linting with `@typescript-eslint`
 
 ### Core Changes
 
-- Native ESLint v9 flat config support
+- Native ESLint v9 flat config support via `flatConfigs` (ESLint v8 `.eslintrc` still supported)
 - Public TypeScript type definitions (passes `publint` & `attw`)
 
 ### Rule Changes

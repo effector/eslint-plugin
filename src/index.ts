@@ -50,15 +50,32 @@ const base = {
   },
 }
 
-const configs = {
-  recommended: { plugins: { effector: base as TSESLint.FlatConfig.Plugin }, rules: ruleset.recommended },
-  scope: { plugins: { effector: base as TSESLint.FlatConfig.Plugin }, rules: ruleset.scope },
-  react: { plugins: { effector: base as TSESLint.FlatConfig.Plugin }, rules: ruleset.react },
-  future: { plugins: { effector: base as TSESLint.FlatConfig.Plugin }, rules: ruleset.future },
+const legacyConfigs = {
+  recommended: { rules: ruleset.recommended },
+  scope: { rules: ruleset.scope },
+  react: { rules: ruleset.react },
+  future: { rules: ruleset.future },
+  patronum: { rules: ruleset.patronum },
 }
 
-const plugin = base as typeof base & { configs: typeof configs }
+const self = base as TSESLint.FlatConfig.Plugin
 
-plugin.configs = configs
+const flatConfigs = {
+  recommended: { plugins: { effector: self }, rules: ruleset.recommended },
+  scope: { plugins: { effector: self }, rules: ruleset.scope },
+  react: { plugins: { effector: self }, rules: ruleset.react },
+  future: { plugins: { effector: self }, rules: ruleset.future },
+  patronum: { plugins: { effector: self }, rules: ruleset.patronum },
+}
+
+const plugin = base as {
+  flatConfigs: typeof flatConfigs
+
+  /** @deprecated Migrate to modern ESLint v9 Flat Config format */
+  configs: typeof legacyConfigs
+} & typeof base
+
+plugin.configs = legacyConfigs
+plugin.flatConfigs = flatConfigs
 
 export default plugin

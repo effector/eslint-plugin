@@ -20,7 +20,7 @@ This preset is recommended for most projects, so we suggest enabling it by defau
 import effector from "eslint-plugin-effector" // [!code focus]
 
 const config = [
-  effector.configs.recommended, // [!code focus]
+  effector.flatConfigs.recommended, // [!code focus]
 ]
 ```
 
@@ -38,7 +38,7 @@ This preset is recommended for projects that use [`patronum`](https://patronum.e
 import effector from "eslint-plugin-effector" // [!code focus]
 
 const config = [
-  effector.configs.patronum, // [!code focus]
+  effector.flatConfigs.patronum, // [!code focus]
 ]
 ```
 
@@ -56,7 +56,7 @@ This preset is recommended for projects that use React with Effector.
 import effector from "eslint-plugin-effector" // [!code focus]
 
 const config = [
-  effector.configs.react, // [!code focus]
+  effector.flatConfigs.react, // [!code focus]
 ]
 ```
 
@@ -74,7 +74,7 @@ This preset is recommended for projects that use [Fork API](https://effector.dev
 import effector from "eslint-plugin-effector" // [!code focus]
 
 const config = [
-  effector.configs.scope, // [!code focus]
+  effector.flatConfigs.scope, // [!code focus]
 ]
 ```
 
@@ -92,7 +92,7 @@ Effector is evolving! Future-proof your code with this preset, which enforces be
 import effector from "eslint-plugin-effector" // [!code focus]
 
 const config = [
-  effector.configs.future, // [!code focus]
+  effector.flatConfigs.future, // [!code focus]
 ]
 ```
 
