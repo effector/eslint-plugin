@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+
+    "target": "ES2022",
+
+    "moduleDetection": "force",
+    "moduleResolution": "bundler",
+
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    "module": "preserve",
+    "noEmit": true,
+
+    "declaration": true,
+
+    "lib": ["ESNext"],
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["src"]
+}

@@ -1,55 +1,42 @@
-# eslint-plugin-effector
+<h1 align="center">eslint-plugin-effector</h1>
 
-Enforcing best practices for [Effector](http://effector.dev/). Documentation available at [eslint.effector.dev](https://eslint.effector.dev/).
+An ESLint plugin for enforcing best practices for [Effector](https://effector.dev).
 
-> This plugin uses TypeScript for more precise results, but JavaScript is supported too.
+For comprehensive documentation, including rules and configuration guides, visit official documentation at [eslint.effector.dev](https://eslint.effector.dev).
 
 ## Installation
 
-Install [ESLint](http://eslint.org) and `eslint-plugin-effector`:
+First, install [ESLint](https://eslint.org) and the plugin:
 
-### pnpm
+```bash
+# pnpm
+pnpm add --save-dev eslint eslint-plugin-effector
 
-```
-$ pnpm install --dev eslint
-$ pnpm install --dev eslint-plugin-effector
-```
+# yarn
+yarn add --dev eslint eslint-plugin-effector
 
-### yarn
-
-```
-$ yarn add --dev eslint
-$ yarn add --dev eslint-plugin-effector
-```
-
-### npm
-
-```
-$ npm install --dev eslint
-$ npm install --dev eslint-plugin-effector
+# npm
+npm install --save-dev eslint eslint-plugin-effector
 ```
 
 ## Usage
 
-Add `effector` to the plugins section of your `.eslintrc` configuration file. You can omit the `eslint-plugin-` prefix:
+This plugin supports the new [flat config format](https://eslint.org/docs/latest/use/configure/configuration-files) for ESLint. Start by adding the `recommended` preset to your `eslint.config.js`:
 
-```json
-{
-  "plugins": ["effector"],
-  "extends": ["plugin:effector/recommended", "plugin:effector/scope"]
-}
+```js
+// eslint.config.js
+import effector from "eslint-plugin-effector"
+
+export default [
+  /* ... */
+
+  // Include the recommended preset:
+  effector.flatConfigs.recommended,
+]
 ```
 
-Read more detailed docs on [eslint.effector.dev](https://eslint.effector.dev/)
+To explore all available presets, refer to the [Rules](https://eslint.effector.dev/rules/) section of the documentation. For more details or legacy config usage, see the [Installation](https://eslint.effector.dev/installation/) section.
 
-## Maintenance
+### TypeScript Requirement
 
-### Release flow
-
-1. Bump `version` in [package.json](package.json)
-2. Fill [CHANGELOG.md](CHANGELOG.md)
-3. Commit changes by `git commit -m "Release X.X.X"`
-4. Create git tag for release by `git tag -a vX.X.X -m "vX.X.X"`
-5. Push changes to remote by `git push --follow-tags`
-6. Release package to registry by `pnpm clean-publish`
-7. Fill release page with changelog on GitHub
+This plugin leverages TypeScript for accurate linting. You must have TypeScript and type-aware linting configured. For setup instructions, please see the [official `typescript-eslint` documentation](https://typescript-eslint.io/getting-started/typed-linting/).

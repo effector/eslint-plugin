@@ -1,7 +1,0 @@
-import { createEffect } from "effector";
-
-const watcher = <T>(x: T) => x;
-const watchableFx = createEffect();
-
-watchableFx.fail.watch(watcher);
-watchableFx.failData.watch(watcher);

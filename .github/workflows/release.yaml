@@ -1,0 +1,29 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          registry-url: "https://registry.npmjs.org"
+          node-version: "25.x"
+
+      - uses: pnpm/action-setup@v4
+        with:
+          cache: true
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm publish

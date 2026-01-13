@@ -1,0 +1,5 @@
+minimumReleaseAge: 2160
+
+onlyBuiltDependencies:
+  - esbuild
+  - unrs-resolver
