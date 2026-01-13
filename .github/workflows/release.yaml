@@ -26,4 +26,4 @@ jobs:
           cache: true
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm publish
+      - run: pnpm publish --no-git-checks
