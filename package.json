@@ -9,6 +9,10 @@
     "effector"
   ],
   "homepage": "https://eslint.effector.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/effector/eslint-plugin"
+  },
   "license": "MIT",
   "author": "Igor Kamyshev <igor@kamyshev.me>",
   "contributors": [
