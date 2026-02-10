@@ -35,21 +35,29 @@ export default createRule({
         const current = stack.render.at(-1) ?? false
         if (current) return void stack.render.push(true)
 
-        const name = nameOf.function(node) // detect a react hook
+        /* === detect a react hook === */
+        const name = nameOf.function(node)
         if (name && UseRegex.test(name.name)) return void stack.render.push(true)
 
         const tsnode = services.esTreeNodeToTSNodeMap.get(node)
 
-        // detect a react component by (inferred) return type
+        /* === detect a react component by (inferred) return type === */
         const signature = checker.getSignatureFromDeclaration(tsnode)
         const returnType = signature ? checker.getReturnTypeOfSignature(signature) : checker.getVoidType()
 
-        if (isType.jsx(returnType, services.program)) return void stack.render.push(true)
+        const isJSX = returnType.isUnion()
+          ? returnType.types.some((type) => isType.jsx(type, services.program))
+          : isType.jsx(returnType, services.program)
 
-        // detect a react component by inferred contextual type
-        const inferred = isExpression(tsnode) ? getContextualType(checker, tsnode) : undefined
+        if (isJSX) return void stack.render.push(true)
 
-        const isComponent = inferred ? isType.component(inferred, services.program) : false
+        /* === detect a react component by inferred contextual type === */
+        const inferred = (isExpression(tsnode) && getContextualType(checker, tsnode)) || checker.getUnknownType()
+
+        const isComponent = inferred.isUnion()
+          ? inferred.types.some((type) => isType.component(type, services.program))
+          : isType.component(inferred, services.program)
+
         if (isComponent) return void stack.render.push(true)
 
         return void stack.render.push(false)

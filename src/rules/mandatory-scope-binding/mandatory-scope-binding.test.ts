@@ -393,5 +393,38 @@ ruleTester.run("mandatory-scope-binding", rule, {
         { messageId: "useUnitNeeded", line: 10, column: 31, data: { name: "clicked" } },
       ],
     },
+    {
+      name: "component with union return type",
+      code: tsx`
+        import React from "react"
+        import { createEvent } from "effector"
+
+        const clicked = createEvent<unknown>()
+
+        function Button() {
+          if (Math.random() > 0.5) return null
+          else return <button onClick={clicked}>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 8, column: 32, data: { name: "clicked" } }],
+    },
+    {
+      name: "component with union inferred contextual type",
+      code: tsx`
+        import React from "react"
+        import { createEvent } from "effector"
+
+        const clicked = createEvent<unknown>()
+
+        const Button: React.FC | null = () => (clicked(), null)
+
+        const insert = (component?: React.ComponentType) => undefined
+        insert(() => (clicked(), null))
+      `,
+      errors: [
+        { messageId: "useUnitNeeded", line: 6, column: 40, data: { name: "clicked" } },
+        { messageId: "useUnitNeeded", line: 9, column: 15, data: { name: "clicked" } },
+      ],
+    },
   ],
 })
