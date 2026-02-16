@@ -5,7 +5,7 @@ import imports from "eslint-plugin-import-x"
 
 /** @type {import('typescript-eslint').Config} */
 const config = [
-  { ignores: ["dist", "docs"] },
+  { ignores: ["dist", "docs", "coverage"] },
   { ignores: ["eslint.config.js", "vitest.config.ts", "tsdown.config.ts"] },
 
   js.configs.recommended,
@@ -22,7 +22,8 @@ const config = [
     rules: {
       "sort-imports": ["warn", { allowSeparatedGroups: true, ignoreDeclarationSort: true }],
 
-      "import-x/no-default-export": "error",
+      // TODO: re-enable after import-x v10 support released
+      "import-x/no-default-export": "off",
       "import-x/no-duplicates": ["error", { "prefer-inline": true }],
       "import-x/newline-after-import": "error",
       "import-x/no-named-as-default-member": "off",
