@@ -1,4 +1,4 @@
-import type { TSESLint } from "@typescript-eslint/utils"
+import type { ESLint, Linter } from "eslint"
 
 import { name, version } from "../package.json"
 
@@ -58,9 +58,9 @@ const legacyConfigs = {
   patronum: { rules: ruleset.patronum },
 }
 
-const self = base as TSESLint.FlatConfig.Plugin
+const self = base as unknown as ESLint.Plugin
 
-const flatConfigs = {
+const flatConfigs: Record<keyof typeof ruleset, Linter.Config> = {
   recommended: { plugins: { effector: self }, rules: ruleset.recommended },
   scope: { plugins: { effector: self }, rules: ruleset.scope },
   react: { plugins: { effector: self }, rules: ruleset.react },
@@ -71,7 +71,7 @@ const flatConfigs = {
 const plugin = base as {
   flatConfigs: typeof flatConfigs
 
-  /** @deprecated Migrate to modern ESLint v9 Flat Config format */
+  /** @deprecated Migrate to modern ESLint v9+ Flat Config format */
   configs: typeof legacyConfigs
 } & typeof base
 
