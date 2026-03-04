@@ -1,15 +1,18 @@
-const { RuleTester } = require("eslint");
-const rule = require("./use-unit-destructuring");
+import { RuleTester } from "@typescript-eslint/rule-tester"
+
+import rule from "./use-unit-destructuring"
 
 const ruleTester = new RuleTester({
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    ecmaFeatures: { jsx: true },
+  languageOptions: {
+    parserOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      ecmaFeatures: { jsx: true },
+    },
   },
-});
+})
 
-ruleTester.run("effector/use-unit-destructuring.test", rule, {
+ruleTester.run("effector/use-unit-destructuring", rule, {
   valid: [
     // All keys were destructured
     {
@@ -137,6 +140,7 @@ ruleTester.run("effector/use-unit-destructuring.test", rule, {
         },
       ],
     },
+    // JSX component with object-shape
     {
       code: `
         import React, { Fragment } from "react";
@@ -158,4 +162,4 @@ ruleTester.run("effector/use-unit-destructuring.test", rule, {
       ],
     },
   ],
-});
+})

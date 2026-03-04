@@ -28,6 +28,7 @@ const react = {
   "effector/enforce-gate-naming-convention": "error",
   "effector/mandatory-scope-binding": "error",
   "effector/prefer-useUnit": "error",
+  "effector/use-unit-destructuring": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
 const future = {
