@@ -13,6 +13,7 @@ const recommended = {
   "effector/no-unnecessary-duplication": "warn",
   "effector/no-useless-methods": "error",
   "effector/no-watch": "warn",
+  "effector/prefer-single-binding": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
 const patronum = {

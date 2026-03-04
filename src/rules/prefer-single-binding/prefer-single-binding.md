@@ -59,7 +59,7 @@ The rule uses heuristics to determine whether a unit is a store or an event:
 
 ```javascript
 // .eslintrc.js
-module.exports = {
+export default {
   rules: {
     'effector/prefer-single-binding': ['warn', {
       allowSeparateStoresAndEvents: true
@@ -120,7 +120,7 @@ This is useful when you want to maintain clear logical separation between state 
 
 ```javascript
 // .eslintrc.js
-module.exports = {
+export default {
   rules: {
     'effector/prefer-single-binding': ['warn', {
       enforceStoresAndEventsSeparation: true
@@ -178,7 +178,7 @@ You can use both options together to enforce a specific code style:
 
 ```javascript
 // .eslintrc.js
-module.exports = {
+export default {
   rules: {
     'effector/prefer-single-binding': ['warn', {
       allowSeparateStoresAndEvents: true,
@@ -516,7 +516,7 @@ const [handler, handler2] = useUnit([event1, event2]);
 ### Strict single call (default)
 ```javascript
 // .eslintrc.js
-module.exports = {
+export default {
   rules: {
     'effector/prefer-single-binding': 'warn'
   }
@@ -526,7 +526,7 @@ module.exports = {
 ### Allow stores/events separation
 ```javascript
 // .eslintrc.js
-module.exports = {
+export default {
   rules: {
     'effector/prefer-single-binding': ['warn', {
       allowSeparateStoresAndEvents: true
@@ -538,7 +538,7 @@ module.exports = {
 ### Enforce stores/events separation
 ```javascript
 // .eslintrc.js
-module.exports = {
+export default {
   rules: {
     'effector/prefer-single-binding': ['warn', {
       enforceStoresAndEventsSeparation: true
@@ -550,7 +550,7 @@ module.exports = {
 ### Enforce separation and combine duplicates
 ```javascript
 // .eslintrc.js
-module.exports = {
+export default {
   rules: {
     'effector/prefer-single-binding': ['warn', {
       allowSeparateStoresAndEvents: true,
