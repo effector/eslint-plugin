@@ -19,6 +19,7 @@ import noUnnecessaryCombination from "./rules/no-unnecessary-combination/no-unne
 import noUnnecessaryDuplication from "./rules/no-unnecessary-duplication/no-unnecessary-duplication"
 import noUselessMethods from "./rules/no-useless-methods/no-useless-methods"
 import noWatch from "./rules/no-watch/no-watch"
+import preferSingleBinding from "./rules/prefer-single-binding/prefer-single-binding"
 import preferUseUnit from "./rules/prefer-useUnit/prefer-useUnit"
 import requirePickupInPersist from "./rules/require-pickup-in-persist/require-pickup-in-persist"
 import strictEffectHandlers from "./rules/strict-effect-handlers/strict-effect-handlers"
@@ -47,6 +48,7 @@ const base = {
     "prefer-useUnit": preferUseUnit,
     "require-pickup-in-persist": requirePickupInPersist,
     "strict-effect-handlers": strictEffectHandlers,
+    "prefer-single-binding": preferSingleBinding,
   },
 }
 
