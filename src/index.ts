@@ -23,6 +23,7 @@ import noWatch from "./rules/no-watch/no-watch"
 import preferUseUnit from "./rules/prefer-useUnit/prefer-useUnit"
 import requirePickupInPersist from "./rules/require-pickup-in-persist/require-pickup-in-persist"
 import strictEffectHandlers from "./rules/strict-effect-handlers/strict-effect-handlers"
+import useUnitDestructuring from "./rules/use-unit-destructuring/use-unit-destructuring"
 import { ruleset } from "./ruleset"
 
 const base = {
@@ -47,6 +48,7 @@ const base = {
     "no-useless-methods": noUselessMethods,
     "no-watch": noWatch,
     "prefer-useUnit": preferUseUnit,
+    "use-unit-destructuring": useUnitDestructuring,
     "require-pickup-in-persist": requirePickupInPersist,
     "strict-effect-handlers": strictEffectHandlers,
   },
