@@ -1,19 +1,22 @@
-const { RuleTester } = require("eslint");
-const rule = require("./prefer-single-binding");
+import { RuleTester } from "@typescript-eslint/rule-tester"
+
+import rule from "./prefer-single-binding"
 
 const ruleTester = new RuleTester({
+  languageOptions: {
     parserOptions: {
-        ecmaVersion: 2020,
-        sourceType: "module",
-        ecmaFeatures: { jsx: true },
+      ecmaVersion: 2020,
+      sourceType: "module",
+      ecmaFeatures: { jsx: true },
     },
-});
+  },
+})
 
-ruleTester.run("effector/prefer-single-binding.test", rule, {
-    valid: [
-        // With enforceStoresAndEventsSeparation - already separated
-        {
-            code: `
+ruleTester.run("effector/prefer-single-binding", rule, {
+  valid: [
+    // With enforceStoresAndEventsSeparation - already separated
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [store] = useUnit([$store]);
@@ -21,10 +24,10 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            options: [{ enforceStoresAndEventsSeparation: true }],
-        },
-        {
-            code: `
+      options: [{ enforceStoresAndEventsSeparation: true }],
+    },
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isFormSent] = useUnit([HelpFormModel.$isFormSent]);
@@ -32,11 +35,11 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            options: [{ allowSeparateStoresAndEvents: true }],
-        },
-        // Once useUnit call - OK
-        {
-            code: `
+      options: [{ allowSeparateStoresAndEvents: true }],
+    },
+    // Once useUnit call - OK
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [store, event] = useUnit([$store, event]);
@@ -44,10 +47,10 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-        // Once useUnit with object-shape - OK
-        {
-            code: `
+    },
+    // Once useUnit with object-shape - OK
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const { store, event } = useUnit({ store: $store, event: event });
@@ -55,21 +58,21 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-        // useUnit outside of components - dont check
-        {
-            code: `
+    },
+    // useUnit outside of components - dont check
+    {
+      code: `
         import { useUnit } from "effector-react";
         const store = useUnit([$store]);
         const event = useUnit([event]);
       `,
-        },
-    ],
+    },
+  ],
 
-    invalid: [
-        // Two useUnit calls with array-shape
-        {
-            code: `
+  invalid: [
+    // Two useUnit calls with array-shape
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [store] = useUnit([$store]);
@@ -78,12 +81,12 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            errors: [
-                {
-                    messageId: "multipleUseUnit",
-                },
-            ],
-            output: `
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [store, event] = useUnit([$store, event]);
@@ -91,10 +94,10 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-        // Three useUnit with array-shape
-        {
-            code: `
+    },
+    // Three useUnit with array-shape
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [store] = useUnit([$store]);
@@ -104,15 +107,15 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            errors: [
-                {
-                    messageId: "multipleUseUnit",
-                },
-                {
-                    messageId: "multipleUseUnit",
-                },
-            ],
-            output: `
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+        },
+        {
+          messageId: "multipleUseUnit",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [store, event, another] = useUnit([$store, event, $another]);
@@ -120,10 +123,10 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-        // Two useUnit calls with object-shape
-        {
-            code: `
+    },
+    // Two useUnit calls with object-shape
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const { store } = useUnit({ store: $store });
@@ -132,12 +135,12 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            errors: [
-                {
-                    messageId: "multipleUseUnit",
-                },
-            ],
-            output: `
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const { store, event } = useUnit({ store: $store, event: event });
@@ -145,10 +148,10 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-        // Multiple useUnit calls
-        {
-            code: `
+    },
+    // Multiple useUnit calls
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [store1, store2] = useUnit([$store1, $store2]);
@@ -157,12 +160,12 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            errors: [
-                {
-                    messageId: "multipleUseUnit",
-                },
-            ],
-            output: `
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [store1, store2, event1, event2] = useUnit([$store1, $store2, event1, event2]);
@@ -170,9 +173,9 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-        {
-            code: `
+    },
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isFormSent] = useUnit([HelpFormModel.$isFormSent]);
@@ -181,13 +184,13 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            options: [{ allowSeparateStoresAndEvents: true }],
-            errors: [
-                {
-                    messageId: "multipleUseUnit",
-                },
-            ],
-            output: `
+      options: [{ allowSeparateStoresAndEvents: true }],
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isFormSent] = useUnit([HelpFormModel.$isFormSent]);
@@ -195,11 +198,10 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-
-        // MemberExpression - два стора должны объединиться
-        {
-            code: `
+    },
+    // MemberExpression - два стора должны объединиться
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isFormSent] = useUnit([HelpFormModel.$isFormSent]);
@@ -208,13 +210,13 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            options: [{ allowSeparateStoresAndEvents: true }],
-            errors: [
-                {
-                    messageId: "multipleUseUnit",
-                },
-            ],
-            output: `
+      options: [{ allowSeparateStoresAndEvents: true }],
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isFormSent, isLoading] = useUnit([HelpFormModel.$isFormSent, HelpFormModel.$isLoading]);
@@ -222,11 +224,10 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-
-        // Смешанные паттерны именования
-        {
-            code: `
+    },
+    // Смешанные паттерны именования
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isVisible] = useUnit([Model.isVisible]);
@@ -236,16 +237,16 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            options: [{ allowSeparateStoresAndEvents: true }],
-            errors: [
-                {
-                    messageId: "multipleUseUnit",
-                },
-                {
-                    messageId: "multipleUseUnit",
-                },
-            ],
-            output: `
+      options: [{ allowSeparateStoresAndEvents: true }],
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+        },
+        {
+          messageId: "multipleUseUnit",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isVisible, hasError] = useUnit([Model.isVisible, Model.hasError]);
@@ -253,11 +254,10 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-
-        // Без опции - все должно объединиться
-        {
-            code: `
+    },
+    // Без опции - все должно объединиться
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isFormSent] = useUnit([HelpFormModel.$isFormSent]);
@@ -266,38 +266,38 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            errors: [
-                {
-                    messageId: "multipleUseUnit",
-                },
-                {
-                    messageId: "multipleUseUnit",
-                },
-            ],
-            output: `
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+        },
+        {
+          messageId: "multipleUseUnit",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isFormSent, sent, submit] = useUnit([HelpFormModel.$isFormSent, HelpFormModel.sentFormChanged, HelpFormModel.submitHelpForm]);
           return null;
         };
       `,
-        },
-        // enforceStoresAndEventsSeparation - mixed array
-        {
-            code: `
+    },
+    // enforceStoresAndEventsSeparation - mixed array
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [value, setValue] = useUnit([$store, event]);
           return null;
         };
       `,
-            options: [{ enforceStoresAndEventsSeparation: true }],
-            errors: [
-                {
-                    messageId: "mixedStoresAndEvents",
-                },
-            ],
-            output: `
+      options: [{ enforceStoresAndEventsSeparation: true }],
+      errors: [
+        {
+          messageId: "mixedStoresAndEvents",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [value] = useUnit([$store]);
@@ -305,24 +305,23 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-
-        // enforceStoresAndEventsSeparation - mixed array with multiple items
-        {
-            code: `
+    },
+    // enforceStoresAndEventsSeparation - mixed array with multiple items
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [value1, value2, handler1, handler2] = useUnit([$store1, $store2, event1, event2]);
           return null;
         };
       `,
-            options: [{ enforceStoresAndEventsSeparation: true }],
-            errors: [
-                {
-                    messageId: "mixedStoresAndEvents",
-                },
-            ],
-            output: `
+      options: [{ enforceStoresAndEventsSeparation: true }],
+      errors: [
+        {
+          messageId: "mixedStoresAndEvents",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [value1, value2] = useUnit([$store1, $store2]);
@@ -330,24 +329,23 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-
-        // enforceStoresAndEventsSeparation - mixed object
-        {
-            code: `
+    },
+    // enforceStoresAndEventsSeparation - mixed object
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const { value, setValue } = useUnit({ value: $store, setValue: event });
           return null;
         };
       `,
-            options: [{ enforceStoresAndEventsSeparation: true }],
-            errors: [
-                {
-                    messageId: "mixedStoresAndEvents",
-                },
-            ],
-            output: `
+      options: [{ enforceStoresAndEventsSeparation: true }],
+      errors: [
+        {
+          messageId: "mixedStoresAndEvents",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const { value } = useUnit({ value: $store });
@@ -355,11 +353,10 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-
-        // Real example with model
-        {
-            code: `
+    },
+    // Real example with model
+    {
+      code: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isFormSent, submit, reset] = useUnit([
@@ -370,13 +367,13 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-            options: [{ enforceStoresAndEventsSeparation: true }],
-            errors: [
-                {
-                    messageId: "mixedStoresAndEvents",
-                },
-            ],
-            output: `
+      options: [{ enforceStoresAndEventsSeparation: true }],
+      errors: [
+        {
+          messageId: "mixedStoresAndEvents",
+        },
+      ],
+      output: `
         import { useUnit } from "effector-react";
         const Component = () => {
           const [isFormSent] = useUnit([FormModel.$isFormSent]);
@@ -384,6 +381,6 @@ ruleTester.run("effector/prefer-single-binding.test", rule, {
           return null;
         };
       `,
-        },
-    ],
-});
+    },
+  ],
+})
