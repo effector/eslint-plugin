@@ -1,6 +1,6 @@
 import { getContextualType, typeMatchesSpecifier } from "@typescript-eslint/type-utils"
-import { AST_NODE_TYPES, ESLintUtils, type TSESTree as Node } from "@typescript-eslint/utils"
-import { type Program, type Type, type TypeChecker, isExpression } from "typescript"
+import { AST_NODE_TYPES, ESLintUtils, type TSESTree as ESNode } from "@typescript-eslint/utils"
+import { type Program, type Node as TSNode, type Type, type TypeChecker, isExpression } from "typescript"
 
 import { createRule } from "@/shared/create"
 import { isType } from "@/shared/is"
@@ -74,7 +74,7 @@ export default createRule({
     // Populated from `import { createStore, sample } from "effector"` (handles renames too).
     const effectorImports = new Map<string, "factory" | "operator">()
 
-    type ComponentFunction = Node.FunctionDeclaration | Node.FunctionExpression | Node.ArrowFunctionExpression
+    type ComponentFunction = ESNode.FunctionDeclaration | ESNode.FunctionExpression | ESNode.ArrowFunctionExpression
 
     const importSelector = `ImportDeclaration[source.value=${PACKAGE_NAME.core}]`
 
@@ -82,7 +82,7 @@ export default createRule({
       // ── Phase 1: Collect effector imports ──────────────────────────────────
 
       [`${importSelector} > ImportSpecifier[imported.type="Identifier"]`]: (
-        node: Node.ImportSpecifier & { imported: Node.Identifier },
+        node: ESNode.ImportSpecifier & { imported: ESNode.Identifier },
       ) => {
         const imported = node.imported.name
         const local = node.local.name
@@ -164,7 +164,7 @@ export default createRule({
       //       by callee type against the effector package
       //     - Anything remaining is treated as a custom factory
 
-      "CallExpression": (node: Node.CallExpression) => {
+      "CallExpression": (node: ESNode.CallExpression) => {
         const isWithinRender = stack.render.at(-1) ?? false
         if (!isWithinRender) return
 
@@ -172,36 +172,31 @@ export default createRule({
 
         // Tier 1: known effector import — report immediately, skip type analysis
         const importType = calleeName ? effectorImports.get(calleeName) : undefined
-        if (importType === "factory") {
-          context.report({ node, messageId: "noFactoryInRender", data: { name: calleeName } })
-          return
-        }
-        if (importType === "operator") {
-          context.report({ node, messageId: "noOperatorInRender", data: { name: calleeName } })
-          return
+        switch (importType) {
+          case "factory":
+            return context.report({ node, messageId: "noFactoryInRender", data: { name: calleeName } })
+          case "operator":
+            return context.report({ node, messageId: "noOperatorInRender", data: { name: calleeName } })
         }
 
         // Tier 2: return type contains effector units — classify via callee type
         const returnType = services.getTypeAtLocation(node)
-        if (!hasEffectorUnitInType(returnType, checker, services.program)) return
+        const ctx: TraverseCtx = { node: services.esTreeNodeToTSNodeMap.get(node), checker, program: services.program }
+
+        if (!hasEffectorUnitInType(ctx, returnType)) return
 
         const calleeType = services.getTypeAtLocation(node.callee)
+        const displayName = calleeName ?? "<expression>"
+
         if (typeMatchesSpecifier(calleeType, REACT_HOOKS_SPEC, services.program)) return
 
-        if (typeMatchesSpecifier(calleeType, EFFECTOR_FACTORY_SPEC, services.program)) {
-          context.report({ node, messageId: "noFactoryInRender", data: { name: calleeName ?? "<expression>" } })
-          return
-        }
-        if (typeMatchesSpecifier(calleeType, EFFECTOR_OPERATOR_SPEC, services.program)) {
-          context.report({ node, messageId: "noOperatorInRender", data: { name: calleeName ?? "<expression>" } })
-          return
-        }
+        if (typeMatchesSpecifier(calleeType, EFFECTOR_FACTORY_SPEC, services.program))
+          return context.report({ node, messageId: "noFactoryInRender", data: { name: displayName } })
 
-        context.report({
-          node,
-          messageId: "noCustomFactoryInRender",
-          data: { name: calleeName ?? "<expression>" },
-        })
+        if (typeMatchesSpecifier(calleeType, EFFECTOR_OPERATOR_SPEC, services.program))
+          return context.report({ node, messageId: "noOperatorInRender", data: { name: displayName } })
+
+        context.report({ node, messageId: "noCustomFactoryInRender", data: { name: displayName } })
       },
     }
   },
@@ -209,33 +204,28 @@ export default createRule({
 
 const UseRegex = /^use[A-Z0-9].*$/
 
-function getCalleeName(callee: Node.CallExpression["callee"]): string | null {
+function getCalleeName(callee: ESNode.Expression): string | null {
   if (callee.type === AST_NODE_TYPES.Identifier) return callee.name
-  if (callee.type === AST_NODE_TYPES.MemberExpression && callee.property.type === AST_NODE_TYPES.Identifier) {
+  if (callee.type === AST_NODE_TYPES.MemberExpression && callee.property.type === AST_NODE_TYPES.Identifier)
     return callee.property.name
-  }
-  return null
+  else return null
 }
+
+type TraverseCtx = { node: TSNode; checker: TypeChecker; program: Program }
 
 // Walks the type structure up to `depth` levels of object nesting to find effector units.
 // Unions don't consume depth — they are alternative shapes at the same level.
-function hasEffectorUnitInType(type: Type, checker: TypeChecker, program: Program, depth = 3): boolean {
-  if (isType.unit(type, program) || isType.domain(type, program)) return true
+function hasEffectorUnitInType(ctx: TraverseCtx, type: Type, depth = 3): boolean {
+  if (isType.unit(type, ctx.program)) return true
   if (depth <= 0) return false
 
   // For unions, getProperties() only returns common properties across all members.
   // We must recurse into each member to check their individual properties for userland factories.
-  if (type.isUnion()) {
-    return type.types.some((t) => hasEffectorUnitInType(t, checker, program, depth))
-  }
+  if (type.isUnion()) return type.types.some((type) => hasEffectorUnitInType(ctx, type, depth))
 
-  const properties = type.getProperties()
-  for (const prop of properties) {
-    const firstDeclaration = prop.declarations?.[0]
-    const propType = firstDeclaration
-      ? checker.getTypeOfSymbolAtLocation(prop, firstDeclaration)
-      : checker.getTypeOfSymbol(prop)
-    if (hasEffectorUnitInType(propType, checker, program, depth - 1)) return true
+  for (const property of type.getProperties()) {
+    const type = ctx.checker.getTypeOfSymbolAtLocation(property, ctx.node)
+    if (hasEffectorUnitInType(ctx, type, depth - 1)) return true
   }
 
   return false
