@@ -22,8 +22,7 @@ const config = [
     rules: {
       "sort-imports": ["warn", { allowSeparatedGroups: true, ignoreDeclarationSort: true }],
 
-      // TODO: re-enable after import-x v10 support released
-      "import-x/no-default-export": "off",
+      "import-x/no-default-export": "error",
       "import-x/no-duplicates": ["error", { "prefer-inline": true }],
       "import-x/newline-after-import": "error",
       "import-x/no-named-as-default-member": "off",

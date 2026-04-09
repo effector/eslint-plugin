@@ -21,6 +21,7 @@
     "declaration": true,
 
     "lib": ["ESNext"],
+    "types": ["node"],
     "paths": { "@/*": ["./src/*"] }
   },
   "include": ["src"]
