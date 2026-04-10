@@ -15,6 +15,7 @@ import noForward from "./rules/no-forward/no-forward"
 import noGetState from "./rules/no-getState/no-getState"
 import noGuard from "./rules/no-guard/no-guard"
 import noPatronumDebug from "./rules/no-patronum-debug/no-patronum-debug"
+import noUnitsSpawnInRender from "./rules/no-units-spawn-in-render/no-units-spawn-in-render"
 import noUnnecessaryCombination from "./rules/no-unnecessary-combination/no-unnecessary-combination"
 import noUnnecessaryDuplication from "./rules/no-unnecessary-duplication/no-unnecessary-duplication"
 import noUselessMethods from "./rules/no-useless-methods/no-useless-methods"
@@ -40,6 +41,7 @@ const base = {
     "no-getState": noGetState,
     "no-guard": noGuard,
     "no-patronum-debug": noPatronumDebug,
+    "no-units-spawn-in-render": noUnitsSpawnInRender,
     "no-unnecessary-combination": noUnnecessaryCombination,
     "no-unnecessary-duplication": noUnnecessaryDuplication,
     "no-useless-methods": noUselessMethods,

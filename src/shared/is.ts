@@ -24,7 +24,7 @@ export const isType = {
     typeMatchesSpecifier(type, { from: "package", package: "effector", name: "Effect" }, program),
 
   unit: (type: Type, program: Program) => {
-    const name = ["Store", "StoreWritable", "Event", "EventCallable", "Effect"]
+    const name = ["Store", "StoreWritable", "Event", "EventCallable", "Effect", "Domain"]
     return typeMatchesSpecifier(type, { from: "package", package: "effector", name }, program)
   },
 

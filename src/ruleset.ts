@@ -27,6 +27,7 @@ const scope = {
 const react = {
   "effector/enforce-gate-naming-convention": "error",
   "effector/mandatory-scope-binding": "error",
+  "effector/no-units-spawn-in-render": "error",
   "effector/prefer-useUnit": "error",
 } satisfies TSESLint.Linter.RulesRecord
 
