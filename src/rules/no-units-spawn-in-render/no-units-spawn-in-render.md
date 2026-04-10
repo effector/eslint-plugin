@@ -79,6 +79,16 @@ function Component() {
 
   return <div>{value}</div>
 }
+
+// 👍 effector-factorio's useModel() retrieves units from context, not creating new ones
+import { counterFactory } from "./model"
+
+function Counter() {
+  const { $count, inc } = counterFactory.useModel()
+  const count = useUnit($count)
+
+  return <button onClick={inc}>{count}</button>
+}
 ```
 
 ## Rule Details
@@ -90,6 +100,14 @@ This rule detects:
 3. **Custom factory functions**: Functions that return objects containing Effector units (requires TypeScript)
 
 The rule uses TypeScript type information to detect custom factories that return Effector units.
+
+## Known Exceptions
+
+### `effector-factorio`
+
+The [`effector-factorio`](https://github.com/Kelin2025/effector-factorio) library provides a `factory.useModel()` hook that retrieves pre-created units from React context (similar to `useContext`). This rule has a built-in exception for `useModel` — it will not be flagged.
+
+Note that `factory.createModel()` **will** still be flagged if called inside a component, since it creates new unit instances.
 
 ## When Not To Use It
 

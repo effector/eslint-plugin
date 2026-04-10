@@ -114,6 +114,22 @@ ruleTester.run("no-units-spawn-in-render", rule, {
       `,
     },
     {
+      name: "effector-factorio useModel in component (context-based)",
+      code: tsx`
+        import React from "react"
+        import { useUnit } from "effector-react"
+
+        import { counterFactory } from "${fixture("factorio")}"
+
+        const Component: React.FC = () => {
+          const { $count, inc, dec } = counterFactory.useModel()
+          const count = useUnit($count)
+
+          return <div>{count}</div>
+        }
+      `,
+    },
+    {
       name: "fork and allSettled in non-render context",
       code: tsx`
         import { createStore, fork, allSettled, createEvent } from "effector"

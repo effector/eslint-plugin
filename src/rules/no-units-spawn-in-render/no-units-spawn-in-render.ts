@@ -43,6 +43,11 @@ const REACT_HOOKS_SPEC = {
 const EFFECTOR_FACTORY_SPEC = { from: "package" as const, package: "effector", name: [...EFFECTOR_FACTORIES] }
 const EFFECTOR_OPERATOR_SPEC = { from: "package" as const, package: "effector", name: [...EFFECTOR_OPERATORS] }
 
+// effector-factorio's `factory.useModel()` is a context-based hook (like useContext) that retrieves
+// pre-created units — not a factory that spawns new ones. Exclude it from false-positive reports.
+// We identify a factorio factory by the structural shape of the receiver object's type.
+const EFFECTOR_FACTORIO_SHAPE = ["useModel", "createModel", "Provider", "@@unitShape"] as const
+
 export default createRule({
   name: "no-units-spawn-in-render",
   meta: {
@@ -160,6 +165,8 @@ export default createRule({
       //       `useMemo(() => createStore(0), [])` returns Store, but the inner
       //       `createStore` and the like is already flagged — reporting `useMemo` too would be noise.
       //       `useContext` is excluded because it legitimately retrieves pre-created units.
+      //     - effector-factorio's `factory.useModel()` is excluded — it retrieves
+      //       pre-created units from React context, similar to useContext
       //     - Namespaced effector calls (e.g. `effector.createStore`) are matched
       //       by callee type against the effector package
       //     - Anything remaining is treated as a custom factory
@@ -189,6 +196,7 @@ export default createRule({
         const displayName = calleeName ?? "<expression>"
 
         if (typeMatchesSpecifier(calleeType, REACT_HOOKS_SPEC, services.program)) return
+        if (isEffectorFactorioHook(node.callee, services.getTypeAtLocation)) return
 
         if (typeMatchesSpecifier(calleeType, EFFECTOR_FACTORY_SPEC, services.program))
           return context.report({ node, messageId: "noFactoryInRender", data: { name: displayName } })
@@ -229,4 +237,15 @@ function hasEffectorUnitInType(ctx: TraverseCtx, type: Type, depth = 3): boolean
   }
 
   return false
+}
+
+// Checks if the callee is a method call on an effector-factorio factory object (e.g. `factory.useModel()`).
+// Matches by structural shape of the receiver: must have useModel, createModel, Provider, and @@unitShape.
+function isEffectorFactorioHook(callee: ESNode.Expression, getTypeAtLocation: (node: ESNode.Node) => Type): boolean {
+  if (callee.type !== AST_NODE_TYPES.MemberExpression) return false
+
+  const objectType = getTypeAtLocation(callee.object)
+  const propertyNames = new Set(objectType.getProperties().map((p) => p.getName()))
+
+  return EFFECTOR_FACTORIO_SHAPE.every((name) => propertyNames.has(name))
 }
