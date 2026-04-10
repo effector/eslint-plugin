@@ -101,6 +101,30 @@ This rule detects:
 
 The rule uses TypeScript type information to detect custom factories that return Effector units.
 
+## Configuration
+
+### `detectCustomFactories`
+
+Controls whether the rule detects custom factory functions (functions that return objects containing Effector units). Defaults to `true`.
+
+**Disable custom factory detection entirely:**
+
+```jsonc
+// Only flag direct Effector API calls and operators — ignore custom factories
+"effector/no-units-spawn-in-render": ["error", { "detectCustomFactories": false }]
+```
+
+**Allow specific functions (allowlist):**
+
+```jsonc
+// Detect custom factories, but skip these specific function names
+"effector/no-units-spawn-in-render": ["error", {
+  "detectCustomFactories": { "allowlist": ["useModel", "getViewModel"] }
+}]
+```
+
+The allowlist matches against the resolved callee name — `"getModel"` will skip both `getModel()` and `obj.getModel()`.
+
 ## Known Exceptions
 
 ### `effector-factorio`

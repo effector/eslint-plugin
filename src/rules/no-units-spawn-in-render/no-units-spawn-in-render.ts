@@ -48,7 +48,11 @@ const EFFECTOR_OPERATOR_SPEC = { from: "package" as const, package: "effector", 
 // We identify a factorio factory by the structural shape of the receiver object's type.
 const EFFECTOR_FACTORIO_SHAPE = ["useModel", "createModel", "Provider", "@@unitShape"] as const
 
-export default createRule({
+type Options = {
+  detectCustomFactories: true | false | { allowlist: string[] }
+}
+
+export default createRule<[Options], "noFactoryInRender" | "noOperatorInRender" | "noCustomFactoryInRender">({
   name: "no-units-spawn-in-render",
   meta: {
     type: "problem",
@@ -57,17 +61,41 @@ export default createRule({
     },
     messages: {
       noFactoryInRender:
-        'Creating Effector units with "{{ name }}" inside React component or hook is forbidden. Units will be recreated on every render, which may cause memory leaks and other bugs.',
+        'Creating Effector units with "{{ name }}" inside React component or hook is forbidden, since it may cause memory leaks and other bugs.',
       noOperatorInRender:
-        'Using Effector operator "{{ name }}" inside React component or hook is forbidden. Subscriptions will be recreated on every render.',
-      noCustomFactoryInRender: `Creating Effector units with custom factory"{{ name }}" inside React component or hook is forbidden. Units will be recreated on every render, which may cause memory leaks and other bugs.`,
+        'Using Effector operator "{{ name }}" inside React component or hook is forbidden, since it may cause memory leaks and other bugs.',
+      noCustomFactoryInRender:
+        'Creating Effector units with "{{ name }}" inside React component or hook is forbidden, since it may cause memory leaks and other bugs. If this is a false positive, add "{{ name }}" to the allowlist in the detectCustomFactories option.',
     },
-    schema: [],
+    schema: [
+      {
+        type: "object",
+        properties: {
+          detectCustomFactories: {
+            oneOf: [
+              { type: "boolean" },
+              {
+                type: "object",
+                properties: {
+                  allowlist: { type: "array", items: { type: "string" }, uniqueItems: true },
+                },
+                required: ["allowlist"],
+                additionalProperties: false,
+              },
+            ],
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
-  defaultOptions: [],
-  create: (context) => {
+  defaultOptions: [{ detectCustomFactories: true }],
+  create: (context, [options]) => {
     const services = ESLintUtils.getParserServices(context)
     const checker = services.program.getTypeChecker()
+
+    const { detectCustomFactories } = options
+    const allowlist = typeof detectCustomFactories === "object" ? new Set(detectCustomFactories.allowlist) : undefined
 
     // Tracks whether each nested function scope is a render context (component/hook).
     // On function enter we push true/false, on exit we pop. Nested functions inherit: if the
@@ -185,7 +213,9 @@ export default createRule({
             return context.report({ node, messageId: "noOperatorInRender", data: { name: calleeName } })
         }
 
-        // Tier 2: return type contains effector units — classify via callee type
+        // Tier 2: type-based detection — skip entirely if custom factories are disabled
+        if (detectCustomFactories === false) return
+
         const returnType = services.getTypeAtLocation(node)
         const ctx: TraverseCtx = { node: services.esTreeNodeToTSNodeMap.get(node), checker, program: services.program }
 
@@ -202,6 +232,8 @@ export default createRule({
 
         if (typeMatchesSpecifier(calleeType, EFFECTOR_OPERATOR_SPEC, services.program))
           return context.report({ node, messageId: "noOperatorInRender", data: { name: displayName } })
+
+        if (allowlist && calleeName && allowlist.has(calleeName)) return
 
         context.report({ node, messageId: "noCustomFactoryInRender", data: { name: displayName } })
       },

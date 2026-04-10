@@ -130,6 +130,36 @@ ruleTester.run("no-units-spawn-in-render", rule, {
       `,
     },
     {
+      name: "custom factory with detectCustomFactories disabled",
+      options: [{ detectCustomFactories: false }],
+      code: tsx`
+        import React from "react"
+
+        import { createModel } from "${fixture("factory")}"
+
+        const Component: React.FC = () => {
+          const model = createModel()
+
+          return <div>hello</div>
+        }
+      `,
+    },
+    {
+      name: "allowlisted custom factory in component",
+      options: [{ detectCustomFactories: { allowlist: ["createModel"] } }],
+      code: tsx`
+        import React from "react"
+
+        import { createModel } from "${fixture("factory")}"
+
+        const Component: React.FC = () => {
+          const model = createModel()
+
+          return <div>hello</div>
+        }
+      `,
+    },
+    {
       name: "fork and allSettled in non-render context",
       code: tsx`
         import { createStore, fork, allSettled, createEvent } from "effector"
@@ -545,6 +575,37 @@ ruleTester.run("no-units-spawn-in-render", rule, {
         }
       `,
       errors: [{ messageId: "noOperatorInRender", line: 8, column: 3, data: { name: "forward" } }],
+    },
+    {
+      name: "direct effector import still flagged with detectCustomFactories disabled",
+      options: [{ detectCustomFactories: false }],
+      code: tsx`
+        import React from "react"
+        import { createStore } from "effector"
+
+        const Component: React.FC = () => {
+          const $store = createStore(0)
+
+          return <div>hello</div>
+        }
+      `,
+      errors: [{ messageId: "noFactoryInRender", line: 5, column: 18, data: { name: "createStore" } }],
+    },
+    {
+      name: "non-allowlisted custom factory still flagged",
+      options: [{ detectCustomFactories: { allowlist: ["createModel"] } }],
+      code: tsx`
+        import React from "react"
+
+        import { createCounter } from "${fixture("factory")}"
+
+        const Component: React.FC = () => {
+          const counter = createCounter(0)
+
+          return <div>hello</div>
+        }
+      `,
+      errors: [{ messageId: "noCustomFactoryInRender", line: 6, column: 19, data: { name: "createCounter" } }],
     },
   ],
 })
