@@ -57,11 +57,10 @@ export default createRule({
     },
     messages: {
       noFactoryInRender:
-        'Creating Effector units with "{{ name }}" inside React component or hook is forbidden. Units will be recreated on every render.',
+        'Creating Effector units with "{{ name }}" inside React component or hook is forbidden. Units will be recreated on every render, which may cause memory leaks and other bugs.',
       noOperatorInRender:
         'Using Effector operator "{{ name }}" inside React component or hook is forbidden. Subscriptions will be recreated on every render.',
-      noCustomFactoryInRender:
-        'Calling "{{ name }}" that returns Effector units inside React component or hook is forbidden. Units will be recreated on every render.',
+      noCustomFactoryInRender: `Creating Effector units with custom factory"{{ name }}" inside React component or hook is forbidden. Units will be recreated on every render, which may cause memory leaks and other bugs.`,
     },
     schema: [],
   },
