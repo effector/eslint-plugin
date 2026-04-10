@@ -5,7 +5,7 @@ import imports from "eslint-plugin-import-x"
 
 /** @type {import('typescript-eslint').Config} */
 const config = [
-  { ignores: ["dist", "docs"] },
+  { ignores: ["dist", "docs", "coverage"] },
   { ignores: ["eslint.config.js", "vitest.config.ts", "tsdown.config.ts"] },
 
   js.configs.recommended,
