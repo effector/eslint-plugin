@@ -46,7 +46,6 @@ export default createRule<Options, MessageIds>({
 
       const destructuredKeys = objectPattern.properties.map(getPropertyKey).filter((key): key is string => key !== null)
 
-      // For objects key itself is the display name
       const keyToName = new Map(argumentKeys.map((key) => [key, key]))
 
       return { argumentKeys, destructuredKeys, keyToName }
@@ -110,7 +109,7 @@ export default createRule<Options, MessageIds>({
     }
 
     return {
-      ImportDeclaration(node): void {
+      "ImportDeclaration"(node): void {
         if (node.source.value !== "effector-react") return
 
         for (const specifier of node.specifiers) {
@@ -124,35 +123,33 @@ export default createRule<Options, MessageIds>({
         }
       },
 
-      CallExpression(node): void {
-        if (
-          node.callee.type !== AST_NODE_TYPES.Identifier ||
-          !importedAs.has(node.callee.name) ||
-          node.arguments.length !== 1
-        ) {
-          return
-        }
-
+      "VariableDeclarator[id.type='ObjectPattern'] > CallExpression[arguments.length=1][callee.type='Identifier']"(
+        node: TSESTree.CallExpression,
+      ): void {
+        if (!importedAs.has((node.callee as TSESTree.Identifier).name)) return
         const argument = node.arguments[0]
-        const parent = node.parent
 
-        if (
-          !parent ||
-          parent.type !== AST_NODE_TYPES.VariableDeclarator ||
-          argument?.type === AST_NODE_TYPES.SpreadElement
-        ) {
-          return
-        }
+        if (argument?.type !== AST_NODE_TYPES.ObjectExpression) return
+        const parent = node.parent as TSESTree.VariableDeclarator
 
-        if (argument?.type === AST_NODE_TYPES.ObjectExpression && parent.id.type === AST_NODE_TYPES.ObjectPattern) {
-          const { argumentKeys, destructuredKeys, keyToName } = getObjectKeys(argument, parent.id)
-          handlePattern(argumentKeys, destructuredKeys, keyToName, argument, parent.id)
-        }
+        if (parent.id.type !== AST_NODE_TYPES.ObjectPattern) return
+        const { argumentKeys, destructuredKeys, keyToName } = getObjectKeys(argument, parent.id)
 
-        if (argument?.type === AST_NODE_TYPES.ArrayExpression && parent.id.type === AST_NODE_TYPES.ArrayPattern) {
-          const { argumentKeys, destructuredKeys, keyToName } = getArrayKeys(argument, parent.id)
-          handlePattern(argumentKeys, destructuredKeys, keyToName, argument, parent.id)
-        }
+        handlePattern(argumentKeys, destructuredKeys, keyToName, argument, parent.id)
+      },
+
+      "VariableDeclarator[id.type='ArrayPattern'] > CallExpression[arguments.length=1][callee.type='Identifier']"(
+        node: TSESTree.CallExpression,
+      ): void {
+        if (!importedAs.has((node.callee as TSESTree.Identifier).name)) return
+        const argument = node.arguments[0]
+
+        if (argument?.type !== AST_NODE_TYPES.ArrayExpression) return
+        const parent = node.parent as TSESTree.VariableDeclarator
+
+        if (parent.id.type !== AST_NODE_TYPES.ArrayPattern) return
+        const { argumentKeys, destructuredKeys, keyToName } = getArrayKeys(argument, parent.id)
+        handlePattern(argumentKeys, destructuredKeys, keyToName, argument, parent.id)
       },
     }
   },
