@@ -78,16 +78,20 @@ ruleTester.run("use-unit-destructuring", rule, {
     {
       name: "Object: key is passed but not destructured",
       code: `
-        import { useUnit } from "effector-react";
-        const { value } = useUnit({
-          value: $store,
-          setValue: event,
-        });
-      `,
+    import { useUnit } from "effector-react";
+    const { value } = useUnit({
+      value: $store,
+      setValue: event,
+    });
+  `,
       errors: [
         {
           messageId: "unusedKey",
           data: { key: "setValue" },
+          line: 3,
+          column: 31,
+          endLine: 6,
+          endColumn: 6,
         },
       ],
     },
@@ -110,13 +114,17 @@ ruleTester.run("use-unit-destructuring", rule, {
     {
       name: "Array: implicit subscription when not all elements are destructured",
       code: `
-        import { useUnit } from "effector-react";
-        const [setValue] = useUnit([event, $store]);
-      `,
+    import { useUnit } from "effector-react";
+    const [setValue] = useUnit([event, $store]);
+  `,
       errors: [
         {
           messageId: "unusedKey",
           data: { key: "$store" },
+          line: 3,
+          column: 32,
+          endLine: 3,
+          endColumn: 47,
         },
       ],
     },
