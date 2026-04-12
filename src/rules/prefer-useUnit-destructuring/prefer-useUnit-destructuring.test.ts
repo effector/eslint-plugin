@@ -3,7 +3,7 @@ import { parser } from "typescript-eslint"
 
 import { tsx } from "@/shared/tag"
 
-import rule from "./use-unit-destructuring"
+import rule from "./prefer-useUnit-destructuring"
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -15,7 +15,7 @@ const ruleTester = new RuleTester({
   },
 })
 
-ruleTester.run("use-unit-destructuring", rule, {
+ruleTester.run("prefer-useUnit-destructuring", rule, {
   valid: [
     {
       name: "object: all keys were destructured",
@@ -90,10 +90,10 @@ ruleTester.run("use-unit-destructuring", rule, {
         {
           messageId: "unusedKey",
           data: { key: "setValue" },
-          line: 3,
-          column: 31,
-          endLine: 6,
-          endColumn: 6,
+          line: 2,
+          column: 27,
+          endLine: 5,
+          endColumn: 2,
         },
       ],
     },
@@ -123,10 +123,10 @@ ruleTester.run("use-unit-destructuring", rule, {
         {
           messageId: "unusedKey",
           data: { key: "$store" },
-          line: 3,
-          column: 32,
-          endLine: 3,
-          endColumn: 47,
+          line: 2,
+          column: 28,
+          endLine: 2,
+          endColumn: 43,
         },
       ],
     },

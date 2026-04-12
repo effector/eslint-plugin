@@ -29,7 +29,7 @@ const react = {
   "effector/mandatory-scope-binding": "error",
   "effector/no-units-spawn-in-render": "error",
   "effector/prefer-useUnit": "error",
-  "effector/use-unit-destructuring": "warn",
+  "effector/prefer-useUnit-destructuring": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
 const future = {

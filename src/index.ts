@@ -21,9 +21,9 @@ import noUnnecessaryDuplication from "./rules/no-unnecessary-duplication/no-unne
 import noUselessMethods from "./rules/no-useless-methods/no-useless-methods"
 import noWatch from "./rules/no-watch/no-watch"
 import preferUseUnit from "./rules/prefer-useUnit/prefer-useUnit"
+import preferUseUnitDestructuring from "./rules/prefer-useUnit-destructuring/prefer-useUnit-destructuring"
 import requirePickupInPersist from "./rules/require-pickup-in-persist/require-pickup-in-persist"
 import strictEffectHandlers from "./rules/strict-effect-handlers/strict-effect-handlers"
-import useUnitDestructuring from "./rules/use-unit-destructuring/use-unit-destructuring"
 import { ruleset } from "./ruleset"
 
 const base = {
@@ -48,9 +48,9 @@ const base = {
     "no-useless-methods": noUselessMethods,
     "no-watch": noWatch,
     "prefer-useUnit": preferUseUnit,
+    "prefer-useUnit-destructuring": preferUseUnitDestructuring,
     "require-pickup-in-persist": requirePickupInPersist,
     "strict-effect-handlers": strictEffectHandlers,
-    "use-unit-destructuring": useUnitDestructuring,
   },
 }
 
