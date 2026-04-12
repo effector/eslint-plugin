@@ -48,9 +48,9 @@ const base = {
     "no-useless-methods": noUselessMethods,
     "no-watch": noWatch,
     "prefer-useUnit": preferUseUnit,
-    "use-unit-destructuring": useUnitDestructuring,
     "require-pickup-in-persist": requirePickupInPersist,
     "strict-effect-handlers": strictEffectHandlers,
+    "use-unit-destructuring": useUnitDestructuring,
   },
 }
 
