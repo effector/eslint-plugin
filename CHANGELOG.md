@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.18.0
+
+This release brings in ESLint v10 support, introduces a new rule `no-units-spawn-in-render` to catch spawning units during React render, and tightens `mandatory-scope-binding` when components are inferred from union return types.
+
+### Minor Changes
+
+- 498b274: New rule `no-units-spawn-in-render` by @AlexandrHoroshih
+- d968622: Support ESLint v10 by @kireevmp
+
+### Patch Changes
+
+- 2118d70: `mandatory-scope-binding`: Improve component detection with union return type by @kireevmp
+
 ## v0.17.0
 
 ### Breaking Changes
