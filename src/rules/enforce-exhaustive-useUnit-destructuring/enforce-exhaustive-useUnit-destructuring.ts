@@ -34,7 +34,7 @@ function toName(key: string | number, node: ValueNode): string {
   return `<unknown at ${key}>`
 }
 
-export function* check(
+function* check(
   provided: Map<string | number, ValueNode>,
   consumed: Map<string | number, ValueNode>,
 ): Generator<{ type: "unused" | "missing"; name: string }> {
@@ -53,9 +53,7 @@ function toKey(prop: Node.Property): string | number | null {
   return null
 }
 
-export function shapeToKeyMap(
-  shape: Node.ObjectPattern | Node.ObjectExpression,
-): Map<string | number, ValueNode> | null {
+function shapeToKeyMap(shape: Node.ObjectPattern | Node.ObjectExpression): Map<string | number, ValueNode> | null {
   const map = new Map<string | number, ValueNode>()
 
   for (const prop of shape.properties) {
@@ -71,7 +69,7 @@ export function shapeToKeyMap(
   return map
 }
 
-export function listToKeyMap(list: Node.ArrayPattern | Node.ArrayExpression): Map<string | number, ValueNode> | null {
+function listToKeyMap(list: Node.ArrayPattern | Node.ArrayExpression): Map<string | number, ValueNode> | null {
   const map = new Map<string | number, ValueNode>()
 
   for (const [index, element] of list.elements.entries()) {
