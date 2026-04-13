@@ -3,6 +3,7 @@ import type { ESLint, Linter } from "eslint"
 import { name, version } from "../package.json"
 
 import enforceEffectNamingConvention from "./rules/enforce-effect-naming-convention/enforce-effect-naming-convention"
+import enforceExhaustiveUseUnitDestructuring from "./rules/enforce-exhaustive-useUnit-destructuring/enforce-exhaustive-useUnit-destructuring"
 import enforceGateNamingConvention from "./rules/enforce-gate-naming-convention/enforce-gate-naming-convention"
 import enforceStoreNamingConvention from "./rules/enforce-store-naming-convention/enforce-store-naming-convention"
 import keepOptionsOrder from "./rules/keep-options-order/keep-options-order"
@@ -29,6 +30,7 @@ const base = {
   meta: { name, version, namespace: "effector" },
   rules: {
     "enforce-effect-naming-convention": enforceEffectNamingConvention,
+    "enforce-exhaustive-useUnit-destructuring": enforceExhaustiveUseUnitDestructuring,
     "enforce-gate-naming-convention": enforceGateNamingConvention,
     "enforce-store-naming-convention": enforceStoreNamingConvention,
     "keep-options-order": keepOptionsOrder,
