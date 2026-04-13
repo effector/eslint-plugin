@@ -26,10 +26,10 @@ const scope = {
 
 const react = {
   "effector/enforce-gate-naming-convention": "error",
+  "effector/enforce-exhaustive-useUnit-destructuring": "warn",
   "effector/mandatory-scope-binding": "error",
   "effector/no-units-spawn-in-render": "error",
   "effector/prefer-useUnit": "error",
-  "effector/prefer-useUnit-destructuring": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
 const future = {

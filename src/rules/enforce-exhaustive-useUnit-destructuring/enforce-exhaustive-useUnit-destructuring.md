@@ -1,8 +1,8 @@
 ---
-description: Ensures that all units passed to useUnit are properly destructured to avoid unused subscriptions and implicit re-renders.
+description: Ensure all units passed to useUnit are properly destructured to avoid unused subscriptions and implicit re-renders.
 ---
 
-# effector/prefer-useUnit-destructuring
+# effector/enforce-exhaustive-useUnit-destructuring
 
 [Related documentation](https://effector.dev/en/api/effector-react/useunit/)
 
@@ -147,7 +147,7 @@ If you intentionally want to subscribe to a store without using its value (rare 
 that line:
 
 ```tsx
-// eslint-disable-next-line effector/prefer-useUnit-destructuring
+// eslint-disable-next-line effector/enforce-exhaustive-useUnit-destructuring
 const { value } = useUnit({
   value: $store,
   trigger: $triggerStore, // intentionally subscribing without using

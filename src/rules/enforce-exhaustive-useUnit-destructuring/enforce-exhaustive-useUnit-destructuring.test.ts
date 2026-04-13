@@ -3,7 +3,7 @@ import { parser } from "typescript-eslint"
 
 import { tsx } from "@/shared/tag"
 
-import rule from "./prefer-useUnit-destructuring"
+import rule from "./enforce-exhaustive-useUnit-destructuring"
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -15,7 +15,7 @@ const ruleTester = new RuleTester({
   },
 })
 
-ruleTester.run("prefer-useUnit-destructuring", rule, {
+ruleTester.run("enforce-exhaustive-useUnit-destructuring", rule, {
   valid: [
     {
       name: "object: all keys were destructured",
@@ -89,7 +89,7 @@ ruleTester.run("prefer-useUnit-destructuring", rule, {
       errors: [
         {
           messageId: "unusedKey",
-          data: { key: "setValue" },
+          data: { name: "setValue" },
           line: 2,
           column: 27,
           endLine: 5,
@@ -109,7 +109,7 @@ ruleTester.run("prefer-useUnit-destructuring", rule, {
       errors: [
         {
           messageId: "missingKey",
-          data: { key: "extra" },
+          data: { name: "extra" },
         },
       ],
     },
@@ -122,7 +122,7 @@ ruleTester.run("prefer-useUnit-destructuring", rule, {
       errors: [
         {
           messageId: "unusedKey",
-          data: { key: "$store" },
+          data: { name: "$store" },
           line: 2,
           column: 28,
           endLine: 2,
@@ -139,11 +139,11 @@ ruleTester.run("prefer-useUnit-destructuring", rule, {
       errors: [
         {
           messageId: "unusedKey",
-          data: { key: "event" },
+          data: { name: "event" },
         },
         {
           messageId: "unusedKey",
-          data: { key: "$anotherStore" },
+          data: { name: "$anotherStore" },
         },
       ],
     },
@@ -160,11 +160,11 @@ ruleTester.run("prefer-useUnit-destructuring", rule, {
       errors: [
         {
           messageId: "unusedKey",
-          data: { key: "setValue" },
+          data: { name: "setValue" },
         },
         {
           messageId: "unusedKey",
-          data: { key: "reset" },
+          data: { name: "reset" },
         },
       ],
     },
@@ -185,7 +185,7 @@ ruleTester.run("prefer-useUnit-destructuring", rule, {
       errors: [
         {
           messageId: "unusedKey",
-          data: { key: "setValue" },
+          data: { name: "setValue" },
         },
       ],
     },
@@ -201,7 +201,7 @@ ruleTester.run("prefer-useUnit-destructuring", rule, {
       errors: [
         {
           messageId: "unusedKey",
-          data: { key: "setValue" },
+          data: { name: "setValue" },
         },
       ],
     },
@@ -214,7 +214,7 @@ ruleTester.run("prefer-useUnit-destructuring", rule, {
       errors: [
         {
           messageId: "unusedKey",
-          data: { key: "$b" },
+          data: { name: "$b" },
         },
       ],
     },
@@ -230,7 +230,7 @@ ruleTester.run("prefer-useUnit-destructuring", rule, {
       errors: [
         {
           messageId: "unusedKey",
-          data: { key: "setValue" },
+          data: { name: "setValue" },
         },
       ],
     },
