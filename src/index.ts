@@ -50,9 +50,9 @@ const base = {
     "no-useless-methods": noUselessMethods,
     "no-watch": noWatch,
     "prefer-useUnit": preferUseUnit,
+    "prefer-single-binding": preferSingleBinding,
     "require-pickup-in-persist": requirePickupInPersist,
     "strict-effect-handlers": strictEffectHandlers,
-    "prefer-single-binding": preferSingleBinding,
   },
 }
 
