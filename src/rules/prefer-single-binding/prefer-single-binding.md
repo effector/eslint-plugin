@@ -13,6 +13,16 @@ Multiple `useUnit` calls can lead to:
 - **Code duplication**: Repetitive hook calls make code harder to read
 - **Maintenance issues**: Harder to track all units used in a component
 
+### Limitations
+
+This rule does not handle the following cases:
+- Mixed array and object forms in the same component are reported but no suggestion is provided
+- `@@unitShape` protocol (used by routers, queries, etc.)
+
+Non-destructuring calls like `const store = useUnit($store)` are partially handled: if such calls appear
+alongside destructuring calls in the same component, the rule will report them. However, no suggestion
+is provided for this case since the fix is ambiguous.
+
 ### Examples
 
 ```tsx
@@ -20,7 +30,7 @@ Multiple `useUnit` calls can lead to:
 const Component = () => {
   const [store] = useUnit([$store]);
   const [event] = useUnit([$event]);
-  
+
   return <button onClick={event}>{store}</button>;
 };
 ```
@@ -29,7 +39,7 @@ const Component = () => {
 // 👍 correct - single useUnit call
 const Component = () => {
   const [store, event] = useUnit([$store, $event]);
-  
+
   return <button onClick={event}>{store}</button>;
 };
 ```
@@ -40,482 +50,136 @@ This rule accepts an options object with the following properties:
 
 ```typescript
 type Options = {
-  allowSeparateStoresAndEvents?: boolean;
-  enforceStoresAndEventsSeparation?: boolean;
+  separation?: "forbid" | "allow" | "enforce";
 };
 ```
 
-### `allowSeparateStoresAndEvents`
+### `separation`
 
-**Default:** `false`
+**Default:** `"forbid"`
 
-When set to `true`, allows separate `useUnit` calls for stores and events, but still enforces combining multiple calls within each group.
+Controls how the rule handles separation of stores, events and effects into different `useUnit` calls.
 
-The rule uses heuristics to determine whether a unit is a store or an event:
-- **Stores**: Names starting with `$`, or matching patterns like `is*`, `has*`, `*Store`, `*State`, `data`, `value`, `items`
-- **Events**: Names ending with `*Event`, `*Changed`, `*Triggered`, `*Clicked`, `*Pressed`, or starting with `on*`, `handle*`, `set*`, `update*`, `submit*`
+| Value | Behavior |
+|---|---|
+| `"forbid"` | All `useUnit` calls must be combined into one (default) |
+| `"allow"` | Stores, events and effects may be in separate calls, but multiple calls of the same type must be combined |
+| `"enforce"` | A single `useUnit` call must not mix stores, events and effects |
 
-#### Configuration
+Unit types are determined using TypeScript type information. The rule requires TypeScript to be configured in your project.
 
-```javascript
-// .eslintrc.js
-export default {
-  rules: {
-    'effector/prefer-single-binding': ['warn', {
-      allowSeparateStoresAndEvents: true
-    }]
-  }
-};
-```
+#### `separation: "forbid"` (default)
 
-#### Examples with `allowSeparateStoresAndEvents: true`
+All `useUnit` calls in a component must be combined into a single call regardless of unit types.
+
+Non-destructuring calls (`const store = useUnit($store)`) are also reported when they appear alongside
+other `useUnit` calls, but no suggestion is provided for them.
 
 ```tsx
-// 👍 correct - separate groups for stores and events
+// 👎 incorrect - multiple destructuring calls
 const Component = () => {
-  const [userName, userAge] = useUnit([$userName, $userAge]);
-  const [updateUser, deleteUser] = useUnit([updateUserEvent, deleteUserEvent]);
-  
-  return (
-    <div>
-      <p>{userName}, {userAge}</p>
-      <button onClick={updateUser}>Update</button>
-      <button onClick={deleteUser}>Delete</button>
-    </div>
-  );
+  const [userName] = useUnit([$userName]);
+  const [updateUser] = useUnit([updateUserEvent]);
+  return null;
+};
+
+// 👎 incorrect - non-destructuring call alongside destructuring call
+const Component = () => {
+  const userName = useUnit($userName);
+  const [updateUser] = useUnit([updateUserEvent]);
+  return null;
+};
+
+// 👍 correct
+const Component = () => {
+  const [userName, updateUser] = useUnit([$userName, updateUserEvent]);
+  return null;
 };
 ```
 
+#### `separation: "allow"`
+
+Stores, events and effects may live in separate `useUnit` calls, but multiple calls of the same type must be combined. Non-destructuring calls are not reported under this option.
+
 ```tsx
-// 👎 incorrect - multiple stores in separate calls
+// 👎 incorrect - multiple store calls
 const Component = () => {
   const [userName] = useUnit([$userName]);
   const [userAge] = useUnit([$userAge]);
-  const [updateUser, deleteUser] = useUnit([updateUserEvent, deleteUserEvent]);
-  
-  return <div>...</div>;
+  const [updateUser] = useUnit([updateUserEvent]);
+  return null;
 };
-```
 
-```tsx
-// 👎 incorrect - multiple events in separate calls
+// 👍 correct - stores combined, events separate
 const Component = () => {
   const [userName, userAge] = useUnit([$userName, $userAge]);
   const [updateUser] = useUnit([updateUserEvent]);
-  const [deleteUser] = useUnit([deleteUserEvent]);
-  
-  return <div>...</div>;
+  return null;
 };
 ```
 
-### `enforceStoresAndEventsSeparation`
+#### `separation: "enforce"`
 
-**Default:** `false`
-
-When set to `true`, enforces separation of stores and events into different `useUnit` calls. This option detects when a single `useUnit` call contains both stores and events and suggests splitting them.
-
-This is useful when you want to maintain clear logical separation between state (stores) and actions (events) in your components.
-
-#### Configuration
-
-```javascript
-// .eslintrc.js
-export default {
-  rules: {
-    'effector/prefer-single-binding': ['warn', {
-      enforceStoresAndEventsSeparation: true
-    }]
-  }
-};
-```
-
-#### Examples with `enforceStoresAndEventsSeparation: true`
+A single `useUnit` call must not contain a mix of stores, events and effects. Each call must contain only one unit type. Non-destructuring calls are not reported under this option.
 
 ```tsx
 // 👎 incorrect - mixed stores and events
 const Component = () => {
   const [value, setValue] = useUnit([$store, event]);
-  
-  return <input value={value} onChange={setValue} />;
+  return null;
 };
-```
 
-```tsx
-// 👍 correct - separated stores and events
+// 👍 correct - separated by type
 const Component = () => {
   const [value] = useUnit([$store]);
   const [setValue] = useUnit([event]);
-  
-  return <input value={value} onChange={setValue} />;
+  return null;
 };
 ```
 
+Works with object form too:
+
 ```tsx
-// 👎 incorrect - mixed in object form
+// 👎 incorrect
 const Component = () => {
-  const { value, setValue } = useUnit({ 
-    value: $store, 
-    setValue: event 
-  });
-  
-  return <input value={value} onChange={setValue} />;
+  const { value, setValue } = useUnit({ value: $store, setValue: event });
+  return null;
 };
-```
 
-```tsx
-// 👍 correct - separated in object form
+// 👍 correct
 const Component = () => {
   const { value } = useUnit({ value: $store });
   const { setValue } = useUnit({ setValue: event });
-  
-  return <input value={value} onChange={setValue} />;
-};
-```
-
-### Combining both options
-
-You can use both options together to enforce a specific code style:
-
-```javascript
-// .eslintrc.js
-export default {
-  rules: {
-    'effector/prefer-single-binding': ['warn', {
-      allowSeparateStoresAndEvents: true,
-      enforceStoresAndEventsSeparation: true
-    }]
-  }
-};
-```
-
-With both options enabled:
-- Mixed `useUnit` calls will be split into separate calls for stores and events
-- Multiple calls of the same type (stores or events) will be combined
-
-```tsx
-// 👎 incorrect - mixed types
-const Component = () => {
-  const [value1, setValue1, value2, setValue2] = useUnit([
-    $store1, 
-    event1, 
-    $store2, 
-    event2
-  ]);
-  
   return null;
 };
 ```
 
+## Import aliases
+
+The rule correctly handles aliased imports:
+
 ```tsx
-// 👍 correct - separated and combined by type
+import { useUnit as useUnitEffector } from "effector-react";
+
+// 👎 incorrect
 const Component = () => {
-  const [value1, value2] = useUnit([$store1, $store2]);
-  const [setValue1, setValue2] = useUnit([event1, event2]);
-  
+  const [store] = useUnitEffector([$store]);
+  const [event] = useUnitEffector([event]);
   return null;
 };
-```
 
-#### Working with models
-
-This combination is especially useful when working with Effector models:
-
-```tsx
-// 👎 incorrect - mixed stores and events
+// 👍 correct
 const Component = () => {
-  const [isFormSent, submit, reset, isLoading] = useUnit([
-    FormModel.$isFormSent,
-    FormModel.submitForm,
-    FormModel.resetForm,
-    FormModel.$isLoading,
-  ]);
-  
-  return (
-    <form onSubmit={submit}>
-      {isLoading && <Spinner />}
-      <button type="submit" disabled={isFormSent}>Submit</button>
-      <button type="button" onClick={reset}>Reset</button>
-    </form>
-  );
+  const [store, event] = useUnitEffector([$store, event]);
+  return null;
 };
-```
-
-```tsx
-// 👍 correct - stores and events are separated by logical groups
-const Component = () => {
-  // All stores from the model
-  const [isFormSent, isLoading] = useUnit([
-    FormModel.$isFormSent,
-    FormModel.$isLoading,
-  ]);
-  
-  // All events from the model
-  const [submit, reset] = useUnit([
-    FormModel.submitForm,
-    FormModel.resetForm,
-  ]);
-  
-  return (
-    <form onSubmit={submit}>
-      {isLoading && <Spinner />}
-      <button type="submit" disabled={isFormSent}>Submit</button>
-      <button type="button" onClick={reset}>Reset</button>
-    </form>
-  );
-};
-```
-
-## Why is this important?
-
-### Performance
-
-Each `useUnit` call creates its own subscription management overhead. Combining them reduces:
-- Number of hook calls
-- Subscription management overhead
-- Re-render coordination complexity
-
-### Code clarity
-
-A single `useUnit` call (or logically separated calls) makes it easier to:
-- See all dependencies at a glance
-- Understand component's reactive logic
-- Maintain and refactor code
-
-## Array shape examples
-
-```tsx
-// 👎 incorrect
-const Component = () => {
-  const [userName] = useUnit([$userName]);
-  const [userAge] = useUnit([$userAge]);
-  const [updateUser] = useUnit([updateUserEvent]);
-  
-  return (
-    <div>
-      <p>{userName}, {userAge}</p>
-      <button onClick={updateUser}>Update</button>
-    </div>
-  );
-};
-```
-
-```tsx
-// 👍 correct - combined (default behavior)
-const Component = () => {
-  const [userName, userAge, updateUser] = useUnit([
-    $userName,
-    $userAge,
-    updateUserEvent,
-  ]);
-  
-  return (
-    <div>
-      <p>{userName}, {userAge}</p>
-      <button onClick={updateUser}>Update</button>
-    </div>
-  );
-};
-```
-
-```tsx
-// 👍 also correct - separated (with enforceStoresAndEventsSeparation: true)
-const Component = () => {
-  const [userName, userAge] = useUnit([$userName, $userAge]);
-  const [updateUser] = useUnit([updateUserEvent]);
-  
-  return (
-    <div>
-      <p>{userName}, {userAge}</p>
-      <button onClick={updateUser}>Update</button>
-    </div>
-  );
-};
-```
-
-## Object shape examples
-
-```tsx
-// 👎 incorrect
-const Component = () => {
-  const { userName } = useUnit({ userName: $userName });
-  const { userAge } = useUnit({ userAge: $userAge });
-  const { updateUser } = useUnit({ updateUser: updateUserEvent });
-  
-  return (
-    <div>
-      <p>{userName}, {userAge}</p>
-      <button onClick={updateUser}>Update</button>
-    </div>
-  );
-};
-```
-
-```tsx
-// 👍 correct - combined (default behavior)
-const Component = () => {
-  const { userName, userAge, updateUser } = useUnit({
-    userName: $userName,
-    userAge: $userAge,
-    updateUser: updateUserEvent,
-  });
-  
-  return (
-    <div>
-      <p>{userName}, {userAge}</p>
-      <button onClick={updateUser}>Update</button>
-    </div>
-  );
-};
-```
-
-```tsx
-// 👍 also correct - separated (with enforceStoresAndEventsSeparation: true)
-const Component = () => {
-  const { userName, userAge } = useUnit({
-    userName: $userName,
-    userAge: $userAge,
-  });
-  const { updateUser } = useUnit({ updateUser: updateUserEvent });
-  
-  return (
-    <div>
-      <p>{userName}, {userAge}</p>
-      <button onClick={updateUser}>Update</button>
-    </div>
-  );
-};
-```
-
-## Real-world example
-
-```tsx
-import React from "react";
-import { createEvent, createStore } from "effector";
-import { useUnit } from "effector-react";
-
-const $userName = createStore("John");
-const $userEmail = createStore("john@example.com");
-const $isLoading = createStore(false);
-const updateNameEvent = createEvent<string>();
-const updateEmailEvent = createEvent<string>();
-
-// 👎 incorrect - scattered useUnit calls (default behavior)
-const UserProfile = () => {
-  const [userName] = useUnit([$userName]);
-  const [userEmail] = useUnit([$userEmail]);
-  const [isLoading] = useUnit([$isLoading]);
-  const [updateName] = useUnit([updateNameEvent]);
-  const [updateEmail] = useUnit([updateEmailEvent]);
-
-  return (
-    <div>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <input value={userName} onChange={(e) => updateName(e.target.value)} />
-          <input value={userEmail} onChange={(e) => updateEmail(e.target.value)} />
-        </>
-      )}
-    </div>
-  );
-};
-
-// 👍 correct - single useUnit call (default behavior)
-const UserProfile = () => {
-  const [userName, userEmail, isLoading, updateName, updateEmail] = useUnit([
-    $userName,
-    $userEmail,
-    $isLoading,
-    updateNameEvent,
-    updateEmailEvent,
-  ]);
-
-  return (
-    <div>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <input value={userName} onChange={(e) => updateName(e.target.value)} />
-          <input value={userEmail} onChange={(e) => updateEmail(e.target.value)} />
-        </>
-      )}
-    </div>
-  );
-};
-
-// 👍 also correct - separated stores and events 
-// (with allowSeparateStoresAndEvents: true or enforceStoresAndEventsSeparation: true)
-const UserProfile = () => {
-  const [userName, userEmail, isLoading] = useUnit([
-    $userName,
-    $userEmail,
-    $isLoading,
-  ]);
-  
-  const [updateName, updateEmail] = useUnit([
-    updateNameEvent,
-    updateEmailEvent,
-  ]);
-
-  return (
-    <div>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <input value={userName} onChange={(e) => updateName(e.target.value)} />
-          <input value={userEmail} onChange={(e) => updateEmail(e.target.value)} />
-        </>
-      )}
-    </div>
-  );
-};
-```
-
-## Auto-fix
-
-This rule provides automatic fixes based on the configuration:
-
-### Default behavior
-When you run ESLint with the `--fix` flag, it will combine all `useUnit` calls into a single one:
-
-```bash
-eslint --fix your-file.tsx
-```
-
-### With `enforceStoresAndEventsSeparation: true`
-The auto-fix will split mixed `useUnit` calls into separate calls for stores and events:
-
-```tsx
-// Before
-const [value, setValue] = useUnit([$store, event]);
-
-// After auto-fix
-const [value] = useUnit([$store]);
-const [setValue] = useUnit([event]);
-```
-
-### With both options enabled
-The auto-fix will both split mixed calls and combine multiple calls of the same type:
-
-```tsx
-// Before
-const [value1] = useUnit([$store1]);
-const [value2, handler] = useUnit([$store2, event1]);
-const [handler2] = useUnit([event2]);
-
-// After auto-fix
-const [value1, value2] = useUnit([$store1, $store2]);
-const [handler, handler2] = useUnit([event1, event2]);
 ```
 
 ## Configuration examples
 
 ### Strict single call (default)
 ```javascript
-// .eslintrc.js
+// eslint.config.js
 export default {
   rules: {
     'effector/prefer-single-binding': 'warn'
@@ -525,11 +189,11 @@ export default {
 
 ### Allow stores/events separation
 ```javascript
-// .eslintrc.js
+// eslint.config.js
 export default {
   rules: {
     'effector/prefer-single-binding': ['warn', {
-      allowSeparateStoresAndEvents: true
+      separation: 'allow'
     }]
   }
 };
@@ -537,52 +201,166 @@ export default {
 
 ### Enforce stores/events separation
 ```javascript
-// .eslintrc.js
+// eslint.config.js
 export default {
   rules: {
     'effector/prefer-single-binding': ['warn', {
-      enforceStoresAndEventsSeparation: true
+      separation: 'enforce'
     }]
   }
 };
 ```
 
-### Enforce separation and combine duplicates
-```javascript
-// .eslintrc.js
-export default {
-  rules: {
-    'effector/prefer-single-binding': ['warn', {
-      allowSeparateStoresAndEvents: true,
-      enforceStoresAndEventsSeparation: true
-    }]
-  }
+## Suggestions
+
+This rule provides **suggestions** (not auto-fixes) because merging or splitting `useUnit` calls may
+change the order of subscriptions which can affect runtime behavior. Suggestions can be applied
+manually via your editor or via `--fix-type suggestion` flag:
+
+```bash
+eslint --fix-type suggestion your-file.tsx
+```
+
+### Default behavior (`separation: "forbid"`)
+
+Suggests combining all `useUnit` calls into a single one:
+
+```tsx
+// Before
+const [value] = useUnit([$store]);
+const [setValue] = useUnit([event]);
+
+// After applying suggestion
+const [value, setValue] = useUnit([$store, event]);
+```
+
+### `separation: "enforce"`
+
+Suggests splitting mixed `useUnit` calls into separate calls per unit type:
+
+```tsx
+// Before
+const [value, setValue] = useUnit([$store, event]);
+
+// After applying suggestion
+const [value] = useUnit([$store]);
+const [setValue] = useUnit([event]);
+```
+
+### `separation: "allow"`
+
+Suggests combining multiple calls of the same unit type:
+
+```tsx
+// Before
+const [value1] = useUnit([$store1]);
+const [value2] = useUnit([$store2]);
+const [handler] = useUnit([event]);
+
+// After applying suggestion
+const [value1, value2] = useUnit([$store1, $store2]);
+const [handler] = useUnit([event]);
+```
+
+## Real-world example
+
+```tsx
+import { createEvent, createStore } from "effector";
+import { useUnit } from "effector-react";
+
+const $userName = createStore("John");
+const $userEmail = createStore("john@example.com");
+const $isLoading = createStore(false);
+const updateName = createEvent<string>();
+const updateEmail = createEvent<string>();
+
+// 👎 incorrect - scattered useUnit calls
+const UserProfile = () => {
+  const [userName] = useUnit([$userName]);
+  const [userEmail] = useUnit([$userEmail]);
+  const [isLoading] = useUnit([$isLoading]);
+  const [handleUpdateName] = useUnit([updateName]);
+  const [handleUpdateEmail] = useUnit([updateEmail]);
+
+  return (
+    <div>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <input value={userName} onChange={(e) => handleUpdateName(e.target.value)} />
+          <input value={userEmail} onChange={(e) => handleUpdateEmail(e.target.value)} />
+        </>
+      )}
+    </div>
+  );
+};
+
+// 👍 correct - single useUnit call (separation: "forbid")
+const UserProfile = () => {
+  const [userName, userEmail, isLoading, handleUpdateName, handleUpdateEmail] = useUnit([
+    $userName,
+    $userEmail,
+    $isLoading,
+    updateName,
+    updateEmail,
+  ]);
+
+  return (
+    <div>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <input value={userName} onChange={(e) => handleUpdateName(e.target.value)} />
+          <input value={userEmail} onChange={(e) => handleUpdateEmail(e.target.value)} />
+        </>
+      )}
+    </div>
+  );
+};
+
+// 👍 correct - separated by type (separation: "allow" or "enforce")
+const UserProfile = () => {
+  const [userName, userEmail, isLoading] = useUnit([$userName, $userEmail, $isLoading]);
+  const [handleUpdateName, handleUpdateEmail] = useUnit([updateName, updateEmail]);
+
+  return (
+    <div>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <input value={userName} onChange={(e) => handleUpdateName(e.target.value)} />
+          <input value={userEmail} onChange={(e) => handleUpdateEmail(e.target.value)} />
+        </>
+      )}
+    </div>
+  );
 };
 ```
 
 ## When Not To Use It
 
-In rare cases, you might want to keep `useUnit` calls separate for specific reasons:
+Disable the rule per-file if you need conditional `useUnit` calls for specific reasons:
 
 ```tsx
 /* eslint-disable effector/prefer-single-binding */
 const Component = () => {
   const [userStore] = useUnit([$userStore]);
-  
-  // Some complex logic that depends on userStore...
+
   if (!userStore) return null;
-  
+
   const [settingsStore] = useUnit([$settingsStore]);
-  
+
   return null;
 };
 /* eslint-enable effector/prefer-single-binding */
 ```
 
-However, even in these cases, consider refactoring to use a single `useUnit` call (or enabling the appropriate options) for better performance and clarity.
+Note that even in these cases, consider refactoring to a single `useUnit` call for better performance.
 
 ## References
 
 - [useUnit API documentation](https://effector.dev/en/api/effector-react/useunit/)
 - [Effector React hooks best practices](https://effector.dev/en/api/effector-react/)
-```

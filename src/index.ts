@@ -62,6 +62,7 @@ const legacyConfigs = {
   react: { rules: ruleset.react },
   future: { rules: ruleset.future },
   patronum: { rules: ruleset.patronum },
+  style: { rules: ruleset.style },
 }
 
 const self = base as unknown as ESLint.Plugin
@@ -72,6 +73,7 @@ const flatConfigs: Record<keyof typeof ruleset, Linter.Config> = {
   react: { plugins: { effector: self }, rules: ruleset.react },
   future: { plugins: { effector: self }, rules: ruleset.future },
   patronum: { plugins: { effector: self }, rules: ruleset.patronum },
+  style: { plugins: { effector: self }, rules: ruleset.style },
 }
 
 const plugin = base as {

@@ -13,7 +13,6 @@ const recommended = {
   "effector/no-unnecessary-duplication": "warn",
   "effector/no-useless-methods": "error",
   "effector/no-watch": "warn",
-  "effector/prefer-single-binding": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
 const patronum = {
@@ -37,4 +36,8 @@ const future = {
   "effector/no-domain-unit-creators": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
-export const ruleset = { recommended, patronum, scope, react, future }
+const style = {
+  "effector/prefer-single-binding": "warn",
+} satisfies TSESLint.Linter.RulesRecord
+
+export const ruleset = { recommended, patronum, scope, react, future, style }

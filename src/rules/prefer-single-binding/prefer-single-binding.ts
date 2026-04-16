@@ -2,10 +2,11 @@ import { ESLintUtils, type TSESTree as Node, AST_NODE_TYPES as NodeType } from "
 import type { RuleContext, RuleFix, RuleFixer } from "@typescript-eslint/utils/ts-eslint"
 
 import { createRule } from "@/shared/create"
+import { isType } from "@/shared/is"
 import { PACKAGE_NAME } from "@/shared/package"
 
-type MessageIds = "multipleUseUnit" | "mixedStoresAndEvents"
-type Options = [{ allowSeparateStoresAndEvents?: boolean; enforceStoresAndEventsSeparation?: boolean }?]
+type MessageIds = "multipleUseUnit" | "mixedStoresAndEvents" | "singleUnitWithoutDestructuring"
+type Options = [{ separation?: "forbid" | "allow" | "enforce" }?]
 type Context = RuleContext<MessageIds, Options>
 type Fixer = RuleFixer
 type ParserServices = ReturnType<typeof ESLintUtils.getParserServices>
@@ -34,7 +35,18 @@ type ListCall = Node.VariableDeclarator & {
   id: Node.ArrayPattern
 }
 
+type PlainCall = {
+  init: Node.CallExpression
+}
+
 type UnitType = "store" | "event" | "effect" | "unknown"
+
+type UnitBinding = {
+  call: UseUnitCall
+  unitNode: Node.Expression
+  identNode: Node.ArrayPattern["elements"][number]
+  propNode: Node.Property | null
+}
 
 const selector = {
   import: `ImportDeclaration[source.value=${PACKAGE_NAME.react}] > ImportSpecifier[imported.name=useUnit]`,
@@ -47,28 +59,21 @@ const selector = {
     shape: "ObjectExpression.arguments",
     list: "ArrayExpression.arguments",
   },
+  plain: "VariableDeclarator[id.type=Identifier]",
 } as const
 
 function getTypeFromChecker(node: Node.Expression, services: ParserServices): UnitType {
   try {
-    if (!services.program) return "unknown"
-    const checker = services.program.getTypeChecker()
+    const checker = services.program?.getTypeChecker()
     const tsNode = services.esTreeNodeToTSNodeMap.get(node)
     if (!tsNode) return "unknown"
-    const type = checker.getTypeAtLocation(tsNode)
-    const typeString = checker.typeToString(type)
+    const type = checker?.getTypeAtLocation(tsNode)
 
-    if (typeString.startsWith("Store<") || typeString.startsWith("StoreWritable<")) return "store"
-    if (typeString.startsWith("Event<") || typeString.startsWith("EventCallable<")) return "event"
-    if (typeString.startsWith("Effect<")) return "effect"
+    if (!type || !services.program) return "unknown"
 
-    const symbol = type.getSymbol() ?? type.aliasSymbol
-    if (symbol) {
-      const name = symbol.getName()
-      if (name === "Store" || name === "StoreWritable") return "store"
-      if (name === "Event" || name === "EventCallable") return "event"
-      if (name === "Effect") return "effect"
-    }
+    if (isType.store(type, services.program)) return "store"
+    if (isType.event(type, services.program)) return "event"
+    if (isType.effect(type, services.program)) return "effect"
 
     return "unknown"
   } catch {
@@ -76,72 +81,76 @@ function getTypeFromChecker(node: Node.Expression, services: ParserServices): Un
   }
 }
 
-function scoreTypes(types: UnitType[]): UnitType {
-  const storeCount = types.filter((t) => t === "store").length
-  const eventCount = types.filter((t) => t === "event").length
-  const unknownCount = types.filter((t) => t === "unknown").length
+function collectBindings(calls: UseUnitCall[]): UnitBinding[] {
+  const bindings: UnitBinding[] = []
 
-  if (storeCount === types.length) return "store"
-  if (eventCount === types.length) return "event"
-  if (unknownCount === types.length) return "unknown"
-  if (storeCount > eventCount && storeCount > unknownCount) return "store"
-  if (eventCount > storeCount && eventCount > unknownCount) return "event"
-  return "unknown"
-}
+  for (const call of calls) {
+    const argument = call.init.arguments[0]
+    if (!argument || argument.type === NodeType.SpreadElement) continue
 
-function getCallType(call: UseUnitCall, getNodeType: GetNodeType): UnitType {
-  const argument = call.init.arguments[0]
-  if (!argument || argument.type === NodeType.SpreadElement) return "unknown"
+    if (argument.type === NodeType.ArrayExpression && call.id.type === NodeType.ArrayPattern) {
+      const elements = argument.elements
+      const destructured = call.id.elements
+      for (let i = 0; i < elements.length; i++) {
+        const el = elements[i]
+        if (!el || el.type === NodeType.SpreadElement) continue
+        bindings.push({
+          call,
+          unitNode: el,
+          identNode: destructured[i] ?? null,
+          propNode: null,
+        })
+      }
+    }
 
-  if (argument.type === NodeType.ArrayExpression) {
-    const types = argument.elements
-      .filter((el): el is Node.Expression => el !== null && el.type !== NodeType.SpreadElement)
-      .map(getNodeType)
-    return types.length === 0 ? "unknown" : scoreTypes(types)
+    if (argument.type === NodeType.ObjectExpression && call.id.type === NodeType.ObjectPattern) {
+      for (const prop of argument.properties) {
+        if (prop.type !== NodeType.Property) continue
+        bindings.push({
+          call,
+          unitNode: prop.value as Node.Expression,
+          identNode: null,
+          propNode: prop,
+        })
+      }
+    }
   }
 
-  if (argument.type === NodeType.ObjectExpression) {
-    const types = argument.properties
-      .filter((prop): prop is Node.Property => prop.type === NodeType.Property)
-      .map((prop) => getNodeType(prop.value as Node.Expression))
-    return types.length === 0 ? "unknown" : scoreTypes(types)
-  }
-
-  return "unknown"
+  return bindings
 }
 
-function groupByType(calls: UseUnitCall[], getNodeType: GetNodeType): Record<string, UseUnitCall[]> {
-  const groups: Record<string, UseUnitCall[]> = { store: [], event: [], effect: [], unknown: [] }
-  for (const call of calls) groups[getCallType(call, getNodeType)]?.push(call)
+function groupBindingsByType(bindings: UnitBinding[], getNodeType: GetNodeType): Record<UnitType, UnitBinding[]> {
+  const groups: Record<UnitType, UnitBinding[]> = { store: [], event: [], effect: [], unknown: [] }
+  for (const binding of bindings) {
+    const type = getNodeType(binding.unitNode)
+    groups[type].push(binding)
+  }
   return groups
 }
 
-function* checkMixed(
-  call: UseUnitCall,
-  getNodeType: GetNodeType,
-): Generator<{ stores: Node.Expression[]; events: Node.Expression[]; isObject: boolean }> {
+function hasMixedTypes(call: UseUnitCall, getNodeType: GetNodeType): boolean {
   const argument = call.init.arguments[0]
-  if (!argument || argument.type === NodeType.SpreadElement) return
+  if (!argument || argument.type === NodeType.SpreadElement) return false
+
+  const types = new Set<UnitType>()
 
   if (argument.type === NodeType.ArrayExpression) {
-    const elements = argument.elements.filter(
-      (el): el is Node.Expression => el !== null && el.type !== NodeType.SpreadElement,
-    )
-    const stores = elements.filter((el) => getNodeType(el) === "store")
-    const events = elements.filter((el) => getNodeType(el) === "event")
-    if (stores.length > 0 && events.length > 0) yield { stores, events, isObject: false }
+    for (const el of argument.elements) {
+      if (!el || el.type === NodeType.SpreadElement) continue
+      const t = getNodeType(el)
+      if (t !== "unknown") types.add(t)
+    }
   }
 
   if (argument.type === NodeType.ObjectExpression) {
-    const properties = argument.properties.filter((prop): prop is Node.Property => prop.type === NodeType.Property)
-    const stores = properties
-      .filter((p) => getNodeType(p.value as Node.Expression) === "store")
-      .map((p) => p.value as Node.Expression)
-    const events = properties
-      .filter((p) => getNodeType(p.value as Node.Expression) === "event")
-      .map((p) => p.value as Node.Expression)
-    if (stores.length > 0 && events.length > 0) yield { stores, events, isObject: true }
+    for (const prop of argument.properties) {
+      if (prop.type !== NodeType.Property) continue
+      const t = getNodeType(prop.value as Node.Expression)
+      if (t !== "unknown") types.add(t)
+    }
   }
+
+  return types.size > 1
 }
 
 function removeStatement(
@@ -165,8 +174,11 @@ function removeStatement(
 
 function generateMergeFix(fixer: Fixer, calls: UseUnitCall[], context: Context): RuleFix[] | null {
   const sourceCode = context.sourceCode
-  const firstArg = calls[0]?.init.arguments[0]
+  const firstCall = calls[0]
+  const firstArg = firstCall?.init.arguments[0]
   if (!firstArg || firstArg.type === NodeType.SpreadElement) return null
+
+  const calleeName = firstCall.init.callee.type === NodeType.Identifier ? firstCall.init.callee.name : "useUnit"
 
   const isArrayForm = firstArg.type === NodeType.ArrayExpression
   const isObjectForm = firstArg.type === NodeType.ObjectExpression
@@ -204,7 +216,7 @@ function generateMergeFix(fixer: Fixer, calls: UseUnitCall[], context: Context):
     fixes.push(
       fixer.replaceText(
         first.statement,
-        `const [${allDestructured.join(", ")}] = useUnit([${allElements.join(", ")}])`,
+        `const [${allDestructured.join(", ")}] = ${calleeName}([${allElements.join(", ")}])`,
       ),
     )
   } else if (isObjectForm) {
@@ -224,7 +236,7 @@ function generateMergeFix(fixer: Fixer, calls: UseUnitCall[], context: Context):
     fixes.push(
       fixer.replaceText(
         first.statement,
-        `const { ${allDestructured.join(", ")} } = useUnit({ ${allProperties.join(", ")} })`,
+        `const { ${allDestructured.join(", ")} } = ${calleeName}({ ${allProperties.join(", ")} })`,
       ),
     )
   }
@@ -239,22 +251,32 @@ function generateSeparationFix(fixer: Fixer, call: UseUnitCall, context: Context
   const argument = call.init.arguments[0]
   if (!argument || argument.type === NodeType.SpreadElement) return []
 
+  const calleeName = call.init.callee.type === NodeType.Identifier ? call.init.callee.name : "useUnit"
+
   const range = call.statement.range
   const lineStart = sourceCode.text.lastIndexOf("\n", range[0] - 1) + 1
   const indent = sourceCode.text.slice(lineStart, range[0])
 
   if (argument.type === NodeType.ObjectExpression) {
     const properties = argument.properties.filter((p): p is Node.Property => p.type === NodeType.Property)
-    const storeProps = properties.filter((p) => getNodeType(p.value as Node.Expression) === "store")
-    const eventProps = properties.filter((p) => getNodeType(p.value as Node.Expression) === "event")
+
+    const byType = {
+      store: properties.filter((p) => getNodeType(p.value as Node.Expression) === "store"),
+      event: properties.filter((p) => getNodeType(p.value as Node.Expression) === "event"),
+      effect: properties.filter((p) => getNodeType(p.value as Node.Expression) === "effect"),
+    }
 
     const toKeyName = (p: Node.Property) =>
       p.key.type === NodeType.Identifier ? p.key.name : sourceCode.getText(p.key)
 
-    const storesCode = `const { ${storeProps.map(toKeyName).join(", ")} } = useUnit({ ${storeProps.map((p) => sourceCode.getText(p)).join(", ")} })`
-    const eventsCode = `const { ${eventProps.map(toKeyName).join(", ")} } = useUnit({ ${eventProps.map((p) => sourceCode.getText(p)).join(", ")} })`
+    const lines = Object.values(byType)
+      .filter((group) => group.length > 0)
+      .map(
+        (group) =>
+          `const { ${group.map(toKeyName).join(", ")} } = ${calleeName}({ ${group.map((p) => sourceCode.getText(p)).join(", ")} })`,
+      )
 
-    return [fixer.replaceText(call.statement, `${storesCode}\n${indent}${eventsCode}`)]
+    return [fixer.replaceText(call.statement, lines.join(`\n${indent}`))]
   }
 
   if (argument.type === NodeType.ArrayExpression && call.id.type === NodeType.ArrayPattern) {
@@ -265,23 +287,26 @@ function generateSeparationFix(fixer: Fixer, call: UseUnitCall, context: Context
       .map((el, i) => ({ el, i }))
       .filter((x): x is { el: Node.Expression; i: number } => x.el !== null && x.el.type !== NodeType.SpreadElement)
 
-    const storeItems = indexed.filter(({ el }) => getNodeType(el) === "store")
-    const eventItems = indexed.filter(({ el }) => getNodeType(el) === "event")
+    const byType = {
+      store: indexed.filter(({ el }) => getNodeType(el) === "store"),
+      event: indexed.filter(({ el }) => getNodeType(el) === "event"),
+      effect: indexed.filter(({ el }) => getNodeType(el) === "effect"),
+    }
 
     const getName = (i: number) => {
       const el = destructured[i]
       return el ? sourceCode.getText(el) : null
     }
 
-    const storeNames = storeItems.map(({ i }) => getName(i)).filter((x): x is string => x !== null)
-    const eventNames = eventItems.map(({ i }) => getName(i)).filter((x): x is string => x !== null)
-    const storeElements = storeItems.map(({ el }) => sourceCode.getText(el))
-    const eventElements = eventItems.map(({ el }) => sourceCode.getText(el))
+    const lines = Object.values(byType)
+      .filter((group) => group.length > 0)
+      .map((group) => {
+        const names = group.map(({ i }) => getName(i)).filter((x): x is string => x !== null)
+        const units = group.map(({ el }) => sourceCode.getText(el))
+        return `const [${names.join(", ")}] = ${calleeName}([${units.join(", ")}])`
+      })
 
-    const storesCode = `const [${storeNames.join(", ")}] = useUnit([${storeElements.join(", ")}])`
-    const eventsCode = `const [${eventNames.join(", ")}] = useUnit([${eventElements.join(", ")}])`
-
-    return [fixer.replaceText(call.statement, `${storesCode}\n${indent}${eventsCode}`)]
+    return [fixer.replaceText(call.statement, lines.join(`\n${indent}`))]
   }
 
   return []
@@ -289,11 +314,17 @@ function generateSeparationFix(fixer: Fixer, call: UseUnitCall, context: Context
 
 function reportMultipleCalls(context: Context, calls: UseUnitCall[]): void {
   const [, ...rest] = calls
+  const captured = [...calls] // явно захватываем копию чтобы замыкание не мутировало
   for (const call of rest) {
     context.report({
       node: call.init,
       messageId: "multipleUseUnit",
-      fix: (fixer) => generateMergeFix(fixer, calls, context),
+      suggest: [
+        {
+          messageId: "multipleUseUnit",
+          fix: (fixer) => generateMergeFix(fixer, captured, context),
+        },
+      ],
     })
   }
 }
@@ -302,64 +333,89 @@ export default createRule<Options, MessageIds>({
   name: "prefer-single-binding",
   meta: {
     type: "suggestion",
+    hasSuggestions: true,
     docs: {
-      description: "Recommend using a single useUnit call instead of multiple",
+      description:
+        "Recommend using a single useUnit call instead of multiple. Non-destructuring calls, @@unitShape and mixed array/object forms are not handled.",
     },
     messages: {
       multipleUseUnit:
         "Multiple useUnit calls detected. Consider combining them into a single call for better performance.",
       mixedStoresAndEvents:
         "useUnit call contains both stores and events. Consider separating them into different calls.",
+      singleUnitWithoutDestructuring:
+        "useUnit called without destructuring alongside other useUnit calls. Consider combining all useUnit calls into a single destructured call.",
     },
     schema: [
       {
         type: "object",
         properties: {
-          allowSeparateStoresAndEvents: { type: "boolean", default: false },
-          enforceStoresAndEventsSeparation: { type: "boolean", default: false },
+          separation: {
+            type: "string",
+            enum: ["forbid", "allow", "enforce"],
+            default: "forbid",
+          },
         },
         additionalProperties: false,
       },
     ],
-    fixable: "code",
   },
   defaultOptions: [],
   create(context) {
     const importedAs = new Set<string>()
-    const options = context.options[0] ?? {}
-    const allowSeparateStoresAndEvents = options.allowSeparateStoresAndEvents ?? false
-    const enforceStoresAndEventsSeparation = options.enforceStoresAndEventsSeparation ?? false
+    const separation = context.options[0]?.separation ?? "forbid"
     const useUnitCallsStack: UseUnitCall[][] = []
+    const plainCallsStack: PlainCall[][] = []
 
-    let services: ParserServices | null = null
-    try {
-      const s = ESLintUtils.getParserServices(context, true)
-      if (s.program) services = s
-    } catch {
-      services = null
-    }
+    const services = ESLintUtils.getParserServices(context)
 
     const getNodeType: GetNodeType = (node) => {
       if (!node) return "unknown"
-      if (!services) return "unknown"
       return getTypeFromChecker(node, services)
     }
 
     const onFunctionEnter = (): void => {
       useUnitCallsStack.push([])
+      plainCallsStack.push([])
     }
 
     const onFunctionExit = (): void => {
+      const plainCalls = plainCallsStack.pop()
       const useUnitCalls = useUnitCallsStack.pop()
-      if (!useUnitCalls || useUnitCalls.length === 0) return
+      if (!useUnitCalls) return
 
-      if (enforceStoresAndEventsSeparation) {
+      if (separation === "forbid" && plainCalls && plainCalls.length > 0 && useUnitCalls.length > 0) {
+        for (const call of plainCalls) {
+          context.report({
+            node: call.init,
+            messageId: "singleUnitWithoutDestructuring",
+          })
+        }
+      }
+
+      if (separation === "forbid" && plainCalls && plainCalls.length > 1 && useUnitCalls.length === 0) {
+        for (const call of plainCalls) {
+          context.report({
+            node: call.init,
+            messageId: "multipleUseUnit",
+          })
+        }
+      }
+
+      if (useUnitCalls.length === 0) return
+
+      if (separation === "enforce") {
         for (const call of useUnitCalls) {
-          if (checkMixed(call, getNodeType).next().done === false) {
+          if (hasMixedTypes(call, getNodeType)) {
             context.report({
               node: call.init,
               messageId: "mixedStoresAndEvents",
-              fix: (fixer) => generateSeparationFix(fixer, call, context, getNodeType),
+              suggest: [
+                {
+                  messageId: "mixedStoresAndEvents",
+                  fix: (fixer) => generateSeparationFix(fixer, call, context, getNodeType),
+                },
+              ],
             })
           }
         }
@@ -368,22 +424,51 @@ export default createRule<Options, MessageIds>({
 
       if (useUnitCalls.length <= 1) return
 
-      if (allowSeparateStoresAndEvents) {
-        const groups = groupByType(useUnitCalls, getNodeType)
+      const getForm = (call: UseUnitCall): "array" | "object" | "unknown" => {
+        const arg = call.init.arguments[0]
+        if (!arg || arg.type === NodeType.SpreadElement) return "unknown"
+        if (arg.type === NodeType.ArrayExpression) return "array"
+        if (arg.type === NodeType.ObjectExpression) return "object"
+        return "unknown"
+      }
+
+      if (separation === "allow") {
+        const bindings = collectBindings(useUnitCalls)
+        const groups = groupBindingsByType(bindings, getNodeType)
         for (const group of Object.values(groups)) {
-          if (group.length > 1) reportMultipleCalls(context, group)
+          const groupCalls = [...new Set(group.map((b) => b.call))]
+          if (groupCalls.length <= 1) continue
+          const form = getForm(groupCalls[0]!)
+          const allSameForm = groupCalls.every((c) => getForm(c) === form)
+          if (!allSameForm) continue
+          reportMultipleCalls(context, groupCalls)
         }
-      } else {
+        return
+      }
+
+      // separation === "forbid"
+      if (useUnitCalls.length <= 1) return
+
+      const form = getForm(useUnitCalls[0]!)
+      const allSameForm = useUnitCalls.every((c) => getForm(c) === form)
+
+      if (allSameForm) {
         reportMultipleCalls(context, useUnitCalls)
+      } else {
+        const [, ...rest] = useUnitCalls
+        for (const call of rest) {
+          context.report({
+            node: call.init,
+            messageId: "multipleUseUnit",
+          })
+        }
       }
     }
 
     return {
       [selector.import]: (node: Node.ImportSpecifier) => void importedAs.add(node.local.name),
 
-      "FunctionDeclaration": onFunctionEnter,
-      "FunctionExpression": onFunctionEnter,
-      "ArrowFunctionExpression": onFunctionEnter,
+      "FunctionDeclaration, FunctionExpression, ArrowFunctionExpression": onFunctionEnter,
 
       "FunctionDeclaration:exit": onFunctionExit,
       "FunctionExpression:exit": onFunctionExit,
@@ -401,6 +486,22 @@ export default createRule<Options, MessageIds>({
         const current = useUnitCallsStack.at(-1)
         if (!current) return
         current.push({ statement: node.parent, declarator: node, init: node.init, id: node.id })
+      },
+
+      [`${selector.plain}:has(> ${selector.call})`](
+        node: Node.VariableDeclarator & { init: Node.CallExpression },
+      ): void {
+        if (node.init.arguments.length !== 1) return
+        const arg = node.init.arguments[0]
+        if (!arg || arg.type === NodeType.SpreadElement) return
+        if (arg.type === NodeType.ArrayExpression && node.id.type === NodeType.ArrayPattern) return
+        if (arg.type === NodeType.ObjectExpression && node.id.type === NodeType.ObjectPattern) return
+        const callee = node.init.callee
+        if (callee.type !== NodeType.Identifier) return
+        if (!importedAs.has(callee.name)) return
+        const current = plainCallsStack.at(-1)
+        if (!current) return
+        current.push({ init: node.init })
       },
     }
   },
