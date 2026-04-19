@@ -4,7 +4,9 @@ description: Enforce $ as a prefix/postfix for any Effector Store
 
 # effector/enforce-store-naming-convention
 
-Enforcing naming conventions helps keep the codebase consistent, and reduces overhead when thinking about how to name a variable with store. Depending on the configuration your `Store`s should be distinguished by a prefix or a postfix `$`. Enforces the prefix convention by default.
+Enforces Effector naming conventions to reduce code reading overhead by clearly and consistently marking all `Store`s with a `$` symbol across the codebase.
+
+Depending on rule configuration, `Store`s must be distinguished from other variables by a `$` prefix or postfix, with prefix enforcement as the default.
 
 ## Prefix convention
 
@@ -21,9 +23,11 @@ const config = {
 ```ts
 // 👍 nice name
 const $name = createStore(null)
+const { $x, $y } = useContext(PointModel)
 
 // 👎 bad name
 const name = createStore(null)
+const { x, y } = useContext(PointModel)
 ```
 
 ## Postfix convention
@@ -43,7 +47,9 @@ Then, the postfix convention will be enforced:
 ```ts
 // 👍 nice name
 const name$ = createStore(null)
+const { x$, y$ } = useContext(PointModel)
 
 // 👎 bad name
-const name = createStrore(null)
+const name = createStore(null)
+const { x, y } = useContext(PointModel)
 ```
