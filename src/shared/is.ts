@@ -23,13 +23,13 @@ export const isType = {
   effect: (type: Type, program: Program) =>
     typeMatchesSpecifier(type, { from: "package", package: "effector", name: "Effect" }, program),
 
+  domain: (type: Type, program: Program) =>
+    typeMatchesSpecifier(type, { from: "package", package: "effector", name: "Domain" }, program),
+
   unit: (type: Type, program: Program) => {
     const name = ["Store", "StoreWritable", "Event", "EventCallable", "Effect", "Domain"]
     return typeMatchesSpecifier(type, { from: "package", package: "effector", name }, program)
   },
-
-  domain: (type: Type, program: Program) =>
-    typeMatchesSpecifier(type, { from: "package", package: "effector", name: "Domain" }, program),
 
   // Gate is an intersection type, which TypeScript erases from existence
   gate: (type: Type) => {

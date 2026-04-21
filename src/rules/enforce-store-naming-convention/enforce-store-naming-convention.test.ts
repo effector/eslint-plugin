@@ -53,7 +53,7 @@ ruleTester.run("enforce-store-naming-convention", rule, {
       options: [postfix],
     },
     {
-      name: "prefix: combine",
+      name: "prefix: mapping",
       code: ts`
         import { createStore, combine } from "effector"
 
@@ -61,17 +61,9 @@ ruleTester.run("enforce-store-naming-convention", rule, {
         const $b = createStore(null)
 
         const $combined = combine($a, $b)
+        const $mapped = $a.map((value) => value === null)
       `,
       options: [prefix],
-    },
-    {
-      name: "prefix: map",
-      code: ts`
-        import { createStore } from "effector"
-
-        const $store = createStore([])
-        const $mapped = $store.map((values) => values.length)
-      `,
     },
     {
       name: "prefix: renamed",
@@ -108,14 +100,75 @@ ruleTester.run("enforce-store-naming-convention", rule, {
       options: [postfix],
     },
     {
-      name: "store as argument",
+      name: "prefix: store as destructured argument",
       code: ts`
         import { type Store, createStore } from "effector"
 
-        type QueryParams = { body: Store<unknown> }
+        type QueryParams = { $body: Store<unknown> }
 
-        const createQuery = ({ body = createStore({}) }: QueryParams) => undefined
-        const createMutation = (body = createStore(null)) => undefined
+        const alpha = ({ $body = createStore({}) }: QueryParams) => undefined
+        const beta = ({ $body }: QueryParams) => undefined
+        const gamma = ($body = createStore(null)) => undefined
+      `,
+    },
+    {
+      name: "prefix: shape destructuring -> ident",
+      code: ts`
+        import { createStore } from "effector"
+
+        const { $first } = { $first: createStore(0) }
+        const { second: $second } = { second: createStore(0) }
+      `,
+    },
+    {
+      name: "prefix: shape destructuring -> assignment",
+      code: ts`
+        import { createStore } from "effector"
+
+        const { first: $first = createStore(0) } = { first: null }
+        const { second: $second = createStore(0) } = { second: createStore(1) }
+      `,
+    },
+    {
+      name: "postfix: array destructuring -> ident",
+      code: ts`
+        import { createStore } from "effector"
+
+        const [first$] = [createStore(0)]
+        const [second$, third$] = [combine($first, (x) => x), restore($first.updates, null)]
+      `,
+      options: [postfix],
+    },
+    {
+      name: "postfix: array destructuring -> assignment",
+      code: ts`
+        import { createStore } from "effector"
+
+        const [first$ = createStore(0)] = [null]
+        const [second$ = createStore(0)] = [createStore(1)]
+      `,
+      options: [postfix],
+    },
+    {
+      name: "postfix: mixed nested destructuring -> assignment",
+      code: ts`
+        import { createStore } from "effector"
+
+        const {
+          first: [second$ = createStore(0)],
+        } = { first: [null] }
+      `,
+      options: [postfix],
+    },
+    {
+      name: "property in argument context",
+      code: ts`
+        import { createStore, combine } from "effector"
+
+        const $source = createStore(0)
+
+        const $combined = combine({ alpha: $source, beta: [$source], gamma: { delta: $source } })
+        const grouped = { alpha: createStore(0), beta: combine($source, (x) => x) }
       `,
     },
   ],
@@ -175,6 +228,15 @@ ruleTester.run("enforce-store-naming-convention", rule, {
       ],
     },
     {
+      name: "variable with type annotation",
+      code: ts`
+        import { createStore, type Store } from "effector"
+
+        const store: Store<unknown> = createStore(null)
+      `,
+      errors: [{ messageId: "invalid", line: 3, data: { current: "store", convention: "prefix", fixed: "$store" } }],
+    },
+    {
       name: "prefix when configured for postfix",
       code: ts`
         import { createStore } from "effector"
@@ -185,6 +247,7 @@ ruleTester.run("enforce-store-naming-convention", rule, {
         {
           messageId: "invalid",
           line: 2,
+          data: { current: "$just", convention: "postfix", fixed: "just$" },
           suggestions: [
             {
               messageId: "rename",
@@ -224,6 +287,178 @@ ruleTester.run("enforce-store-naming-convention", rule, {
             },
           ],
         },
+      ],
+    },
+    {
+      name: "shape destructuring",
+      code: ts`
+        import { createStore } from "effector"
+
+        const { first } = { first: createStore(0) }
+        const { $first: first } = { $first: createStore(0) }
+      `,
+      errors: [
+        {
+          messageId: "invalid",
+          line: 3,
+          suggestions: [
+            {
+              messageId: "rename",
+              data: { current: "first", fixed: "$first" },
+              output: ts`
+                import { createStore } from "effector"
+
+                const { first: $first } = { first: createStore(0) }
+                const { $first: first } = { $first: createStore(0) }
+              `,
+            },
+          ],
+        },
+        {
+          messageId: "invalid",
+          line: 4,
+          suggestions: [
+            {
+              messageId: "rename",
+              data: { current: "first", fixed: "$first" },
+              output: ts`
+                import { createStore } from "effector"
+
+                const { first } = { first: createStore(0) }
+                const { $first: $first } = { $first: createStore(0) }
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "shape destructuring with assignment",
+      code: ts`
+        import { createStore, combine } from "effector"
+
+        const $source = createStore(0)
+
+        const { first = createStore(0) } = { first: $source }
+        const { second: beta = combine($source, (x) => x) } = { second: $source }
+      `,
+      errors: [
+        {
+          messageId: "invalid",
+          line: 5,
+          suggestions: [
+            {
+              messageId: "rename",
+              data: { current: "first", fixed: "$first" },
+              output: ts`
+                import { createStore, combine } from "effector"
+
+                const $source = createStore(0)
+
+                const { first: $first = createStore(0) } = { first: $source }
+                const { second: beta = combine($source, (x) => x) } = { second: $source }
+              `,
+            },
+          ],
+        },
+        {
+          messageId: "invalid",
+          line: 6,
+          suggestions: [
+            {
+              messageId: "rename",
+              data: { current: "beta", fixed: "$beta" },
+              output: ts`
+                import { createStore, combine } from "effector"
+
+                const $source = createStore(0)
+
+                const { first = createStore(0) } = { first: $source }
+                const { second: $beta = combine($source, (x) => x) } = { second: $source }
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "array destructuring",
+      code: ts`
+        import { createStore } from "effector"
+
+        const [first, second = createStore(0)] = [createStore(0)]
+      `,
+      errors: [
+        {
+          messageId: "invalid",
+          line: 3,
+          suggestions: [
+            {
+              messageId: "rename",
+              data: { current: "first", fixed: "$first" },
+              output: ts`
+                import { createStore } from "effector"
+
+                const [$first, second = createStore(0)] = [createStore(0)]
+              `,
+            },
+          ],
+        },
+        {
+          messageId: "invalid",
+          line: 3,
+          suggestions: [
+            {
+              messageId: "rename",
+              data: { current: "second", fixed: "$second" },
+              output: ts`
+                import { createStore } from "effector"
+
+                const [first, $second = createStore(0)] = [createStore(0)]
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "function parameter nested inferred destructuring",
+      code: ts`
+        import { type Store } from "effector"
+
+        type Config = { store: Store<unknown> }
+        function test({ config: { store } }: { config: Config }) {}
+      `,
+      errors: [
+        {
+          messageId: "invalid",
+          line: 4,
+          suggestions: [
+            {
+              messageId: "rename",
+              data: { current: "store", fixed: "$store" },
+              output: ts`
+                import { type Store } from "effector"
+
+                type Config = { store: Store<unknown> }
+                function test({ config: { store: $store } }: { config: Config }) {}
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "function parameter inferred",
+      code: ts`
+        import { type Store, type StoreWritable } from "effector"
+
+        function alpha(store: Store<unknown>) {}
+        const beta = (store: StoreWritable<unknown>) => {}
+      `,
+      errors: [
+        { messageId: "invalid", line: 3, data: { current: "store", convention: "prefix", fixed: "$store" } },
+        { messageId: "invalid", line: 4, data: { current: "store", convention: "prefix", fixed: "$store" } },
       ],
     },
   ],
