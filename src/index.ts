@@ -21,6 +21,7 @@ import noUnnecessaryCombination from "./rules/no-unnecessary-combination/no-unne
 import noUnnecessaryDuplication from "./rules/no-unnecessary-duplication/no-unnecessary-duplication"
 import noUselessMethods from "./rules/no-useless-methods/no-useless-methods"
 import noWatch from "./rules/no-watch/no-watch"
+import preferSingleBinding from "./rules/prefer-single-binding/prefer-single-binding"
 import preferUseUnit from "./rules/prefer-useUnit/prefer-useUnit"
 import requirePickupInPersist from "./rules/require-pickup-in-persist/require-pickup-in-persist"
 import strictEffectHandlers from "./rules/strict-effect-handlers/strict-effect-handlers"
@@ -49,6 +50,7 @@ const base = {
     "no-useless-methods": noUselessMethods,
     "no-watch": noWatch,
     "prefer-useUnit": preferUseUnit,
+    "prefer-single-binding": preferSingleBinding,
     "require-pickup-in-persist": requirePickupInPersist,
     "strict-effect-handlers": strictEffectHandlers,
   },
@@ -60,6 +62,7 @@ const legacyConfigs = {
   react: { rules: ruleset.react },
   future: { rules: ruleset.future },
   patronum: { rules: ruleset.patronum },
+  style: { rules: ruleset.style },
 }
 
 const self = base as unknown as ESLint.Plugin
@@ -70,6 +73,7 @@ const flatConfigs: Record<keyof typeof ruleset, Linter.Config> = {
   react: { plugins: { effector: self }, rules: ruleset.react },
   future: { plugins: { effector: self }, rules: ruleset.future },
   patronum: { plugins: { effector: self }, rules: ruleset.patronum },
+  style: { plugins: { effector: self }, rules: ruleset.style },
 }
 
 const plugin = base as {

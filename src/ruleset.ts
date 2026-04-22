@@ -36,4 +36,8 @@ const future = {
   "effector/no-domain-unit-creators": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
-export const ruleset = { recommended, patronum, scope, react, future }
+const style = {
+  "effector/prefer-single-binding": "warn",
+} satisfies TSESLint.Linter.RulesRecord
+
+export const ruleset = { recommended, patronum, scope, react, future, style }
