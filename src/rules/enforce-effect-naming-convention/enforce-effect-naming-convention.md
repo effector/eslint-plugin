@@ -4,7 +4,9 @@ description: Enforce Fx as a suffix for any Effector Effect
 
 # effector/enforce-effect-naming-convention
 
-Enforcing naming conventions helps keep the codebase consistent, and reduces overhead when thinking about how to name a variable with effect. Your effect should be distinguished by a suffix `Fx`. For example, `fetchUserInfoFx` is an effect, `fetchUserInfo` is not.
+Enforces Effector naming conventions to reduce code reading overhead by clearly and consistently marking all `Effect`s with an `Fx` suffix across the codebase.
+
+`Effect`s must be distinguished from other variables by an `Fx` suffix. For example, `fetchUserInfoFx` is an effect, `fetchUserInfo` is not.
 
 ## Configuration
 
@@ -20,8 +22,10 @@ Enforcing naming conventions helps keep the codebase consistent, and reduces ove
 
 ```ts
 // 👍 nice name
-const fetchNameFx = createEffect()
+const fetchUserFx = createEffect()
+const { fetchUserFx, fetchPostFx } = useContext(ApiContext)
 
 // 👎 bad name
-const fetchName = createEffect()
+const fetchUser = createEffect()
+const { fetchUser, fetchPost } = useContext(ApiContext)
 ```
