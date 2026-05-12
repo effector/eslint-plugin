@@ -80,7 +80,7 @@ export default createRule({
         return void stack.hook.push(isHook)
       },
 
-      "Identifier": (node: Node.Identifier) => {
+      [`${selector.direct}, ${selector.member}`]: (node: Node.Identifier) => {
         const isWithinRender = stack.render.at(-1) ?? false
         if (!isWithinRender) return
 
@@ -97,3 +97,10 @@ export default createRule({
 })
 
 const UseRegex = /^use[A-Z0-9].*$/
+
+const selector = {
+  // direct usage: `unit()` or `<button onClick={unit} />`
+  direct: `:matches(CallExpression, JSXExpressionContainer) > Identifier`,
+  // member usage: `model.unit()` or `<button onClick={model.unit} />`
+  member: `:matches(CallExpression, JSXExpressionContainer) > MemberExpression[computed=false] > Identifier.property`,
+}

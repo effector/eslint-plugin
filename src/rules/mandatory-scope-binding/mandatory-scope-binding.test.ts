@@ -117,7 +117,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
         import React from "react"
         import { useUnit } from "effector-react"
 
-        import { fetchFx, clicked } from "${fixture("model")}"
+        import { fetchFx, clicked, mounted } from "${fixture("model")}"
 
         const Button = () => {
           const { fn, mount, loading } = useUnit({ fn: clicked, mount: mounted, loading: fetchFx.pending })
@@ -197,6 +197,43 @@ ruleTester.run("mandatory-scope-binding", rule, {
         export const Render = () => <>{eff.useUnit(fetchFx.pending)}</>
       `,
     },
+    {
+      name: "hook argument declaration",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+        import { useUnit } from "effector-react"
+
+        function useMounted(event: EventCallable<void>) {
+          const fn = useUnit(event)
+
+          React.useEffect(() => void fn(), [])
+        }
+      `,
+    },
+    {
+      name: "static metadata access on a unit",
+      code: tsx`
+        import React from "react"
+
+        import { clicked, fetchFx } from "${fixture("model")}"
+
+        const Button = () => (
+          <div data-sid={clicked.sid} data-name={fetchFx.shortName}>
+            {clicked.shortName}
+          </div>
+        )
+      `,
+    },
+    {
+      name: "deeply-nested metadata access on a unit",
+      code: tsx`
+        import React from "react"
+        import * as model from "${fixture("model")}"
+
+        const Button = () => <div data-sid={model.$$.context.outputs.clicked.sid} />
+      `,
+    },
   ],
   invalid: [
     {
@@ -222,12 +259,8 @@ ruleTester.run("mandatory-scope-binding", rule, {
         import { clicked } from "${fixture("model")}"
 
         const Button = React.forwardRef((props, ref) => <button ref={ref} onClick={clicked} />)
-        const Button = React.forwardRef((props, ref) => clicked.shortName)
       `,
-      errors: [
-        { messageId: "useUnitNeeded", line: 6, column: 76, data: { name: "clicked" } },
-        { messageId: "useUnitNeeded", line: 7, column: 49, data: { name: "clicked" } },
-      ],
+      errors: [{ messageId: "useUnitNeeded", line: 6, column: 76, data: { name: "clicked" } }],
     },
     {
       name: "event: inferred jsx arrow function",
@@ -425,6 +458,30 @@ ruleTester.run("mandatory-scope-binding", rule, {
         { messageId: "useUnitNeeded", line: 6, column: 40, data: { name: "clicked" } },
         { messageId: "useUnitNeeded", line: 9, column: 15, data: { name: "clicked" } },
       ],
+    },
+    {
+      name: "event (member) call",
+      code: tsx`
+        import React from "react"
+        import * as model from "${fixture("model")}"
+
+        function Button() {
+          React.useEffect(() => void model.clicked(), [])
+
+          return <button>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 5, column: 36, data: { name: "clicked" } }],
+    },
+    {
+      name: "event (member) passed in JSX",
+      code: tsx`
+        import React from "react"
+        import * as model from "${fixture("model")}"
+
+        const Button = () => <button onClick={model.clicked}>click</button>
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 4, column: 45, data: { name: "clicked" } }],
     },
   ],
 })
