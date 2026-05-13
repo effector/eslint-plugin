@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           registry-url: "https://registry.npmjs.org"
-          node-version: "25.x"
+          node-version: "26.x"
 
       - uses: pnpm/action-setup@v4
         with:
