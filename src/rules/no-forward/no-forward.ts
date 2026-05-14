@@ -49,8 +49,8 @@ export default createRule({
         const config: { [k in ForwardParameter]?: ForwardParameterValue } = {}
 
         const arg = node.arguments[0]
-        config.clock = locate.property("from", arg)?.value as ForwardParameterValue
-        config.target = locate.property("to", arg)?.value as ForwardParameterValue
+        config.clock = locate.property("from", arg)?.value
+        config.target = locate.property("to", arg)?.value
 
         // transform target prepend -> sample fn
         if (config.target) {

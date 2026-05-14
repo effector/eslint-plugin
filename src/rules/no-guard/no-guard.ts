@@ -53,14 +53,13 @@ export default createRule({
           const [arg] = node.arguments
 
           for (const key of ["clock", "source", "filter", "target"] as const)
-            config[key] = locate.property(key, arg)?.value as GuardParameterValue
+            config[key] = locate.property(key, arg)?.value
         } else if (node.arguments.length === 2 && node.arguments[1]!.type === NodeType.ObjectExpression) {
           const [clock, arg] = node.arguments as [GuardParameterValue, Node.ObjectExpression]
 
           config.clock = clock
 
-          for (const key of ["source", "filter", "target"] as const)
-            config[key] = locate.property(key, arg)?.value as GuardParameterValue
+          for (const key of ["source", "filter", "target"] as const) config[key] = locate.property(key, arg)?.value
         } else return
 
         // transform prepend -> sample fn

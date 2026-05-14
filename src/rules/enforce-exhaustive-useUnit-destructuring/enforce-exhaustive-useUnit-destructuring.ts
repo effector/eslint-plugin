@@ -76,7 +76,7 @@ function listToKeyMap(list: Node.ArrayPattern | Node.ArrayExpression): Map<strin
     if (element === null) continue
     if (element.type === NodeType.RestElement || element.type === NodeType.SpreadElement) return null
 
-    map.set(index, element as ValueNode)
+    map.set(index, element)
   }
 
   return map
