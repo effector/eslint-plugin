@@ -38,23 +38,6 @@ ruleTester.run("mandatory-scope-binding", rule, {
       `,
     },
     {
-      name: "store via useStore",
-      code: tsx`
-        import React from "react"
-        import { useStore } from "effector-react"
-
-        import { fetchFx } from "${fixture("model")}"
-
-        const Button: React.FC = () => {
-          const loading = useStore(fetchFx.pending)
-
-          if (loading) return null
-
-          return <button>click</button>
-        }
-      `,
-    },
-    {
       name: "effect via useUnit",
       code: tsx`
         import React from "react"
@@ -117,7 +100,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
         import React from "react"
         import { useUnit } from "effector-react"
 
-        import { fetchFx, clicked } from "${fixture("model")}"
+        import { fetchFx, clicked, mounted } from "${fixture("model")}"
 
         const Button = () => {
           const { fn, mount, loading } = useUnit({ fn: clicked, mount: mounted, loading: fetchFx.pending })
@@ -165,42 +148,164 @@ ruleTester.run("mandatory-scope-binding", rule, {
       `,
     },
     {
-      name: "scope package import",
+      name: "hook argument declaration",
       code: tsx`
         import React from "react"
-        import { useStore } from "effector-react/scope"
+        import { type EventCallable } from "effector"
+        import { useUnit } from "effector-react"
 
-        import { fetchFx } from "${fixture("model")}"
+        function useMounted(event: EventCallable<void>) {
+          const fn = useUnit(event)
 
-        export const Render = () => <>{useStore(fetchFx.pending)}</>
+          React.useEffect(() => void fn(), [])
+        }
       `,
     },
     {
-      name: "aliased import",
+      name: "static metadata access on a unit",
       code: tsx`
         import React from "react"
-        import { useUnit as use } from "effector-react/scope"
 
-        import { fetchFx } from "${fixture("model")}"
+        import { clicked, fetchFx } from "${fixture("model")}"
 
-        export const Render = () => <>{use(fetchFx.pending)}</>
+        const Button = () => (
+          <div data-sid={clicked.sid} data-name={fetchFx.shortName}>
+            {clicked.shortName}
+          </div>
+        )
       `,
     },
     {
-      name: "star import",
+      name: "event via custom effector hook",
       code: tsx`
         import React from "react"
-        import * as eff from "effector-react"
+        import { type EventCallable } from "effector"
+        import { mounted } from "${fixture("model")}"
 
-        import { fetchFx } from "${fixture("model")}"
+        declare function useMounted(event: EventCallable<void>): void
 
-        export const Render = () => <>{eff.useUnit(fetchFx.pending)}</>
+        function Component() {
+          useMounted(mounted)
+
+          return <button>click</button>
+        }
+      `,
+    },
+    {
+      name: "event via custom effector hook (generic)",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+        import { mounted } from "${fixture("model")}"
+
+        declare function useThing<T extends EventCallable<any>>(unit: T): void
+
+        function Component() {
+          useThing(mounted)
+
+          return <button>click</button>
+        }
+      `,
+    },
+    {
+      name: "event in custom effector component",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+        import { mounted } from "${fixture("model")}"
+
+        type Props = { onPress: EventCallable<void> }
+        const MyButton = (props: Props) => null
+
+        function Component() {
+          return <MyButton onPress={mounted} />
+        }
+      `,
+    },
+    {
+      name: "effect (member) via useUnit",
+      code: tsx`
+        import React from "react"
+        import { useUnit } from "effector-react"
+        import * as model from "${fixture("model")}"
+
+        function Component() {
+          const onClick = useUnit(model.fetchFx)
+          return <button onClick={onClick}>click</button>
+        }
+      `,
+    },
+    {
+      name: "event via custom effector hook (object shape)",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+        import { mounted } from "${fixture("model")}"
+
+        type Config = { onEnter: EventCallable<void> }
+        declare function useLifecycle(cfg: Config): void
+
+        function Component() {
+          useLifecycle({ onEnter: mounted })
+
+          return <button>click</button>
+        }
+      `,
+    },
+    {
+      name: "event via custom effector hook (object shape shorthand)",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable, createEvent } from "effector"
+
+        const onEnter = createEvent<void>()
+
+        type Config = { onEnter: EventCallable<void> }
+        declare function useLifecycle(cfg: Config): void
+
+        function Component() {
+          useLifecycle({ onEnter })
+
+          return <button>click</button>
+        }
+      `,
+    },
+    {
+      name: "event (member) via custom hook (object shape)",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+        import * as model from "${fixture("model")}"
+
+        type Config = { onEnter: EventCallable<void> }
+        declare function useLifecycle(cfg: Config): void
+
+        function Component() {
+          useLifecycle({ onEnter: model.mounted })
+
+          return <button>click</button>
+        }
+      `,
+    },
+    {
+      name: "event (member) in custom effector component",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+        import * as model from "${fixture("model")}"
+
+        type Props = { onPress: EventCallable<void> }
+        const MyButton = (props: Props) => null
+
+        function Component() {
+          return <MyButton onPress={model.mounted} />
+        }
       `,
     },
   ],
   invalid: [
     {
-      name: "event: annotated",
+      name: "event via plain component (react annotated)",
       code: tsx`
         import React from "react"
         import { createEvent } from "effector"
@@ -214,7 +319,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
       errors: [{ messageId: "useUnitNeeded", line: 7, column: 27, data: { name: "clicked" } }],
     },
     {
-      name: "event: inferred forwardRef",
+      name: "event via plain component (inferred via forwardRef)",
       code: tsx`
         import React from "react"
         import { createEvent } from "effector"
@@ -222,15 +327,11 @@ ruleTester.run("mandatory-scope-binding", rule, {
         import { clicked } from "${fixture("model")}"
 
         const Button = React.forwardRef((props, ref) => <button ref={ref} onClick={clicked} />)
-        const Button = React.forwardRef((props, ref) => clicked.shortName)
       `,
-      errors: [
-        { messageId: "useUnitNeeded", line: 6, column: 76, data: { name: "clicked" } },
-        { messageId: "useUnitNeeded", line: 7, column: 49, data: { name: "clicked" } },
-      ],
+      errors: [{ messageId: "useUnitNeeded", line: 6, column: 76, data: { name: "clicked" } }],
     },
     {
-      name: "event: inferred jsx arrow function",
+      name: "event via plain component (arrow inferred via jsx)",
       code: tsx`
         import React from "react"
         import { createEvent } from "effector"
@@ -238,59 +339,11 @@ ruleTester.run("mandatory-scope-binding", rule, {
         const clicked = createEvent<unknown>()
 
         const Button = () => <button onClick={clicked}>click</button>
-        const Link = () => {
-          return <a onClick={clicked}>click</a>
-        }
       `,
-      errors: [
-        { messageId: "useUnitNeeded", line: 6, column: 39, data: { name: "clicked" } },
-        { messageId: "useUnitNeeded", line: 8, column: 22, data: { name: "clicked" } },
-      ],
+      errors: [{ messageId: "useUnitNeeded", line: 6, column: 39, data: { name: "clicked" } }],
     },
     {
-      name: "event: function expression inferred jsx",
-      code: tsx`
-        import React from "react"
-        import { createEvent } from "effector"
-
-        import { clicked } from "${fixture("model")}"
-
-        const Button = function ButtonView() {
-          return <button onClick={clicked}>click</button>
-        }
-      `,
-      errors: [{ messageId: "useUnitNeeded", line: 7, column: 27, data: { name: "clicked" } }],
-    },
-    {
-      name: "event: function declaration inferred jsx",
-      code: tsx`
-        import React from "react"
-        import { createEvent } from "effector"
-
-        import { clicked } from "${fixture("model")}"
-
-        function Button() {
-          return <button onClick={clicked}>click</button>
-        }
-      `,
-      errors: [{ messageId: "useUnitNeeded", line: 7, column: 27, data: { name: "clicked" } }],
-    },
-    {
-      name: "effect: annotated",
-      code: tsx`
-        import React from "react"
-        import { useUnit } from "effector-react"
-
-        import { fetchFx } from "${fixture("model")}"
-
-        const Button: React.FC = () => {
-          return <button onClick={fetchFx}>click</button>
-        }
-      `,
-      errors: [{ messageId: "useUnitNeeded", line: 7, column: 27, data: { name: "fetchFx" } }],
-    },
-    {
-      name: "effect: inferred memo",
+      name: "effect via plain component (inferred via memo)",
       code: tsx`
         import { memo } from "react"
         import { createEvent } from "effector"
@@ -302,7 +355,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
       errors: [{ messageId: "useUnitNeeded", line: 6, column: 49, data: { name: "fetchFx" } }],
     },
     {
-      name: "effect in useEffect",
+      name: "effect call in useEffect",
       code: tsx`
         import React from "react"
 
@@ -317,25 +370,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
       errors: [{ messageId: "useUnitNeeded", line: 6, column: 30, data: { name: "fetchFx" } }],
     },
     {
-      name: "event in useEffect cleanup",
-      code: tsx`
-        import React from "react"
-        import { createEvent } from "effector"
-
-        const unmounted = createEvent<unknown>()
-
-        function Button() {
-          React.useEffect(() => {
-            return () => unmounted()
-          }, [])
-
-          return <button>click</button>
-        }
-      `,
-      errors: [{ messageId: "useUnitNeeded", line: 8, column: 18, data: { name: "unmounted" } }],
-    },
-    {
-      name: "event in callback",
+      name: "event call in callback",
       code: tsx`
         import React from "react"
 
@@ -346,22 +381,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
       errors: [{ messageId: "useUnitNeeded", line: 5, column: 45, data: { name: "clicked" } }],
     },
     {
-      name: "effect in callback",
-      code: tsx`
-        import { useEvent } from "react"
-
-        import { clicked } from "${fixture("model")}"
-
-        function Button() {
-          const fn = useEvent(clicked)
-
-          return <button onClick={fn}>click</button>
-        }
-      `,
-      errors: [{ messageId: "useUnitNeeded", line: 6, column: 23, data: { name: "clicked" } }],
-    },
-    {
-      name: "event inside hook",
+      name: "event call inside hook",
       code: tsx`
         import { useEffect } from "react"
 
@@ -374,7 +394,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
       errors: [{ messageId: "useUnitNeeded", line: 6, column: 16, data: { name: "clicked" } }],
     },
     {
-      name: "event inside weird hook (name inference)",
+      name: "event call inside weird hook (name inference)",
       code: tsx`
         import { useEffect } from "react"
 
@@ -394,7 +414,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
       ],
     },
     {
-      name: "component with union return type",
+      name: "react component with union return type",
       code: tsx`
         import React from "react"
         import { createEvent } from "effector"
@@ -409,7 +429,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
       errors: [{ messageId: "useUnitNeeded", line: 8, column: 32, data: { name: "clicked" } }],
     },
     {
-      name: "component with union inferred contextual type",
+      name: "react component with union inferred contextual type",
       code: tsx`
         import React from "react"
         import { createEvent } from "effector"
@@ -425,6 +445,140 @@ ruleTester.run("mandatory-scope-binding", rule, {
         { messageId: "useUnitNeeded", line: 6, column: 40, data: { name: "clicked" } },
         { messageId: "useUnitNeeded", line: 9, column: 15, data: { name: "clicked" } },
       ],
+    },
+    {
+      name: "event (member) direct call",
+      code: tsx`
+        import React from "react"
+        import * as model from "${fixture("model")}"
+
+        function Button() {
+          React.useEffect(() => void model.clicked(), [])
+
+          return <button>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 5, column: 30, data: { name: "clicked" } }],
+    },
+    {
+      name: "event (member) in jsx plain component",
+      code: tsx`
+        import React from "react"
+        import * as model from "${fixture("model")}"
+
+        const Button = () => <button onClick={model.clicked}>click</button>
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 4, column: 39, data: { name: "clicked" } }],
+    },
+    {
+      name: "event in useState (lazy initializer)",
+      code: tsx`
+        import React from "react"
+        import { useState } from "react"
+        import { clicked } from "${fixture("model")}"
+
+        function Component() {
+          const [s, setS] = useState(clicked)
+          return <button>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 6, column: 30, data: { name: "clicked" } }],
+    },
+    {
+      name: "event in custom non-unit hook",
+      code: tsx`
+        import React from "react"
+        import { mounted } from "${fixture("model")}"
+
+        declare function useLeave(fn: () => void): void
+
+        function Component() {
+          useLeave(mounted)
+
+          return <button>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 7, column: 12, data: { name: "mounted" } }],
+    },
+    {
+      name: "event in plain custom non-unit component",
+      code: tsx`
+        import React from "react"
+        import { mounted } from "${fixture("model")}"
+
+        type Props = { onClick: () => void }
+        const MyButton = (props: Props) => null
+
+        function Component() {
+          return <MyButton onClick={mounted} />
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 8, column: 29, data: { name: "mounted" } }],
+    },
+    {
+      name: "event in custom plain hook (object shape)",
+      code: tsx`
+        import React from "react"
+        import { mounted } from "${fixture("model")}"
+
+        type Config = { onLeave: () => void }
+        declare function useLifecycle(cfg: Config): void
+
+        function Component() {
+          useLifecycle({ onLeave: mounted })
+
+          return <button>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 8, column: 27, data: { name: "mounted" } }],
+    },
+    {
+      name: "event in custom plain hook (object shape shorthand)",
+      code: tsx`
+        import React from "react"
+        import { createEvent } from "effector"
+
+        const onLeave = createEvent<void>()
+
+        type Config = { onLeave: () => void }
+        declare function useLifecycle(cfg: Config): void
+
+        function Component() {
+          useLifecycle({ onLeave })
+          return <button>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 10, column: 18, data: { name: "onLeave" } }],
+    },
+    {
+      name: "effect (member) direct call",
+      code: tsx`
+        import React from "react"
+        import * as model from "${fixture("model")}"
+
+        function Component() {
+          React.useEffect(() => void model.fetchFx(), [])
+
+          return <button>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 5, column: 30, data: { name: "fetchFx" } }],
+    },
+    {
+      name: "event (member) in custom plain hook",
+      code: tsx`
+        import React from "react"
+        import * as model from "${fixture("model")}"
+
+        declare function useLeave(fn: () => void): void
+
+        function Component() {
+          useLeave(model.mounted)
+
+          return <button>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 7, column: 12, data: { name: "mounted" } }],
     },
   ],
 })

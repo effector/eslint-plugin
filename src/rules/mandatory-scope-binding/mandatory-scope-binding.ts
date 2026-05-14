@@ -1,6 +1,6 @@
-import { getContextualType, typeMatchesSpecifier } from "@typescript-eslint/type-utils"
+import { getContextualType } from "@typescript-eslint/type-utils"
 import { ESLintUtils, type TSESTree as Node } from "@typescript-eslint/utils"
-import { isExpression } from "typescript"
+import ts from "typescript"
 
 import { createRule } from "@/shared/create"
 import { isType } from "@/shared/is"
@@ -11,11 +11,10 @@ export default createRule({
   meta: {
     type: "problem",
     docs: {
-      description: "Forbid `Event` and `Effect` usage without `useUnit` in React components.",
+      description: "Forbid `Event` and `Effect` usage without `useUnit` in React.",
     },
     messages: {
-      useUnitNeeded:
-        '"{{ name }}" must be wrapped with `useUnit` from `effector-react` before usage inside React components.',
+      useUnitNeeded: '"{{ name }}" must be wrapped with `useUnit` from `effector-react` before usage inside React.',
     },
     schema: [],
   },
@@ -24,20 +23,51 @@ export default createRule({
     const services = ESLintUtils.getParserServices(context)
     const checker = services.program.getTypeChecker()
 
-    const stack = { render: [] as boolean[], hook: [] as boolean[] }
+    const inRender: boolean[] = []
+    const inHook: boolean[] = []
 
-    type ComponentFunction = Node.FunctionDeclaration | Node.FunctionExpression | Node.ArrowFunctionExpression
+    /** check if the expression is used in a context specifically expecting a unit */
+    const isExpectingUnit = (slot: UsageNode): boolean => {
+      const tsnode = services.esTreeNodeToTSNodeMap.get(slot) as ts.Expression
+      const type = checker.getContextualType(tsnode)
+
+      if (type) return isType.event(type, services.program) || isType.effect(type, services.program)
+      else return false
+    }
+
+    const check = (mode: "call" | "arg" | "prop" | "jsx", node: UsageNode) => {
+      const rendering = inRender.at(-1) ?? false
+      if (!rendering) return
+
+      const type = services.getTypeAtLocation(node)
+      if (!isType.event(type, services.program) && !isType.effect(type, services.program)) return
+
+      if (mode === "call") return report(node) // direct call => always dangerous
+
+      const delegated = isExpectingUnit(node),
+        // jsx receivers and `use*` callees are contractually *assumed* to bind, so we can
+        // delegate scope binding to them; any other call carries no such guarantee
+        eligible = mode === "jsx" || (inHook.at(-1) ?? false)
+
+      if (eligible && delegated) return
+      else return report(node)
+    }
+
+    const report = (node: UsageNode) => {
+      const name = nameOf.expression.simple(node) ?? "<expression>"
+      context.report({ node, messageId: "useUnitNeeded", data: { name } })
+    }
 
     return {
       // detect react render contexts
-      [`FunctionDeclaration, FunctionExpression, ArrowFunctionExpression`]: (node: ComponentFunction) => {
+      [`:matches(${selector.function})`]: (node: ComponentNode) => {
         // propagate when already in render context (callbacks and general purpose hooks)
-        const current = stack.render.at(-1) ?? false
-        if (current) return void stack.render.push(true)
+        const current = inRender.at(-1) ?? false
+        if (current) return void inRender.push(true)
 
         /* === detect a react hook === */
         const name = nameOf.function(node)
-        if (name && UseRegex.test(name.name)) return void stack.render.push(true)
+        if (name && UseRegex.test(name.name)) return void inRender.push(true)
 
         const tsnode = services.esTreeNodeToTSNodeMap.get(node)
 
@@ -49,51 +79,75 @@ export default createRule({
           ? returnType.types.some((type) => isType.jsx(type, services.program))
           : isType.jsx(returnType, services.program)
 
-        if (isJSX) return void stack.render.push(true)
+        if (isJSX) return void inRender.push(true)
 
         /* === detect a react component by inferred contextual type === */
-        const inferred = (isExpression(tsnode) && getContextualType(checker, tsnode)) || checker.getUnknownType()
+        const inferred = (ts.isExpression(tsnode) && getContextualType(checker, tsnode)) || checker.getUnknownType()
 
         const isComponent = inferred.isUnion()
           ? inferred.types.some((type) => isType.component(type, services.program))
           : isType.component(inferred, services.program)
 
-        if (isComponent) return void stack.render.push(true)
+        if (isComponent) return void inRender.push(true)
 
-        return void stack.render.push(false)
+        return void inRender.push(false)
       },
 
-      [`:matches(FunctionDeclaration, FunctionExpression, ArrowFunctionExpression):exit`]: () =>
-        void stack.render.pop(),
+      [`:matches(${selector.function}):exit`]: () => void inRender.pop(),
 
       // bail from tracking classes
-      "ClassDeclaration": () => void stack.render.push(false),
-      "ClassDeclaration:exit": () => void stack.render.pop(),
+      "ClassDeclaration": () => void inRender.push(false),
+      "ClassDeclaration:exit": () => void inRender.pop(),
 
+      // detect contexts where we may delegate `useUnit` binding to the callee
       "CallExpression": (node: Node.CallExpression) => {
-        const type = services.getTypeAtLocation(node.callee)
+        const id = nameOf.callee(node.callee),
+          isEnteringHook = id !== null && UseRegex.test(id.name)
 
-        const hook = ["useStore", "useStoreMap", "useList", "useEvent", "useUnit"] // useGate excluded
-        const specifier = { from: "package" as const, package: "effector-react", name: hook }
-
-        const isHook = typeMatchesSpecifier(type, specifier, services.program)
-        return void stack.hook.push(isHook)
+        inHook.push(isEnteringHook)
       },
+      "CallExpression:exit": () => void inHook.pop(),
 
-      "Identifier": (node: Node.Identifier) => {
-        const isWithinRender = stack.render.at(-1) ?? false
-        if (!isWithinRender) return
+      // direct invocation site `event()` & `model.event()`
+      // - receiver is being invoked directly, always dangerous
+      [`${selector.callee.direct}, ${selector.callee.member}`]: (node: UsageNode) => check("call", node),
 
-        const isWithinHook = stack.hook.at(-1) ?? false
-        if (isWithinHook) return
+      // argument position `fn(event)` & `fn(model.event)`
+      // - dangerous unless scope binding delegated (arg expects unit)
+      [`${selector.arg.direct}, ${selector.arg.member}`]: (node: UsageNode) => check("arg", node),
 
-        const type = services.getTypeAtLocation(node)
-        if (!isType.event(type, services.program) && !isType.effect(type, services.program)) return
+      // one-level-deep object-property position `fn({ key: event })` & `fn({ key: model.event })`
+      // - dangerous unless scope binding delegated (key expects unit)
+      [`${selector.prop.direct}, ${selector.prop.member}`]: (node: UsageNode) => check("prop", node),
 
-        context.report({ node, messageId: "useUnitNeeded", data: { name: node.name } })
-      },
+      // jsx expression slot `<C prop={event}>`, `<C prop={model.event}>`
+      // - dangerous unless scope binding delegated (prop expects unit)
+      [`${selector.jsx.direct}, ${selector.jsx.member}`]: (node: UsageNode) => check("jsx", node),
     }
   },
 })
 
+type ComponentNode = Node.FunctionDeclaration | Node.FunctionExpression | Node.ArrowFunctionExpression
+type UsageNode = Node.Identifier | Node.MemberExpression
+
 const UseRegex = /^use[A-Z0-9].*$/
+
+const selector = {
+  function: "FunctionDeclaration, FunctionExpression, ArrowFunctionExpression",
+  callee: {
+    direct: "CallExpression > Identifier.callee",
+    member: "CallExpression > MemberExpression[computed=false].callee",
+  },
+  arg: {
+    direct: "CallExpression > Identifier:not(.callee)",
+    member: "CallExpression > MemberExpression[computed=false]:not(.callee)",
+  },
+  prop: {
+    direct: "CallExpression > ObjectExpression > Property > Identifier.value",
+    member: "CallExpression > ObjectExpression > Property > MemberExpression[computed=false].value",
+  },
+  jsx: {
+    direct: "JSXExpressionContainer > Identifier",
+    member: "JSXExpressionContainer > MemberExpression[computed=false]",
+  },
+}

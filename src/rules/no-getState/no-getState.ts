@@ -1,7 +1,8 @@
-import { ESLintUtils, type TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-eslint/utils"
+import { ESLintUtils, type TSESTree as Node } from "@typescript-eslint/utils"
 
 import { createRule } from "@/shared/create"
 import { isType } from "@/shared/is"
+import { nameOf } from "@/shared/name"
 
 export default createRule({
   name: "no-getState",
@@ -31,7 +32,7 @@ export default createRule({
         const isStore = isType.store(type, services.program)
         if (!isStore) return
 
-        const name = toName(node.callee.object)
+        const name = nameOf.expression.simple(node.callee.object)
 
         if (name) context.report({ node, messageId: "named", data: { name } })
         else context.report({ node, messageId: "anonymous" })
@@ -39,9 +40,3 @@ export default createRule({
     }
   },
 })
-
-const toName = (node: Node.Expression) => {
-  if (node.type === NodeType.Identifier) return node.name
-  if (node.type === NodeType.MemberExpression && !node.computed) return node.property.name
-  return null
-}
