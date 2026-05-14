@@ -37,7 +37,7 @@ const Page = () => <PressButton event={pressed} />
 ```
 
 ::: warning Receiver Type Guarantee
-A receiver declared as plain `() => void` does not count – TypeScript accepts the unit structurally, but the consumer hasn't promised to bind it to `Scope`.
+A receiver typed as a plain function `(arg: T) => R` does not qualify as `effector`-aware. TypeScript's structural typing allows units to satisfy such signatures, but the receiver makes no promise to bind the unit to a `Scope`.
 
-Either explicitly type the parameter as a Unit (`EventCallable` / `Effect`) and opt-in to provide this guarantee, or wrap with `useUnit` at the call site.
+To fix this, either type the parameter explicitly as a unit (`EventCallable` / `Effect`) to signal that the receiver is responsible for scope binding, or wrap the unit with `useUnit` at the call site.
 :::
