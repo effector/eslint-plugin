@@ -1,6 +1,6 @@
 import { getContextualType } from "@typescript-eslint/type-utils"
 import { ESLintUtils, type TSESTree as Node } from "@typescript-eslint/utils"
-import ts, { isExpression } from "typescript"
+import ts from "typescript"
 
 import { createRule } from "@/shared/create"
 import { isType } from "@/shared/is"
@@ -60,7 +60,7 @@ export default createRule({
 
     return {
       // detect react render contexts
-      [`FunctionDeclaration, FunctionExpression, ArrowFunctionExpression`]: (node: ComponentNode) => {
+      [`:matches(${selector.function})`]: (node: ComponentNode) => {
         // propagate when already in render context (callbacks and general purpose hooks)
         const current = inRender.at(-1) ?? false
         if (current) return void inRender.push(true)
@@ -82,7 +82,7 @@ export default createRule({
         if (isJSX) return void inRender.push(true)
 
         /* === detect a react component by inferred contextual type === */
-        const inferred = (isExpression(tsnode) && getContextualType(checker, tsnode)) || checker.getUnknownType()
+        const inferred = (ts.isExpression(tsnode) && getContextualType(checker, tsnode)) || checker.getUnknownType()
 
         const isComponent = inferred.isUnion()
           ? inferred.types.some((type) => isType.component(type, services.program))
@@ -93,7 +93,7 @@ export default createRule({
         return void inRender.push(false)
       },
 
-      [`:matches(FunctionDeclaration, FunctionExpression, ArrowFunctionExpression):exit`]: () => void inRender.pop(),
+      [`:matches(${selector.function}):exit`]: () => void inRender.pop(),
 
       // bail from tracking classes
       "ClassDeclaration": () => void inRender.push(false),
@@ -133,20 +133,21 @@ type UsageNode = Node.Identifier | Node.MemberExpression
 const UseRegex = /^use[A-Z0-9].*$/
 
 const selector = {
+  function: "FunctionDeclaration, FunctionExpression, ArrowFunctionExpression",
   callee: {
-    direct: `CallExpression > Identifier.callee`,
-    member: `CallExpression > MemberExpression[computed=false].callee`,
+    direct: "CallExpression > Identifier.callee",
+    member: "CallExpression > MemberExpression[computed=false].callee",
   },
   arg: {
-    direct: `CallExpression > Identifier:not(.callee)`,
-    member: `CallExpression > MemberExpression[computed=false]:not(.callee)`,
+    direct: "CallExpression > Identifier:not(.callee)",
+    member: "CallExpression > MemberExpression[computed=false]:not(.callee)",
   },
   prop: {
-    direct: `CallExpression > ObjectExpression > Property > Identifier.value`,
-    member: `CallExpression > ObjectExpression > Property > MemberExpression[computed=false].value`,
+    direct: "CallExpression > ObjectExpression > Property > Identifier.value",
+    member: "CallExpression > ObjectExpression > Property > MemberExpression[computed=false].value",
   },
   jsx: {
-    direct: `JSXExpressionContainer > Identifier`,
-    member: `JSXExpressionContainer > MemberExpression[computed=false]`,
+    direct: "JSXExpressionContainer > Identifier",
+    member: "JSXExpressionContainer > MemberExpression[computed=false]",
   },
 }
