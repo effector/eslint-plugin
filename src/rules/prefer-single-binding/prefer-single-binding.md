@@ -13,15 +13,37 @@ Multiple `useUnit` calls can lead to:
 - **Code duplication**: Repetitive hook calls make code harder to read
 - **Maintenance issues**: Harder to track all units used in a component
 
-### Limitations
+Array, object and non-destructuring forms are all supported and can be merged together.
+Mixed array and object forms collapse into the form of the **first** array/object call
+(an all-non-destructuring group merges into the object form), and a non-destructuring
+`const store = useUnit($store)` is treated as the binding `(store, $store)`.
 
-This rule does not handle the following cases:
-- Mixed array and object forms in the same component are reported but no suggestion is provided
-- `@@unitShape` protocol (used by routers, queries, etc.)
+### Ignored calls
 
-Non-destructuring calls like `const store = useUnit($store)` are partially handled: if such calls appear
-alongside destructuring calls in the same component, the rule will report them. However, no suggestion
-is provided for this case since the fix is ambiguous.
+The rule never reports — and never tries to combine — calls that cannot be soundly merged:
+
+- The `@@unitShape` protocol (used by routers, queries, etc.) and any `useUnit(arg)` whose
+  argument is **not** a single unit (e.g. `const products = useUnit(CartModel)` or
+  `const list = useUnit([$a, $b])` without destructuring).
+- Calls separated by an intervening declaration that a later unit depends on, where merging
+  would move a unit above its definition (a temporal dead zone). For example, a unit obtained
+  from `useContext` between two `useUnit` calls — those calls are left untouched:
+
+  ```tsx
+  const a = useUnit($a);
+  const $b = useContext(MyContext); // $b is declared between the calls
+  const b = useUnit($b);            // merging would hoist $b above its declaration
+  ```
+
+### No suggestion
+
+A call is still reported as redundant, but **no** auto-merge suggestion is offered, when a
+binding can't be safely converted between forms — rest elements (`[a, ...rest]`), array holes,
+defaults (`{ a = 1 }`), nested/computed destructuring — or when merging would produce two
+variables with the same name.
+
+Renamed object keys are normalized to the local variable name on merge, so
+`const { a: store } = useUnit({ a: $store })` is treated as `(store, $store)`.
 
 ### Examples
 
@@ -72,8 +94,8 @@ Unit types are determined using TypeScript type information. The rule requires T
 
 All `useUnit` calls in a component must be combined into a single call regardless of unit types.
 
-Non-destructuring calls (`const store = useUnit($store)`) are also reported when they appear alongside
-other `useUnit` calls, but no suggestion is provided for them.
+Non-destructuring calls (`const store = useUnit($store)`) are merged together with the rest — this is
+the most common form of accidental duplication from copy-pasting.
 
 ```tsx
 // 👎 incorrect - multiple destructuring calls
@@ -99,7 +121,7 @@ const Component = () => {
 
 #### `separation: "allow"`
 
-Stores, events and effects may live in separate `useUnit` calls, but multiple calls of the same type must be combined. Non-destructuring calls are not reported under this option.
+Stores, events and effects may live in separate `useUnit` calls, but multiple calls of the same type must be combined. Non-destructuring calls participate in their type's group like any other call.
 
 ```tsx
 // 👎 incorrect - multiple store calls
@@ -120,7 +142,7 @@ const Component = () => {
 
 #### `separation: "enforce"`
 
-A single `useUnit` call must not contain a mix of stores, events and effects. Each call must contain only one unit type. Non-destructuring calls are not reported under this option.
+A single `useUnit` call must not contain a mix of stores, events and effects. Each call must contain only one unit type. Non-destructuring calls hold a single unit, so they are never flagged under this option.
 
 ```tsx
 // 👎 incorrect - mixed stores and events

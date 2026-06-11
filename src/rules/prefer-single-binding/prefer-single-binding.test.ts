@@ -69,6 +69,35 @@ ruleTester.run("prefer-single-binding", rule, {
       `,
     },
     {
+      name: "nocheck: non-destructuring call with a collection argument is ignored",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store, type EventCallable } from "effector"
+        declare const CartModel: { $cartProducts: Store<string[]> }
+        declare const AddToCartModel: { cartProductTotalRemoved: EventCallable<void> }
+        const Component = () => {
+          const products = useUnit([CartModel.$cartProducts])
+          const onProductRemoveFromCart = useUnit(AddToCartModel.cartProductTotalRemoved)
+          return null
+        }
+      `,
+    },
+    {
+      name: "nocheck: a unit acquired between calls is not merged (temporal dead zone)",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const useScopedStore: () => Store<boolean>
+        const Component = () => {
+          const a = useUnit($a)
+          const $b = useScopedStore()
+          const b = useUnit($b)
+          return null
+        }
+      `,
+    },
+    {
       name: "nocheck: plain calls with separation allow are ignored",
       code: tsx`
         import { useUnit } from "effector-react"
@@ -177,7 +206,7 @@ ruleTester.run("prefer-single-binding", rule, {
   ],
   invalid: [
     {
-      name: "mixed array and object forms are reported without suggestion",
+      name: "mixed forms: array first merges into array form",
       code: tsx`
         import { useUnit } from "effector-react"
         import { type Store } from "effector"
@@ -189,10 +218,63 @@ ruleTester.run("prefer-single-binding", rule, {
           return null
         }
       `,
-      errors: [{ messageId: "multipleUseUnit", suggestions: [] }],
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store } from "effector"
+                declare const $store1: Store<boolean>
+                declare const $store2: Store<boolean>
+                const Component = () => {
+                  const [a, b] = useUnit([$store1, $store2])
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
     },
     {
-      name: "mixed array and object forms are reported without suggestion",
+      name: "mixed forms: object first merges into object form",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $store1: Store<boolean>
+        declare const $store2: Store<boolean>
+        const Component = () => {
+          const { b } = useUnit({ b: $store2 })
+          const [a] = useUnit([$store1])
+          return null
+        }
+      `,
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store } from "effector"
+                declare const $store1: Store<boolean>
+                declare const $store2: Store<boolean>
+                const Component = () => {
+                  const { b, a } = useUnit({ b: $store2, a: $store1 })
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "mixed forms: array first, object with renamed key",
       code: tsx`
         import { useUnit } from "effector-react"
         import { type Store, type EventCallable } from "effector"
@@ -200,7 +282,93 @@ ruleTester.run("prefer-single-binding", rule, {
         declare const event: EventCallable<void>
         const Component = () => {
           const [value] = useUnit([$store])
-          const { handler } = useUnit({ handler: event })
+          const { handler: onClick } = useUnit({ handler: event })
+          return null
+        }
+      `,
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store, type EventCallable } from "effector"
+                declare const $store: Store<string>
+                declare const event: EventCallable<void>
+                const Component = () => {
+                  const [value, onClick] = useUnit([$store, event])
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "mixed forms: rest element in destructuring is reported without suggestion",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $store1: Store<boolean>
+        declare const $store2: Store<boolean>
+        const Component = () => {
+          const [a, ...others] = useUnit([$store1])
+          const { b } = useUnit({ b: $store2 })
+          return null
+        }
+      `,
+      errors: [{ messageId: "multipleUseUnit", suggestions: [] }],
+    },
+    {
+      name: "object: renamed keys are normalized to the local variable name",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store, type EventCallable } from "effector"
+        declare const $store: Store<string>
+        declare const submitted: EventCallable<void>
+        const Component = () => {
+          const { a: store } = useUnit({ a: $store })
+          const { b: onSubmit } = useUnit({ b: submitted })
+          return null
+        }
+      `,
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store, type EventCallable } from "effector"
+                declare const $store: Store<string>
+                declare const submitted: EventCallable<void>
+                const Component = () => {
+                  const { store, onSubmit } = useUnit({ store: $store, onSubmit: submitted })
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "duplicate local names across block scopes are reported without suggestion",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const $b: Store<boolean>
+        declare const cond: boolean
+        const Component = () => {
+          const [value] = useUnit([$a])
+          if (cond) {
+            const [value] = useUnit([$b])
+          }
           return null
         }
       `,
@@ -212,7 +380,7 @@ ruleTester.run("prefer-single-binding", rule, {
         import { useUnit as useUnitEffector } from "effector-react"
         const Component = () => {
           const [store] = useUnitEffector([$store])
-          const [event] = useUnitEffector([event])
+          const [event] = useUnitEffector([eventUnit])
           return null
         }
       `,
@@ -225,7 +393,7 @@ ruleTester.run("prefer-single-binding", rule, {
               output: tsx`
                 import { useUnit as useUnitEffector } from "effector-react"
                 const Component = () => {
-                  const [store, event] = useUnitEffector([$store, event])
+                  const [store, event] = useUnitEffector([$store, eventUnit])
                   return null
                 }
               `,
@@ -235,12 +403,13 @@ ruleTester.run("prefer-single-binding", rule, {
       ],
     },
     {
-      name: "plain calls alongside destructured calls are reported",
+      name: "plain calls alongside destructured calls are merged",
       code: tsx`
         import { useUnit } from "effector-react"
         import { type Store, type EventCallable } from "effector"
         declare const CartModel: { $cartProducts: Store<string[]> }
         declare const AddToCartModel: { cartProductTotalRemoved: EventCallable<void> }
+        declare const $something: Store<boolean>
         const Component = () => {
           const products = useUnit(CartModel.$cartProducts)
           const onProductRemoveFromCart = useUnit(AddToCartModel.cartProductTotalRemoved)
@@ -248,24 +417,87 @@ ruleTester.run("prefer-single-binding", rule, {
           return null
         }
       `,
-      errors: [{ messageId: "singleUnitWithoutDestructuring" }, { messageId: "singleUnitWithoutDestructuring" }],
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              /* INFO: fixer produces a single-line output intentionally; prettier will reformat it in real projects */
+              // prettier-ignore
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store, type EventCallable } from "effector"
+                declare const CartModel: { $cartProducts: Store<string[]> }
+                declare const AddToCartModel: { cartProductTotalRemoved: EventCallable<void> }
+                declare const $something: Store<boolean>
+                const Component = () => {
+                  const [products, onProductRemoveFromCart, something] = useUnit([CartModel.$cartProducts, AddToCartModel.cartProductTotalRemoved, $something])
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              /* INFO: fixer produces a single-line output intentionally; prettier will reformat it in real projects */
+              // prettier-ignore
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store, type EventCallable } from "effector"
+                declare const CartModel: { $cartProducts: Store<string[]> }
+                declare const AddToCartModel: { cartProductTotalRemoved: EventCallable<void> }
+                declare const $something: Store<boolean>
+                const Component = () => {
+                  const [products, onProductRemoveFromCart, something] = useUnit([CartModel.$cartProducts, AddToCartModel.cartProductTotalRemoved, $something])
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
     },
     {
-      name: "single plain call alongside destructured call is reported",
+      name: "single plain call alongside destructured call is merged",
       code: tsx`
         import { useUnit } from "effector-react"
-        import { type Store, type EventCallable } from "effector"
+        import { type Store } from "effector"
         declare const CartModel: { $cartProducts: Store<string[]> }
+        declare const $something: Store<boolean>
         const Component = () => {
           const products = useUnit(CartModel.$cartProducts)
           const [something] = useUnit([$something])
           return null
         }
       `,
-      errors: [{ messageId: "singleUnitWithoutDestructuring" }],
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store } from "effector"
+                declare const CartModel: { $cartProducts: Store<string[]> }
+                declare const $something: Store<boolean>
+                const Component = () => {
+                  const [products, something] = useUnit([CartModel.$cartProducts, $something])
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
     },
     {
-      name: "multiple plain calls without destructured calls are reported",
+      name: "multiple plain calls merge into object form",
       code: tsx`
         import { useUnit } from "effector-react"
         import { type Store, type EventCallable } from "effector"
@@ -277,22 +509,28 @@ ruleTester.run("prefer-single-binding", rule, {
           return null
         }
       `,
-      errors: [{ messageId: "multipleUseUnit" }, { messageId: "multipleUseUnit" }],
-    },
-    {
-      name: "plain array call alongside plain scalar call are both reported",
-      code: tsx`
-        import { useUnit } from "effector-react"
-        import { type Store, type EventCallable } from "effector"
-        declare const CartModel: { $cartProducts: Store<string[]> }
-        declare const AddToCartModel: { cartProductTotalRemoved: EventCallable<void> }
-        const Component = () => {
-          const products = useUnit([CartModel.$cartProducts])
-          const onProductRemoveFromCart = useUnit(AddToCartModel.cartProductTotalRemoved)
-          return null
-        }
-      `,
-      errors: [{ messageId: "multipleUseUnit" }, { messageId: "multipleUseUnit" }],
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              /* INFO: fixer produces a single-line output intentionally; prettier will reformat it in real projects */
+              // prettier-ignore
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store, type EventCallable } from "effector"
+                declare const CartModel: { $cartProducts: Store<string[]> }
+                declare const AddToCartModel: { cartProductTotalRemoved: EventCallable<void> }
+                const Component = () => {
+                  const { products, onProductRemoveFromCart } = useUnit({ products: CartModel.$cartProducts, onProductRemoveFromCart: AddToCartModel.cartProductTotalRemoved })
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
     },
     {
       name: "array: two useUnit calls",
@@ -300,7 +538,7 @@ ruleTester.run("prefer-single-binding", rule, {
         import { useUnit } from "effector-react"
         const Component = () => {
           const [store] = useUnit([$store])
-          const [event] = useUnit([event])
+          const [event] = useUnit([eventUnit])
           return null
         }
       `,
@@ -313,7 +551,7 @@ ruleTester.run("prefer-single-binding", rule, {
               output: tsx`
                 import { useUnit } from "effector-react"
                 const Component = () => {
-                  const [store, event] = useUnit([$store, event])
+                  const [store, event] = useUnit([$store, eventUnit])
                   return null
                 }
               `,
@@ -328,7 +566,7 @@ ruleTester.run("prefer-single-binding", rule, {
         import { useUnit } from "effector-react"
         const Component = () => {
           const [store] = useUnit([$store])
-          const [event] = useUnit([event])
+          const [event] = useUnit([eventUnit])
           const [another] = useUnit([$another])
           return null
         }
@@ -342,7 +580,7 @@ ruleTester.run("prefer-single-binding", rule, {
               output: tsx`
                 import { useUnit } from "effector-react"
                 const Component = () => {
-                  const [store, event, another] = useUnit([$store, event, $another])
+                  const [store, event, another] = useUnit([$store, eventUnit, $another])
                   return null
                 }
               `,
@@ -357,7 +595,7 @@ ruleTester.run("prefer-single-binding", rule, {
               output: tsx`
                 import { useUnit } from "effector-react"
                 const Component = () => {
-                  const [store, event, another] = useUnit([$store, event, $another])
+                  const [store, event, another] = useUnit([$store, eventUnit, $another])
                   return null
                 }
               `,
@@ -372,7 +610,7 @@ ruleTester.run("prefer-single-binding", rule, {
         import { useUnit } from "effector-react"
         const Component = () => {
           const { store } = useUnit({ store: $store })
-          const { event } = useUnit({ event: event })
+          const { event } = useUnit({ event: eventUnit })
           return null
         }
       `,
@@ -385,7 +623,7 @@ ruleTester.run("prefer-single-binding", rule, {
               output: tsx`
                 import { useUnit } from "effector-react"
                 const Component = () => {
-                  const { store, event } = useUnit({ store: $store, event: event })
+                  const { store, event } = useUnit({ store: $store, event: eventUnit })
                   return null
                 }
               `,
@@ -400,7 +638,7 @@ ruleTester.run("prefer-single-binding", rule, {
         import { useUnit } from "effector-react"
         const Component = () => {
           const [store1, store2] = useUnit([$store1, $store2])
-          const [event1, event2] = useUnit([event1, event2])
+          const [event1, event2] = useUnit([eventUnit1, eventUnit2])
           return null
         }
       `,
@@ -413,7 +651,7 @@ ruleTester.run("prefer-single-binding", rule, {
               output: tsx`
                 import { useUnit } from "effector-react"
                 const Component = () => {
-                  const [store1, store2, event1, event2] = useUnit([$store1, $store2, event1, event2])
+                  const [store1, store2, event1, event2] = useUnit([$store1, $store2, eventUnit1, eventUnit2])
                   return null
                 }
               `,
@@ -462,6 +700,41 @@ ruleTester.run("prefer-single-binding", rule, {
                 import { useUnit } from "effector-react"
                 const Component = () => {
                   const [isFormSent, sent, submit] = useUnit([HelpFormModel.$isFormSent, HelpFormModel.sentFormChanged, HelpFormModel.submitHelpForm])
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "separation allow: same-type calls in mixed forms are merged into the first form",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $store1: Store<boolean>
+        declare const $store2: Store<boolean>
+        const Component = () => {
+          const [a] = useUnit([$store1])
+          const { b } = useUnit({ b: $store2 })
+          return null
+        }
+      `,
+      options: [{ separation: "allow" }],
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store } from "effector"
+                declare const $store1: Store<boolean>
+                declare const $store2: Store<boolean>
+                const Component = () => {
+                  const [a, b] = useUnit([$store1, $store2])
                   return null
                 }
               `,
