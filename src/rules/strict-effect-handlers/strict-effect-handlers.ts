@@ -43,8 +43,7 @@ export default createRule({
     }
 
     const exit = (node: Node.FunctionLike) => {
-      const scope = stack.pop()
-      if (!scope) return
+      const scope = stack.pop()! // soundness: always pushed in enter
 
       if (scope.effect && scope.regular) context.report({ node, messageId: "mixed" })
     }
