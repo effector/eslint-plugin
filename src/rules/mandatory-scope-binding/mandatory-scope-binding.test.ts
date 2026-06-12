@@ -290,6 +290,22 @@ ruleTester.run("mandatory-scope-binding", rule, {
       `,
     },
     {
+      name: "event via member-callee custom hook",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+        import { mounted } from "${fixture("model")}"
+
+        declare const utils: { useMounted(event: EventCallable<void>): void }
+
+        function Component() {
+          utils.useMounted(mounted)
+
+          return <button>click</button>
+        }
+      `,
+    },
+    {
       name: "unit invocation at module scope",
       code: tsx`
         import { createEvent } from "effector"
@@ -575,7 +591,7 @@ ruleTester.run("mandatory-scope-binding", rule, {
 
         const Button: React.FC = () => <UntypedButton onPress={clicked} />
       `,
-      errors: [{ messageId: "useUnitNeeded", line: 8, column: 52, data: { name: "clicked" } }],
+      errors: [{ messageId: "useUnitNeeded", line: 8, column: 56, data: { name: "clicked" } }],
     },
     {
       name: "event in unit-typed argument of a non-hook function",
