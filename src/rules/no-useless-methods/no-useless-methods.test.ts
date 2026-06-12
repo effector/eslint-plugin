@@ -43,6 +43,14 @@ ruleTester.run("no-useless-methods", rule, {
       `,
     },
     {
+      name: "ignores untracked calls",
+      code: ts`
+        import { allSettled, fork } from "effector"
+
+        allSettled(trigger, { scope: fork() })
+      `,
+    },
+    {
       name: "complex assign",
       code: ts`
         import { sample, guard } from "effector"

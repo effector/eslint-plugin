@@ -64,13 +64,13 @@ export default createRule({
           if (target) return
         }
 
-        const grandparent = node.parent.parent
-        if (grandparent) {
-          const ancestry = source.getAncestors(grandparent) as ESNode[]
-          const isWatched = esquery.matches(grandparent as ESNode, query.watch, ancestry, { visitorKeys })
+        // a CallExpression is never a direct child of Program, so the grandparent always exists
+        const grandparent = node.parent.parent!
 
-          if (isWatched) return
-        }
+        const ancestry = source.getAncestors(grandparent) as ESNode[]
+        const isWatched = esquery.matches(grandparent as ESNode, query.watch, ancestry, { visitorKeys })
+
+        if (isWatched) return
 
         const method = node.callee.name
         context.report({ node, messageId: "uselessMethod", data: { method } })
