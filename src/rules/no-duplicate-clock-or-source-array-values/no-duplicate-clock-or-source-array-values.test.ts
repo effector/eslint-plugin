@@ -50,6 +50,16 @@ ruleTester.run("no-duplicate-clock-or-source-array-values", rule, {
         })
       `,
     },
+    {
+      name: "ignores same-named import from another package",
+      code: ts`
+        import { sample } from "lodash"
+
+        const event = { value: 1 }
+
+        sample({ clock: [event, event] })
+      `,
+    },
   ],
   invalid: [
     {
