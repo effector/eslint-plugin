@@ -125,6 +125,15 @@ ruleTester.run("enforce-effect-naming-convention", rule, {
         const grouped = { alpha: createEffect(), beta: attach({ effect: sourceFx }) }
       `,
     },
+    {
+      name: "ignores non-effect in shape destructuring",
+      code: ts`
+        import { createEffect, createStore } from "effector"
+
+        const model = { user: createStore(0), fetchFx: createEffect() }
+        const { user, fetchFx } = model
+      `,
+    },
   ],
   invalid: [
     {

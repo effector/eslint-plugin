@@ -57,9 +57,6 @@ export default createRule({
 
         const data = { current: ident.name, fixed: ident.name + "Fx" }
 
-        // type annotation is included in `range` so we can't reliably replace text without erasing the annotation
-        if (ident.typeAnnotation) return context.report({ node: ident, messageId: "invalid", data })
-
         const suggestion: Suggestion = {
           messageId: "rename",
           data: { current: ident.name, fixed: data.fixed },
