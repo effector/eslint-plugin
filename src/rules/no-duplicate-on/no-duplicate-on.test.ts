@@ -262,5 +262,17 @@ ruleTester.run("no-duplicate-on", rule, {
       `,
       errors: [{ messageId: "duplicate", line: 10, column: 11, data: { store: "$store", unit: "first" } }],
     },
+    {
+      name: "store in model (member)",
+      code: ts`
+        import { createStore, createEvent } from "effector"
+
+        const first = createEvent()
+        const config = { $store: createStore(null) }
+
+        config.$store.on(first, () => null).on(first, () => null)
+      `,
+      errors: [{ messageId: "duplicate", line: 6, column: 18, data: { store: "config.$store", unit: "first" } }],
+    },
   ],
 })
