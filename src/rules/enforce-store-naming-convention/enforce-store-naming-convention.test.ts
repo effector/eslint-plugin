@@ -171,6 +171,14 @@ ruleTester.run("enforce-store-naming-convention", rule, {
         const grouped = { alpha: createStore(0), beta: combine($source, (x) => x) }
       `,
     },
+    {
+      name: "prefix: ignores non-store in shape destructuring",
+      code: ts`
+        import { createEvent } from "effector"
+
+        const { handler } = { handler: createEvent() }
+      `,
+    },
   ],
   invalid: [
     {
