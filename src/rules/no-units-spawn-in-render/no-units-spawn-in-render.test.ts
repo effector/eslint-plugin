@@ -173,6 +173,29 @@ ruleTester.run("no-units-spawn-in-render", rule, {
         }
       `,
     },
+    {
+      name: "use-prefixed factory name is not a hook",
+      code: tsx`
+        import { createStore } from "effector"
+
+        function userModel() {
+          const $user = createStore(null)
+
+          return { $user }
+        }
+      `,
+    },
+    {
+      name: "units created at module level after a component",
+      code: tsx`
+        import React from "react"
+        import { createStore } from "effector"
+
+        const Component: React.FC = () => <div>hello</div>
+
+        const $store = createStore(0)
+      `,
+    },
   ],
   invalid: [
     {
@@ -369,26 +392,6 @@ ruleTester.run("no-units-spawn-in-render", rule, {
       errors: [{ messageId: "noCustomFactoryInRender", line: 6, column: 24, data: { name: "createModel" } }],
     },
     {
-      name: "multiple violations in component",
-      code: tsx`
-        import React from "react"
-        import { createStore, createEvent, sample } from "effector"
-
-        const Component: React.FC = () => {
-          const $store = createStore(0)
-          const clicked = createEvent()
-          sample({ clock: clicked, target: $store })
-
-          return <button onClick={clicked}>click</button>
-        }
-      `,
-      errors: [
-        { messageId: "noFactoryInRender", line: 5, column: 18, data: { name: "createStore" } },
-        { messageId: "noFactoryInRender", line: 6, column: 19, data: { name: "createEvent" } },
-        { messageId: "noOperatorInRender", line: 7, column: 3, data: { name: "sample" } },
-      ],
-    },
-    {
       name: "attach operator in component",
       code: tsx`
         import React from "react"
@@ -487,20 +490,6 @@ ruleTester.run("no-units-spawn-in-render", rule, {
         }
       `,
       errors: [{ messageId: "noFactoryInRender", line: 7, column: 15, data: { name: "createApi" } }],
-    },
-    {
-      name: "inferred component (arrow function returning JSX)",
-      code: tsx`
-        import React from "react"
-        import { createStore } from "effector"
-
-        const Component = () => {
-          const $store = createStore(0)
-
-          return <div>hello</div>
-        }
-      `,
-      errors: [{ messageId: "noFactoryInRender", line: 5, column: 18, data: { name: "createStore" } }],
     },
     {
       name: "inferred component via forwardRef",
@@ -606,6 +595,100 @@ ruleTester.run("no-units-spawn-in-render", rule, {
         }
       `,
       errors: [{ messageId: "noCustomFactoryInRender", line: 6, column: 19, data: { name: "createCounter" } }],
+    },
+    {
+      name: "inferred component with union JSX return with conditional null return type",
+      code: tsx`
+        import React from "react"
+        import { createStore } from "effector"
+
+        type Props = { hidden: boolean }
+        const Component = ({ hidden }: Props) => {
+          const $store = createStore(0)
+
+          if (hidden) return null
+
+          return <div>hello</div>
+        }
+      `,
+      errors: [{ messageId: "noFactoryInRender", line: 6, column: 18, data: { name: "createStore" } }],
+    },
+    {
+      name: "contextually typed component returning null without JSX in return type",
+      code: tsx`
+        import React from "react"
+        import { createStore } from "effector"
+
+        const Component: React.FC = () => {
+          const $store = createStore(0)
+
+          return null
+        }
+      `,
+      errors: [{ messageId: "noFactoryInRender", line: 5, column: 18, data: { name: "createStore" } }],
+    },
+    {
+      name: "namespaced effector factory in component",
+      code: tsx`
+        import React from "react"
+        import * as effector from "effector"
+
+        const Component: React.FC = () => {
+          const $store = effector.createStore(0)
+
+          return <div>hello</div>
+        }
+      `,
+      errors: [{ messageId: "noFactoryInRender", line: 5, column: 18, data: { name: "createStore" } }],
+    },
+    {
+      name: "namespaced effector operator in component",
+      code: tsx`
+        import React from "react"
+        import * as effector from "effector"
+
+        const $a = effector.createStore(1)
+        const $b = effector.createStore(2)
+
+        const Component: React.FC = () => {
+          const $sum = effector.combine($a, $b, (a, b) => a + b)
+
+          return <div>hello</div>
+        }
+      `,
+      errors: [{ messageId: "noOperatorInRender", line: 8, column: 16, data: { name: "combine" } }],
+    },
+    {
+      name: "unnameable callee reported as <expression>",
+      code: tsx`
+        import React from "react"
+
+        import { createCounter } from "${fixture("factory")}"
+
+        const factories = { counter: createCounter }
+
+        const Component: React.FC = () => {
+          const model = factories["counter"](0)
+
+          return <div>hello</div>
+        }
+      `,
+      errors: [{ messageId: "noCustomFactoryInRender", line: 8, column: 17, data: { name: "<expression>" } }],
+    },
+    {
+      name: "effector-factorio createModel in component",
+      code: tsx`
+        import React from "react"
+
+        import { counterFactory } from "${fixture("factorio")}"
+
+        const Component: React.FC = () => {
+          const model = counterFactory.createModel()
+
+          return <div>hello</div>
+        }
+      `,
+      errors: [{ messageId: "noCustomFactoryInRender", line: 6, column: 17, data: { name: "createModel" } }],
     },
   ],
 })

@@ -270,10 +270,13 @@ function hasEffectorUnitInType(ctx: TraverseCtx, type: Type, depth = 3): boolean
   return false
 }
 
-// Checks if the callee is a method call on an effector-factorio factory object (e.g. `factory.useModel()`).
+// Checks if the callee is a `useModel` call on an effector-factorio factory object (`factory.useModel()`).
 // Matches by structural shape of the receiver: must have useModel, createModel, Provider, and @@unitShape.
+// Only `useModel` is excluded — `factory.createModel()` spawns new units and must stay flagged.
 function isEffectorFactorioHook(callee: ESNode.Expression, getTypeAtLocation: (node: ESNode.Node) => Type): boolean {
   if (callee.type !== AST_NODE_TYPES.MemberExpression) return false
+  if (callee.property.type !== AST_NODE_TYPES.Identifier) return false
+  if (callee.property.name !== "useModel" /* only `useModel` is a hook */) return false
 
   const objectType = getTypeAtLocation(callee.object)
   const propertyNames = new Set(objectType.getProperties().map((p) => p.getName()))
