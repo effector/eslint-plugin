@@ -223,19 +223,6 @@ ruleTester.run("mandatory-scope-binding", rule, {
       `,
     },
     {
-      name: "effect (member) via useUnit",
-      code: tsx`
-        import React from "react"
-        import { useUnit } from "effector-react"
-        import * as model from "${fixture("model")}"
-
-        function Component() {
-          const onClick = useUnit(model.fetchFx)
-          return <button onClick={onClick}>click</button>
-        }
-      `,
-    },
-    {
       name: "event via custom effector hook (object shape)",
       code: tsx`
         import React from "react"
@@ -300,6 +287,16 @@ ruleTester.run("mandatory-scope-binding", rule, {
         function Component() {
           return <MyButton onPress={model.mounted} />
         }
+      `,
+    },
+    {
+      name: "unit invocation at module scope",
+      code: tsx`
+        import { createEvent } from "effector"
+
+        const appStarted = createEvent()
+
+        appStarted()
       `,
     },
   ],
@@ -551,20 +548,6 @@ ruleTester.run("mandatory-scope-binding", rule, {
       errors: [{ messageId: "useUnitNeeded", line: 10, column: 18, data: { name: "onLeave" } }],
     },
     {
-      name: "effect (member) direct call",
-      code: tsx`
-        import React from "react"
-        import * as model from "${fixture("model")}"
-
-        function Component() {
-          React.useEffect(() => void model.fetchFx(), [])
-
-          return <button>click</button>
-        }
-      `,
-      errors: [{ messageId: "useUnitNeeded", line: 5, column: 30, data: { name: "fetchFx" } }],
-    },
-    {
       name: "event (member) in custom plain hook",
       code: tsx`
         import React from "react"
@@ -579,6 +562,37 @@ ruleTester.run("mandatory-scope-binding", rule, {
         }
       `,
       errors: [{ messageId: "useUnitNeeded", line: 7, column: 12, data: { name: "mounted" } }],
+    },
+    {
+      name: "event in jsx slot of an untyped component",
+      code: tsx`
+        import React from "react"
+        import { createEvent } from "effector"
+
+        const clicked = createEvent<unknown>()
+
+        declare const UntypedButton: any
+
+        const Button: React.FC = () => <UntypedButton onPress={clicked} />
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 8, column: 52, data: { name: "clicked" } }],
+    },
+    {
+      name: "event in unit-typed argument of a non-hook function",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+        import { mounted } from "${fixture("model")}"
+
+        declare function trackEvent(event: EventCallable<void>): void
+
+        function Component() {
+          trackEvent(mounted)
+
+          return <button>click</button>
+        }
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 8, column: 14, data: { name: "mounted" } }],
     },
   ],
 })
