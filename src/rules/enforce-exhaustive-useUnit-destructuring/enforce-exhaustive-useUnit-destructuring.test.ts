@@ -21,10 +21,7 @@ ruleTester.run("enforce-exhaustive-useUnit-destructuring", rule, {
       name: "object: all keys were destructured",
       code: tsx`
         import { useUnit } from "effector-react"
-        const { value, setValue } = useUnit({
-          value: $store,
-          setValue: event,
-        })
+        const { value, setValue } = useUnit({ value: $store, setValue: event })
       `,
     },
     {
@@ -50,21 +47,13 @@ ruleTester.run("enforce-exhaustive-useUnit-destructuring", rule, {
     },
     {
       name: "nocheck: is not useUnit",
-      code: tsx`
-        const { value } = someOtherFunction({
-          value: $store,
-          setValue: event,
-        })
-      `,
+      code: tsx` const { value } = someOtherFunction({ value: $store, setValue: event }) `,
     },
     {
       name: "alias: all keys destructured",
       code: tsx`
         import { useUnit as useEffectorUnit } from "effector-react"
-        const { value, setValue } = useEffectorUnit({
-          value: $store,
-          setValue: event,
-        })
+        const { value, setValue } = useEffectorUnit({ value: $store, setValue: event })
       `,
     },
     {
@@ -74,6 +63,40 @@ ruleTester.run("enforce-exhaustive-useUnit-destructuring", rule, {
         const [a, b, c] = useUnit([$a, $b, $c])
       `,
     },
+    {
+      name: "nocheck: array destructuring of a non-useUnit call",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        const [first] = pickWinners([alice, bob, carol])
+      `,
+    },
+    {
+      name: "object: spread in passed object is not analyzable",
+      code: tsx`
+        import { useUnit } from "effector-react"
+
+        const model = {}
+
+        const { value } = useUnit({ ...model, value: $store })
+      `,
+    },
+    {
+      name: "object: computed key in passed object is not analyzable",
+      code: tsx`
+        import { useUnit } from "effector-react"
+
+        const key = "key"
+
+        const { value } = useUnit({ [key]: setField, value: $store })
+      `,
+    },
+    {
+      name: "array: rest element consumes remaining units",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        const [value, ...handlers] = useUnit([$store, save, reset])
+      `,
+    },
   ],
 
   invalid: [
@@ -81,37 +104,17 @@ ruleTester.run("enforce-exhaustive-useUnit-destructuring", rule, {
       name: "object: key is passed but not destructured",
       code: tsx`
         import { useUnit } from "effector-react"
-        const { value } = useUnit({
-          value: $store,
-          setValue: event,
-        })
+        const { value } = useUnit({ value: $store, setValue: event })
       `,
-      errors: [
-        {
-          messageId: "unusedKey",
-          data: { name: "setValue" },
-          line: 2,
-          column: 27,
-          endLine: 5,
-          endColumn: 2,
-        },
-      ],
+      errors: [{ messageId: "unusedKey", data: { name: "setValue" }, line: 2, column: 27, endLine: 2, endColumn: 61 }],
     },
     {
       name: "object: key is destructured but does not exist in passed object",
       code: tsx`
         import { useUnit } from "effector-react"
-        const { value, setValue, extra } = useUnit({
-          value: $store,
-          setValue: event,
-        })
+        const { value, setValue, extra } = useUnit({ value: $store, setValue: event })
       `,
-      errors: [
-        {
-          messageId: "missingKey",
-          data: { name: "extra" },
-        },
-      ],
+      errors: [{ messageId: "missingKey", data: { name: "extra" } }],
     },
     {
       name: "array: implicit subscription when not all elements are destructured",
@@ -119,16 +122,7 @@ ruleTester.run("enforce-exhaustive-useUnit-destructuring", rule, {
         import { useUnit } from "effector-react"
         const [setValue] = useUnit([event, $store])
       `,
-      errors: [
-        {
-          messageId: "unusedKey",
-          data: { name: "$store" },
-          line: 2,
-          column: 28,
-          endLine: 2,
-          endColumn: 43,
-        },
-      ],
+      errors: [{ messageId: "unusedKey", data: { name: "$store" }, line: 2, column: 28, endLine: 2, endColumn: 43 }],
     },
     {
       name: "array: several implicit subscriptions",
@@ -137,35 +131,20 @@ ruleTester.run("enforce-exhaustive-useUnit-destructuring", rule, {
         const [value] = useUnit([$store, event, $anotherStore])
       `,
       errors: [
-        {
-          messageId: "unusedKey",
-          data: { name: "event" },
-        },
-        {
-          messageId: "unusedKey",
-          data: { name: "$anotherStore" },
-        },
+        { messageId: "unusedKey", data: { name: "event" } },
+        { messageId: "unusedKey", data: { name: "$anotherStore" } },
       ],
     },
     {
       name: "object: several keys are passed but not destructured",
       code: tsx`
         import { useUnit } from "effector-react"
-        const { value } = useUnit({
-          value: $store,
-          setValue: event,
-          reset: resetEvent,
-        })
+
+        const { value } = useUnit({ value: $store, setValue: event, reset: resetEvent })
       `,
       errors: [
-        {
-          messageId: "unusedKey",
-          data: { name: "setValue" },
-        },
-        {
-          messageId: "unusedKey",
-          data: { name: "reset" },
-        },
+        { messageId: "unusedKey", data: { name: "setValue" } },
+        { messageId: "unusedKey", data: { name: "reset" } },
       ],
     },
     {
@@ -175,19 +154,12 @@ ruleTester.run("enforce-exhaustive-useUnit-destructuring", rule, {
         import { useUnit } from "effector-react"
 
         const ObjectShapeComponent = () => {
-          const { value } = useUnit({
-            value: $store,
-            setValue: event,
-          })
+          const { value } = useUnit({ value: $store, setValue: event })
+
           return <Fragment>{value}</Fragment>
         }
       `,
-      errors: [
-        {
-          messageId: "unusedKey",
-          data: { name: "setValue" },
-        },
-      ],
+      errors: [{ messageId: "unusedKey", data: { name: "setValue" } }],
     },
     {
       name: "alias: key is passed but not destructured",
@@ -222,17 +194,25 @@ ruleTester.run("enforce-exhaustive-useUnit-destructuring", rule, {
       name: "object: string literal key is passed but not destructured",
       code: tsx`
         import { useUnit } from "effector-react"
-        const { value } = useUnit({
-          value: $store,
-          setValue: event,
-        })
+        const { value } = useUnit({ "value": $store, "set-value": event })
       `,
-      errors: [
-        {
-          messageId: "unusedKey",
-          data: { name: "setValue" },
-        },
-      ],
+      errors: [{ messageId: "unusedKey", data: { name: "set-value" } }],
+    },
+    {
+      name: "array: key is destructured but does not exist in passed array",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        const [value, setValue] = useUnit([$store])
+      `,
+      errors: [{ messageId: "missingKey", data: { name: "setValue" }, line: 2, column: 7, endLine: 2, endColumn: 24 }],
+    },
+    {
+      name: "array: namespaced unit is passed but not destructured",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        const [submit] = useUnit([formModel.submit, formModel.$values])
+      `,
+      errors: [{ messageId: "unusedKey", data: { name: "formModel.$values" } }],
     },
   ],
 })
