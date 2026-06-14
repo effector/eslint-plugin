@@ -1,5 +1,11 @@
 <h1 align="center">eslint-plugin-effector</h1>
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/eslint-plugin-effector"><img src="https://badgen.net/npm/v/eslint-plugin-effector?color=blue" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/eslint-plugin-effector"><img src="https://badgen.net/badge/provenance/yes?color=green&icon=npm" alt="npm provenance"></a>
+  <a href="https://www.npmjs.com/package/eslint-plugin-effector"><img src="https://badgen.net/npm/dm/eslint-plugin-effector?color=orange" alt="monthly downloads"></a>
+</p>
+
 An ESLint plugin for enforcing best practices for [Effector](https://effector.dev).
 
 For comprehensive documentation, including rules and configuration guides, visit official documentation at [eslint.effector.dev](https://eslint.effector.dev).
