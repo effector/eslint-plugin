@@ -203,6 +203,34 @@ ruleTester.run("prefer-single-binding", rule, {
       `,
       options: [{ separation: "allow" }],
     },
+    {
+      name: "object: computed key is ignored (cannot be normalized)",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const key: string
+        const Component = () => {
+          const { [key]: a } = useUnit({ [key]: $a })
+          return null
+        }
+      `,
+    },
+    {
+      name: "allow: a call with an undetectable unit type is left alone",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const whatever: unknown
+        const Component = () => {
+          const [a] = useUnit([$a])
+          const [b] = useUnit([whatever as never])
+          return null
+        }
+      `,
+      options: [{ separation: "allow" }],
+    },
   ],
   invalid: [
     {
@@ -1088,6 +1116,218 @@ ruleTester.run("prefer-single-binding", rule, {
           ],
         },
       ],
+    },
+    {
+      name: "module units declared below the component are still mergeable",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { createStore } from "effector"
+        const Component = () => {
+          const a = useUnit($a)
+          const b = useUnit($b)
+          return null
+        }
+        const $a = createStore(0)
+        const $b = createStore(1)
+      `,
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { createStore } from "effector"
+                const Component = () => {
+                  const { a, b } = useUnit({ a: $a, b: $b })
+                  return null
+                }
+                const $a = createStore(0)
+                const $b = createStore(1)
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "a unit acquired mid-body blocks the anchor but calls below it still merge",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const useScopedStore: () => Store<boolean>
+        const Component = () => {
+          const a = useUnit($a)
+          const $mid = useScopedStore()
+          const b = useUnit($mid)
+          const c = useUnit($mid)
+          return null
+        }
+      `,
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store } from "effector"
+                declare const $a: Store<boolean>
+                declare const useScopedStore: () => Store<boolean>
+                const Component = () => {
+                  const a = useUnit($a)
+                  const $mid = useScopedStore()
+                  const { b, c } = useUnit({ b: $mid, c: $mid })
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "multiple declarators in one statement are reported without a suggestion",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const $b: Store<boolean>
+        const Component = () => {
+          const a = useUnit($a),
+            b = useUnit($b)
+          return null
+        }
+      `,
+      errors: [{ messageId: "multipleUseUnit", suggestions: [] }],
+    },
+    {
+      name: "let declarations are reported without a suggestion",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const $b: Store<boolean>
+        const Component = () => {
+          let a = useUnit($a)
+          let b = useUnit($b)
+          return null
+        }
+      `,
+      errors: [{ messageId: "multipleUseUnit", suggestions: [] }],
+    },
+    {
+      name: "a type-annotated binding is reported without a suggestion",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const $b: Store<boolean>
+        const Component = () => {
+          const a: boolean = useUnit($a)
+          const b = useUnit($b)
+          return null
+        }
+      `,
+      errors: [{ messageId: "multipleUseUnit", suggestions: [] }],
+    },
+    {
+      name: "a duplicate destructuring key keeps both bindings (reported without a suggestion)",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const $b: Store<boolean>
+        const Component = () => {
+          const { value: x, value: y } = useUnit({ value: $a })
+          const [z] = useUnit([$b])
+          return null
+        }
+      `,
+      errors: [{ messageId: "multipleUseUnit", suggestions: [] }],
+    },
+    {
+      name: "separation enforce: same-type calls are merged",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const $b: Store<boolean>
+        const Component = () => {
+          const [a] = useUnit([$a])
+          const [b] = useUnit([$b])
+          return null
+        }
+      `,
+      options: [{ separation: "enforce" }],
+      errors: [
+        {
+          messageId: "multipleUseUnit",
+          suggestions: [
+            {
+              messageId: "multipleUseUnit",
+              output: tsx`
+                import { useUnit } from "effector-react"
+                import { type Store } from "effector"
+                declare const $a: Store<boolean>
+                declare const $b: Store<boolean>
+                const Component = () => {
+                  const [a, b] = useUnit([$a, $b])
+                  return null
+                }
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "a default in the destructuring pattern is reported without a suggestion",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const $b: Store<boolean>
+        const Component = () => {
+          const { a = false } = useUnit({ a: $a })
+          const [b] = useUnit([$b])
+          return null
+        }
+      `,
+      errors: [{ messageId: "multipleUseUnit", suggestions: [] }],
+    },
+    {
+      name: "an argument key that is not destructured is reported without a suggestion",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store } from "effector"
+        declare const $a: Store<boolean>
+        declare const $b: Store<boolean>
+        const Component = () => {
+          const { a } = useUnit({ a: $a, b: $b })
+          const [c] = useUnit([$b])
+          return null
+        }
+      `,
+      errors: [{ messageId: "multipleUseUnit", suggestions: [] }],
+    },
+    {
+      name: "separation enforce: a mixed let call is reported without a suggestion",
+      code: tsx`
+        import { useUnit } from "effector-react"
+        import { type Store, type EventCallable } from "effector"
+        declare const $store: Store<boolean>
+        declare const event: EventCallable<void>
+        const Component = () => {
+          let { value, run } = useUnit({ value: $store, run: event })
+          return null
+        }
+      `,
+      options: [{ separation: "enforce" }],
+      errors: [{ messageId: "mixedStoresAndEvents", suggestions: [] }],
     },
   ],
 })

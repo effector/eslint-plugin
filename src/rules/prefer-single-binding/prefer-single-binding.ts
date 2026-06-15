@@ -1,5 +1,5 @@
 import { ESLintUtils, type TSESTree as Node, AST_NODE_TYPES as NodeType } from "@typescript-eslint/utils"
-import type { RuleContext, RuleFix, RuleFixer } from "@typescript-eslint/utils/ts-eslint"
+import type { RuleContext, RuleFix, RuleFixer, Scope, SourceCode } from "@typescript-eslint/utils/ts-eslint"
 
 import { createRule } from "@/shared/create"
 import { isType } from "@/shared/is"
@@ -8,68 +8,32 @@ import { PACKAGE_NAME } from "@/shared/package"
 type MessageIds = "multipleUseUnit" | "mixedStoresAndEvents"
 type Options = [{ separation?: "forbid" | "allow" | "enforce" }?]
 type Context = RuleContext<MessageIds, Options>
-type Fixer = RuleFixer
-type SourceCode = Context["sourceCode"]
-type Scope = ReturnType<SourceCode["getScope"]>
-type GetNodeType = (node: Node.Expression) => UnitType
+type UnitType = "store" | "event" | "effect" | "unknown"
+type GetNodeType = (node: Node.Node) => UnitType
+type Form = "array" | "object" | "plain"
+
+/** The rule's primitive: a component-scope identifier bound to the unit expression passed to `useUnit`. */
+type Binding = { unit: Node.Expression; boundTo: Node.Identifier }
 
 type UseUnitCall = {
-  statement: Node.VariableDeclaration
-  init: Node.CallExpression
-  id: Node.VariableDeclarator["id"]
+  /** the enclosing statement, replaced/removed when fixing */
+  declaration: Node.VariableDeclaration
+  /** the `useUnit(...)` call, used as the report location */
+  report: Node.CallExpression
+  callee: string
+  form: Form
+  /** every unit expression in the call (always complete, even when `normalized` is false) */
+  units: Node.Expression[]
+  /** identifier ↔ unit pairs; complete and lossless only when `normalized` */
+  bindings: Binding[]
+  /** `bindings` losslessly represent the destructuring (no holes, rest, defaults, computed or duplicate keys) */
+  normalized: boolean
+  /** safe to rewrite the statement: a sole `const` declarator without a type annotation */
+  fixable: boolean
 }
 
-type ShapeCall = Node.VariableDeclarator & {
-  init: Node.CallExpression & {
-    callee: Node.Identifier
-    arguments: [Node.ObjectExpression]
-  }
-  id: Node.ObjectPattern
-}
-
-type ListCall = Node.VariableDeclarator & {
-  init: Node.CallExpression & {
-    callee: Node.Identifier
-    arguments: [Node.ArrayExpression]
-  }
-  id: Node.ArrayPattern
-}
-
-type PlainCall = Node.VariableDeclarator & {
-  init: Node.CallExpression
-  id: Node.Identifier
-}
-
-type UnitType = "store" | "event" | "effect" | "unknown"
-
-type UnitBinding = {
-  call: UseUnitCall
-  unitNode: Node.Expression
-}
-
-/** A `useUnit` binding normalized into a form-independent shape so array, object and plain calls can merge. */
-type NormalizedBinding = {
-  /** local variable identifier */
-  local: string
-  /** unit expression text */
-  unit: string
-  /** unit expression node (for scope / hoisting analysis) */
-  unitNode: Node.Expression
-}
-
-const selector = {
-  import: `ImportDeclaration[source.value=${PACKAGE_NAME.react}] > ImportSpecifier[imported.name=useUnit]`,
-  variable: {
-    shape: "VariableDeclarator[id.type=ObjectPattern]",
-    list: "VariableDeclarator[id.type=ArrayPattern]",
-    plain: "VariableDeclarator[id.type=Identifier]",
-  },
-  call: "CallExpression.init[arguments.length=1][callee.type=Identifier]",
-  arg: {
-    shape: "ObjectExpression.arguments",
-    list: "ArrayExpression.arguments",
-  },
-} as const
+const selectorImport = `ImportDeclaration[source.value=${PACKAGE_NAME.react}] > ImportSpecifier[imported.name=useUnit]`
+const selectorCall = "VariableDeclarator:has(> CallExpression.init[arguments.length=1][callee.type=Identifier])"
 
 function keyName(key: Node.Property["key"]): string | null {
   if (key.type === NodeType.Identifier) return key.name
@@ -77,309 +41,230 @@ function keyName(key: Node.Property["key"]): string | null {
   return null
 }
 
-/** Unit expression nodes of a call, regardless of whether it can be normalized (used for hoisting analysis). */
-function unitExpressionNodes(call: UseUnitCall): Node.Expression[] {
-  const argument = call.init.arguments[0]
-  if (!argument || argument.type === NodeType.SpreadElement) return []
-
-  if (argument.type === NodeType.ArrayExpression) {
-    return argument.elements.filter((el): el is Node.Expression => el !== null && el.type !== NodeType.SpreadElement)
-  }
-  if (argument.type === NodeType.ObjectExpression) {
-    return argument.properties
-      .filter((p): p is Node.Property => p.type === NodeType.Property)
-      .map((p) => p.value as Node.Expression)
-  }
-  return [argument]
-}
+type Analysis = { form: Form; units: Node.Expression[]; bindings: Binding[]; normalized: boolean }
 
 /**
- * Normalizes a call into bindings. Returns `null` when a binding can't be safely converted
- * between forms — array holes, rest/spread, defaults, nested or computed patterns, or a
- * non-destructuring call whose argument is a collection (`const x = useUnit([...])`).
- *
- * Object keys are taken from the local variable name (not the source key), which makes
- * renamed keys (`{ a: b }` → `{ b }`) and form conversion collision-free.
+ * Walks a `useUnit` declarator once and normalizes it. `units` lists every unit expression; `bindings`
+ * pairs each with its destructured identifier. `normalized` is false when the destructuring can't be
+ * losslessly rebuilt — holes, rest/spread, defaults, computed or duplicate keys, nested patterns, or a
+ * non-destructuring call over a collection. Returns null when the declarator isn't a useUnit form we handle.
  */
-function extractBindings(call: UseUnitCall, sourceCode: SourceCode): NormalizedBinding[] | null {
-  const argument = call.init.arguments[0]
+function analyze(declarator: Node.VariableDeclarator): Analysis | null {
+  const init = declarator.init
+  if (init?.type !== NodeType.CallExpression) return null
+  const argument = init.arguments[0]
   if (!argument || argument.type === NodeType.SpreadElement) return null
+  const id = declarator.id
 
-  if (argument.type === NodeType.ArrayExpression && call.id.type === NodeType.ArrayPattern) {
-    const elements = argument.elements
-    const targets = call.id.elements
-    if (elements.length !== targets.length) return null
+  if (id.type === NodeType.ArrayPattern && argument.type === NodeType.ArrayExpression) {
+    const units: Node.Expression[] = []
+    const bindings: Binding[] = []
+    let normalized = argument.elements.length === id.elements.length
 
-    const bindings: NormalizedBinding[] = []
-    for (let i = 0; i < elements.length; i++) {
-      const el = elements[i]
-      const target = targets[i]
-      if (!el || el.type === NodeType.SpreadElement) return null
-      if (!target || target.type !== NodeType.Identifier) return null
-      bindings.push({ local: target.name, unit: sourceCode.getText(el), unitNode: el })
-    }
-    return bindings
+    argument.elements.forEach((element, index) => {
+      if (!element || element.type === NodeType.SpreadElement) {
+        normalized = false
+        return
+      }
+      units.push(element)
+      const target = id.elements[index]
+      if (target?.type === NodeType.Identifier) bindings.push({ unit: element, boundTo: target })
+      else normalized = false
+    })
+
+    return { form: "array", units, bindings, normalized }
   }
 
-  if (argument.type === NodeType.ObjectExpression && call.id.type === NodeType.ObjectPattern) {
-    const locals = new Map<string, Node.Identifier>()
-    for (const prop of call.id.properties) {
-      if (prop.type !== NodeType.Property || prop.computed) return null
-      const name = keyName(prop.key)
-      if (name === null || prop.value.type !== NodeType.Identifier) return null
-      locals.set(name, prop.value)
+  if (id.type === NodeType.ObjectPattern && argument.type === NodeType.ObjectExpression) {
+    const localByKey = new Map<string, Node.Identifier>()
+    let normalized = true
+
+    for (const property of id.properties) {
+      if (property.type !== NodeType.Property || property.computed) {
+        normalized = false
+        continue
+      }
+      const key = keyName(property.key)
+      if (key === null || property.value.type !== NodeType.Identifier) {
+        normalized = false
+        continue
+      }
+      if (localByKey.has(key)) normalized = false // e.g. const { value: x, value: y } = useUnit({ value: $ })
+      localByKey.set(key, property.value)
     }
 
-    const bindings: NormalizedBinding[] = []
-    for (const prop of argument.properties) {
-      if (prop.type !== NodeType.Property || prop.computed) return null
-      const name = keyName(prop.key)
-      if (name === null) return null
-      const local = locals.get(name)
-      if (!local) return null
-      const value = prop.value as Node.Expression
-      bindings.push({ local: local.name, unit: sourceCode.getText(value), unitNode: value })
+    const units: Node.Expression[] = []
+    const bindings: Binding[] = []
+
+    for (const property of argument.properties) {
+      if (property.type !== NodeType.Property || property.computed) {
+        normalized = false
+        continue
+      }
+      // Property values inside an ObjectExpression are expressions at runtime; exclude the pattern
+      // members the shared `Property` type carries so `value` narrows to Expression without a cast.
+      const value = property.value
+      if (
+        value.type === NodeType.AssignmentPattern ||
+        value.type === NodeType.ArrayPattern ||
+        value.type === NodeType.ObjectPattern ||
+        value.type === NodeType.TSEmptyBodyFunctionExpression
+      ) {
+        normalized = false
+        continue
+      }
+      units.push(value)
+      const key = keyName(property.key)
+      const local = key === null ? undefined : localByKey.get(key)
+      if (local) bindings.push({ unit: value, boundTo: local })
+      else normalized = false
     }
-    return bindings
+
+    return { form: "object", units, bindings, normalized }
   }
 
-  // plain non-destructuring call: const x = useUnit($unit)
-  if (call.id.type === NodeType.Identifier) {
+  // non-destructuring call: const x = useUnit($unit)
+  if (id.type === NodeType.Identifier) {
     if (argument.type === NodeType.ArrayExpression || argument.type === NodeType.ObjectExpression) return null
-    return [{ local: call.id.name, unit: sourceCode.getText(argument), unitNode: argument }]
+    return { form: "plain", units: [argument], bindings: [{ unit: argument, boundTo: id }], normalized: true }
   }
 
   return null
 }
 
 /**
- * Builds the merged statement text. The target form follows the first array/object call,
- * so mixed forms collapse into the form the author started with; all-plain groups become
- * object form. Returns `null` when any call can't be normalized or two bindings share a
- * local name (which would generate invalid JS).
+ * Distinct unit type of a call: "mixed" when it spans several known types; "unknown" when any unit's
+ * type is undetermined (so it's never merged or split — we must not guess at an unknown unit).
  */
-function buildMergedText(calls: UseUnitCall[], sourceCode: SourceCode): string | null {
-  const [first] = calls
-  if (!first) return null
-
-  const calleeName = first.init.callee.type === NodeType.Identifier ? first.init.callee.name : "useUnit"
-
-  let targetForm: "array" | "object" = "object"
-  for (const call of calls) {
-    if (call.init.arguments[0]?.type === NodeType.ArrayExpression && call.id.type === NodeType.ArrayPattern) {
-      targetForm = "array"
-      break
-    }
-    if (call.init.arguments[0]?.type === NodeType.ObjectExpression && call.id.type === NodeType.ObjectPattern) {
-      targetForm = "object"
-      break
-    }
-  }
-
-  const bindings: NormalizedBinding[] = []
-  const seen = new Set<string>()
-  for (const call of calls) {
-    const extracted = extractBindings(call, sourceCode)
-    if (!extracted) return null
-    for (const binding of extracted) {
-      if (seen.has(binding.local)) return null
-      seen.add(binding.local)
-      bindings.push(binding)
-    }
-  }
-
-  if (targetForm === "array") {
-    return `const [${bindings.map((b) => b.local).join(", ")}] = ${calleeName}([${bindings.map((b) => b.unit).join(", ")}])`
-  }
-  return `const { ${bindings.map((b) => b.local).join(", ")} } = ${calleeName}({ ${bindings.map((b) => `${b.local}: ${b.unit}`).join(", ")} })`
-}
-
-function collectBindings(calls: UseUnitCall[]): UnitBinding[] {
-  const bindings: UnitBinding[] = []
-  for (const call of calls) {
-    for (const unitNode of unitExpressionNodes(call)) bindings.push({ call, unitNode })
-  }
-  return bindings
-}
-
-function groupBindingsByType(bindings: UnitBinding[], getNodeType: GetNodeType): Record<UnitType, UnitBinding[]> {
-  const groups: Record<UnitType, UnitBinding[]> = { store: [], event: [], effect: [], unknown: [] }
-  for (const binding of bindings) groups[getNodeType(binding.unitNode)].push(binding)
-  return groups
-}
-
-function hasMixedTypes(call: UseUnitCall, getNodeType: GetNodeType): boolean {
-  const types = new Set<UnitType>()
-  for (const node of unitExpressionNodes(call)) {
-    const type = getNodeType(node)
-    if (type !== "unknown") types.add(type)
-  }
-  return types.size > 1
+function classify(call: UseUnitCall, getNodeType: GetNodeType): UnitType | "mixed" {
+  const types = new Set(call.units.map(getNodeType))
+  const known = [...types].filter((type) => type !== "unknown")
+  if (known.length > 1) return "mixed"
+  if (known.length === 1 && !types.has("unknown")) return known[0]!
+  return "unknown"
 }
 
 /**
- * Whether `exprNode` can be evaluated at `anchorStart` without hitting a temporal dead zone —
- * i.e. it references no variable declared at or after the anchor. Merging hoists every unit to
- * the anchor's position, so a unit depending on a later declaration (e.g. `useContext`) is unsafe.
+ * Whether `unit` references a variable declared inside the enclosing component at or after `anchorStart`.
+ * Merging hoists every unit to the anchor's position, so such a reference would hit a temporal dead zone.
+ * Variables from outer scopes (module units, imports, params) are always initialized by render time and safe.
  */
-function isHoistable(exprNode: Node.Expression, anchorStart: number, sourceCode: SourceCode): boolean {
-  const within = (node: Node.Node) => node.range[0] >= exprNode.range[0] && node.range[1] <= exprNode.range[1]
+function dependsOnLaterLocal(unit: Node.Expression, anchorStart: number, functionEnd: number, sourceCode: SourceCode) {
+  const within = (node: Node.Node) => node.range[0] >= unit.range[0] && node.range[1] <= unit.range[1]
 
-  const visit = (scope: Scope): boolean => {
+  const visit = (scope: Scope.Scope): boolean => {
     for (const reference of scope.references) {
       if (!within(reference.identifier)) continue
-      const variable = reference.resolved
-      if (!variable) continue
-      for (const def of variable.defs) {
-        if (def.node.range[0] >= anchorStart) return false
-      }
+      const defs = reference.resolved?.defs ?? []
+      if (defs.some((def) => def.node.range[0] >= anchorStart && def.node.range[1] <= functionEnd)) return true
     }
-    return scope.childScopes.every(visit)
+    return scope.childScopes.some(visit)
   }
 
-  return visit(sourceCode.getScope(exprNode))
+  return visit(sourceCode.getScope(unit))
 }
 
-/**
- * The subset of calls that can be merged at the first call's position without a TDZ hazard.
- * Calls whose units depend on declarations between the anchor and themselves are dropped, so
- * legitimately ordered code (a unit acquired between two `useUnit` calls) is left untouched.
- */
-function hoistableSubset(calls: UseUnitCall[], sourceCode: SourceCode): UseUnitCall[] {
-  const [anchor, ...rest] = calls
-  if (!anchor) return []
-
-  const anchorStart = anchor.statement.range[0]
-  const subset = [anchor]
-  for (const call of rest) {
-    if (unitExpressionNodes(call).every((node) => isHoistable(node, anchorStart, sourceCode))) subset.push(call)
+/** Renders one `useUnit` statement from a set of bindings in the given form. */
+function lineFor(form: Form, bindings: Binding[], callee: string, sourceCode: SourceCode): string {
+  const names = bindings.map((binding) => sourceCode.getText(binding.boundTo))
+  if (form === "array") {
+    const units = bindings.map((binding) => sourceCode.getText(binding.unit))
+    return `const [${names.join(", ")}] = ${callee}([${units.join(", ")}])`
   }
-  return subset
+  const properties = bindings.map(
+    (binding) => `${sourceCode.getText(binding.boundTo)}: ${sourceCode.getText(binding.unit)}`,
+  )
+  return `const { ${names.join(", ")} } = ${callee}({ ${properties.join(", ")} })`
 }
 
-function removeStatement(fixer: Fixer, sourceCode: SourceCode, statement: Node.VariableDeclaration): RuleFix {
-  const range = statement.range
-  let startIndex = range[0]
-  const lineStart = sourceCode.text.lastIndexOf("\n", startIndex - 1) + 1
-  const textBefore = sourceCode.text.slice(lineStart, startIndex)
-
-  if (/^\s*$/.test(textBefore)) startIndex = lineStart
-
-  const endIndex = range[1]
-  const nextChar = sourceCode.text[endIndex]
-  const removeEnd = nextChar === "\n" || nextChar === "\r" ? endIndex + 1 : endIndex
-
-  return fixer.removeRange([startIndex, removeEnd])
+/** The form a merged group collapses into: the first array/object call, or object form for all-plain groups. */
+function targetForm(group: UseUnitCall[]): Form {
+  for (const call of group) if (call.form !== "plain") return call.form
+  return "object"
 }
 
-function generateMergeFix(fixer: Fixer, calls: UseUnitCall[], context: Context): RuleFix[] | null {
-  const sourceCode = context.sourceCode
-  const text = buildMergedText(calls, sourceCode)
-  if (text === null) return null
+function indentOf(statement: Node.VariableDeclaration, sourceCode: SourceCode): string {
+  const lineStart = sourceCode.text.lastIndexOf("\n", statement.range[0] - 1) + 1
+  return sourceCode.text.slice(lineStart, statement.range[0])
+}
 
-  const [first, ...rest] = calls
-  if (!first) return null
+function removeStatement(fixer: RuleFixer, sourceCode: SourceCode, statement: Node.VariableDeclaration): RuleFix {
+  let start = statement.range[0]
+  const lineStart = sourceCode.text.lastIndexOf("\n", start - 1) + 1
+  if (/^\s*$/.test(sourceCode.text.slice(lineStart, start))) start = lineStart
 
-  const fixes: RuleFix[] = [fixer.replaceText(first.statement, text)]
-  for (const call of rest) fixes.push(removeStatement(fixer, sourceCode, call.statement))
+  const end = statement.range[1]
+  const nextChar = sourceCode.text[end]
+  return fixer.removeRange([start, nextChar === "\n" || nextChar === "\r" ? end + 1 : end])
+}
 
+function mergeFix(fixer: RuleFixer, group: UseUnitCall[], sourceCode: SourceCode): RuleFix[] {
+  const [anchor, ...rest] = group
+  const bindings = group.flatMap((call) => call.bindings)
+  const fixes = [
+    fixer.replaceText(anchor!.declaration, lineFor(targetForm(group), bindings, anchor!.callee, sourceCode)),
+  ]
+  for (const call of rest) fixes.push(removeStatement(fixer, sourceCode, call.declaration))
   return fixes
 }
 
-function generateSeparationFix(fixer: Fixer, call: UseUnitCall, context: Context, getNodeType: GetNodeType): RuleFix[] {
-  const sourceCode = context.sourceCode
-  const argument = call.init.arguments[0]
-  if (!argument || argument.type === NodeType.SpreadElement) return []
-
-  const calleeName = call.init.callee.type === NodeType.Identifier ? call.init.callee.name : "useUnit"
-
-  const range = call.statement.range
-  const lineStart = sourceCode.text.lastIndexOf("\n", range[0] - 1) + 1
-  const indent = sourceCode.text.slice(lineStart, range[0])
-
-  if (argument.type === NodeType.ObjectExpression) {
-    const properties = argument.properties.filter((p): p is Node.Property => p.type === NodeType.Property)
-
-    const byType = {
-      store: properties.filter((p) => getNodeType(p.value as Node.Expression) === "store"),
-      event: properties.filter((p) => getNodeType(p.value as Node.Expression) === "event"),
-      effect: properties.filter((p) => getNodeType(p.value as Node.Expression) === "effect"),
-    }
-
-    const toKeyName = (p: Node.Property) =>
-      p.key.type === NodeType.Identifier ? p.key.name : sourceCode.getText(p.key)
-
-    const lines = Object.values(byType)
-      .filter((group) => group.length > 0)
-      .map(
-        (group) =>
-          `const { ${group.map(toKeyName).join(", ")} } = ${calleeName}({ ${group.map((p) => sourceCode.getText(p)).join(", ")} })`,
-      )
-
-    return [fixer.replaceText(call.statement, lines.join(`\n${indent}`))]
+function splitFix(fixer: RuleFixer, call: UseUnitCall, sourceCode: SourceCode, getNodeType: GetNodeType): RuleFix[] {
+  const order: UnitType[] = ["store", "event", "effect", "unknown"]
+  const byType = new Map<UnitType, Binding[]>()
+  for (const binding of call.bindings) {
+    const type = getNodeType(binding.unit)
+    const group = byType.get(type) ?? byType.set(type, []).get(type)!
+    group.push(binding)
   }
 
-  if (argument.type === NodeType.ArrayExpression && call.id.type === NodeType.ArrayPattern) {
-    const elements = argument.elements
-    const destructured = call.id.elements
+  const indent = indentOf(call.declaration, sourceCode)
+  const lines = order
+    .filter((type) => byType.has(type))
+    .map((type) => lineFor(call.form, byType.get(type)!, call.callee, sourceCode))
 
-    const indexed = elements
-      .map((el, i) => ({ el, i }))
-      .filter((x): x is { el: Node.Expression; i: number } => x.el !== null && x.el.type !== NodeType.SpreadElement)
+  return [fixer.replaceText(call.declaration, lines.join(`\n${indent}`))]
+}
 
-    const byType = {
-      store: indexed.filter(({ el }) => getNodeType(el) === "store"),
-      event: indexed.filter(({ el }) => getNodeType(el) === "event"),
-      effect: indexed.filter(({ el }) => getNodeType(el) === "effect"),
-    }
-
-    const getName = (i: number) => {
-      const el = destructured[i]
-      return el ? sourceCode.getText(el) : null
-    }
-
-    const lines = Object.values(byType)
-      .filter((group) => group.length > 0)
-      .map((group) => {
-        const names = group.map(({ i }) => getName(i)).filter((x): x is string => x !== null)
-        const units = group.map(({ el }) => sourceCode.getText(el))
-        return `const [${names.join(", ")}] = ${calleeName}([${units.join(", ")}])`
-      })
-
-    return [fixer.replaceText(call.statement, lines.join(`\n${indent}`))]
-  }
-
-  return []
+/** Names bound across the group are unique, so a merged destructuring stays valid JS. */
+function hasUniqueNames(group: UseUnitCall[]): boolean {
+  const names = group.flatMap((call) => call.bindings.map((binding) => binding.boundTo.name))
+  return new Set(names).size === names.length
 }
 
 /**
- * Reports redundant `useUnit` calls in a group, attaching a merge suggestion when one is sound.
- * Calls that can't be hoisted to the first call are dropped from the group (left unreported), so
- * the rule stays silent on legitimately ordered code instead of suggesting broken fixes.
+ * Reports redundant `useUnit` calls that should collapse into one. Calls whose units depend on a
+ * declaration between the anchor and themselves can't be hoisted, so they start a fresh group instead —
+ * leaving legitimately ordered code untouched while still surfacing mergeable calls further down.
  */
-function reportGroup(context: Context, calls: UseUnitCall[]): void {
+function reportMerge(context: Context, candidates: UseUnitCall[], functionEnd: number): void {
   const sourceCode = context.sourceCode
-  const group = hoistableSubset(calls, sourceCode)
-  if (group.length <= 1) return
+  let pool = candidates
 
-  const captured = [...group]
-  const mergeable = buildMergedText(captured, sourceCode) !== null
-  const [, ...rest] = captured
-  for (const call of rest) {
-    context.report({
-      node: call.init,
-      messageId: "multipleUseUnit",
-      ...(mergeable
-        ? {
-            suggest: [
-              {
-                messageId: "multipleUseUnit",
-                fix: (fixer) => generateMergeFix(fixer, captured, context),
-              },
-            ],
-          }
-        : {}),
-    })
+  while (pool.length > 1) {
+    const [anchor, ...rest] = pool
+    const anchorStart = anchor!.declaration.range[0]
+    const group = [anchor!]
+    const leftover: UseUnitCall[] = []
+
+    for (const call of rest) {
+      const hoistable = call.units.every((unit) => !dependsOnLaterLocal(unit, anchorStart, functionEnd, sourceCode))
+      ;(hoistable ? group : leftover).push(call)
+    }
+
+    if (group.length > 1) {
+      const mergeable = group.every((call) => call.normalized && call.fixable) && hasUniqueNames(group)
+      for (const call of group.slice(1)) {
+        context.report({
+          node: call.report,
+          messageId: "multipleUseUnit",
+          suggest: mergeable
+            ? [{ messageId: "multipleUseUnit", fix: (fixer) => mergeFix(fixer, group, sourceCode) }]
+            : undefined,
+        })
+      }
+    }
+
+    pool = leftover
   }
 }
 
@@ -402,11 +287,7 @@ export default createRule<Options, MessageIds>({
       {
         type: "object",
         properties: {
-          separation: {
-            type: "string",
-            enum: ["forbid", "allow", "enforce"],
-            default: "forbid",
-          },
+          separation: { type: "string", enum: ["forbid", "allow", "enforce"], default: "forbid" },
         },
         additionalProperties: false,
       },
@@ -416,10 +297,9 @@ export default createRule<Options, MessageIds>({
   create(context) {
     const importedAs = new Set<string>()
     const separation = context.options[0]?.separation ?? "forbid"
-    const callsStack: UseUnitCall[][] = []
+    const stack: { calls: UseUnitCall[]; functionEnd: number }[] = []
 
     const services = ESLintUtils.getParserServices(context)
-
     const getNodeType: GetNodeType = (node) => {
       const type = services.getTypeAtLocation(node)
       if (isType.store(type, services.program)) return "store"
@@ -428,77 +308,75 @@ export default createRule<Options, MessageIds>({
       return "unknown"
     }
 
-    const pushCall = (node: ShapeCall | ListCall | PlainCall): void => {
-      const callee = node.init.callee
-      if (callee.type !== NodeType.Identifier || !importedAs.has(callee.name)) return
-      const current = callsStack.at(-1)
-      if (!current) return
-      current.push({ statement: node.parent, init: node.init, id: node.id })
-    }
-
     const onFunctionExit = (): void => {
-      const calls = callsStack.pop()
-      if (!calls || calls.length === 0) return
+      const frame = stack.pop()
+      if (!frame || frame.calls.length === 0) return
+      const { calls, functionEnd } = frame
+
+      if (separation === "forbid") {
+        reportMerge(context, calls, functionEnd)
+        return
+      }
+
+      // allow & enforce both merge same-type calls; enforce additionally splits mixed ones.
+      const byType: Record<"store" | "event" | "effect", UseUnitCall[]> = { store: [], event: [], effect: [] }
+      for (const call of calls) {
+        const type = classify(call, getNodeType)
+        if (type !== "mixed" && type !== "unknown") byType[type].push(call)
+      }
+      for (const group of Object.values(byType)) reportMerge(context, group, functionEnd)
 
       if (separation === "enforce") {
         for (const call of calls) {
-          if (!hasMixedTypes(call, getNodeType)) continue
+          if (classify(call, getNodeType) !== "mixed") continue
           context.report({
-            node: call.init,
+            node: call.report,
             messageId: "mixedStoresAndEvents",
-            suggest: [
-              {
-                messageId: "mixedStoresAndEvents",
-                fix: (fixer) => generateSeparationFix(fixer, call, context, getNodeType),
-              },
-            ],
+            suggest:
+              call.normalized && call.fixable
+                ? [
+                    {
+                      messageId: "mixedStoresAndEvents",
+                      fix: (fixer) => splitFix(fixer, call, context.sourceCode, getNodeType),
+                    },
+                  ]
+                : undefined,
           })
         }
-        return
       }
-
-      if (calls.length <= 1) return
-
-      if (separation === "allow") {
-        const groups = groupBindingsByType(collectBindings(calls), getNodeType)
-        for (const group of Object.values(groups)) {
-          const groupCalls = [...new Set(group.map((b) => b.call))]
-          if (groupCalls.length <= 1) continue
-          reportGroup(context, groupCalls)
-        }
-        return
-      }
-
-      // separation === "forbid": all calls collapse into one regardless of form or type
-      reportGroup(context, calls)
     }
 
     return {
-      [selector.import]: (node: Node.ImportSpecifier) => void importedAs.add(node.local.name),
+      [selectorImport]: (node: Node.ImportSpecifier) => void importedAs.add(node.local.name),
 
-      "FunctionDeclaration, FunctionExpression, ArrowFunctionExpression": () => void callsStack.push([]),
+      "FunctionDeclaration, FunctionExpression, ArrowFunctionExpression": (node: Node.FunctionLike) =>
+        void stack.push({ calls: [], functionEnd: node.range[1] }),
 
       "FunctionDeclaration:exit": onFunctionExit,
       "FunctionExpression:exit": onFunctionExit,
       "ArrowFunctionExpression:exit": onFunctionExit,
 
-      [`${selector.variable.shape}:has(> ${selector.call}:has(${selector.arg.shape}))`]: (node: ShapeCall) =>
-        pushCall(node),
-
-      [`${selector.variable.list}:has(> ${selector.call}:has(${selector.arg.list}))`]: (node: ListCall) =>
-        pushCall(node),
-
-      [`${selector.variable.plain}:has(> ${selector.call})`](node: PlainCall): void {
-        if (node.init.arguments.length !== 1) return
-        const arg = node.init.arguments[0]
-        if (!arg || arg.type === NodeType.SpreadElement) return
-        // Only non-destructuring calls over a single unit can be merged; a collection argument
-        // (`useUnit([...])` / `useUnit({...})`) or a non-unit argument (e.g. @@unitShape) is ignored.
-        if (arg.type === NodeType.ArrayExpression || arg.type === NodeType.ObjectExpression) return
-        const callee = node.init.callee
+      [selectorCall](node: Node.VariableDeclarator): void {
+        const init = node.init
+        if (init?.type !== NodeType.CallExpression) return
+        const callee = init.callee
         if (callee.type !== NodeType.Identifier || !importedAs.has(callee.name)) return
-        if (getNodeType(arg) === "unknown") return
-        pushCall(node)
+        if (node.parent.type !== NodeType.VariableDeclaration) return
+
+        // A non-destructuring call is only relevant when its single argument is a unit; this drops
+        // `useUnit(model)` (@@unitShape), `useUnit(notAUnit)` and `useUnit([...])` over a collection.
+        if (node.id.type === NodeType.Identifier) {
+          const argument = init.arguments[0]
+          if (!argument || argument.type === NodeType.SpreadElement || getNodeType(argument) === "unknown") return
+        }
+
+        const analysis = analyze(node)
+        if (!analysis) return
+
+        const declaration = node.parent
+        const fixable = declaration.kind === "const" && declaration.declarations.length === 1 && !node.id.typeAnnotation
+
+        stack.at(-1)?.calls.push({ declaration, report: init, callee: callee.name, fixable, ...analysis })
       },
     }
   },
