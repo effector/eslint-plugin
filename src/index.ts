@@ -49,8 +49,8 @@ const base = {
     "no-unnecessary-duplication": noUnnecessaryDuplication,
     "no-useless-methods": noUselessMethods,
     "no-watch": noWatch,
-    "prefer-useUnit": preferUseUnit,
     "prefer-single-binding": preferSingleBinding,
+    "prefer-useUnit": preferUseUnit,
     "require-pickup-in-persist": requirePickupInPersist,
     "strict-effect-handlers": strictEffectHandlers,
   },
@@ -62,7 +62,6 @@ const legacyConfigs = {
   react: { rules: ruleset.react },
   future: { rules: ruleset.future },
   patronum: { rules: ruleset.patronum },
-  style: { rules: ruleset.style },
 }
 
 const self = base as unknown as ESLint.Plugin
@@ -73,7 +72,6 @@ const flatConfigs: Record<keyof typeof ruleset, Linter.Config> = {
   react: { plugins: { effector: self }, rules: ruleset.react },
   future: { plugins: { effector: self }, rules: ruleset.future },
   patronum: { plugins: { effector: self }, rules: ruleset.patronum },
-  style: { plugins: { effector: self }, rules: ruleset.style },
 }
 
 const plugin = base as {
