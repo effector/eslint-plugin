@@ -37,13 +37,19 @@ The rule never reports — and never tries to combine — calls that cannot be s
 
 ### No suggestion
 
-A call is still reported as redundant, but **no** auto-merge suggestion is offered, when a
-binding can't be safely converted between forms — rest elements (`[a, ...rest]`), array holes,
-defaults (`{ a = 1 }`), nested/computed destructuring — or when merging would produce two
-variables with the same name.
+A call is still reported as redundant, but **no** auto-merge suggestion is offered when a
+rewrite would not be sound:
+
+- the destructuring can't be losslessly rebuilt — rest elements (`[a, ...rest]`), array holes,
+  defaults (`{ a = 1 }`), nested/computed/duplicate keys, or an argument key that isn't destructured;
+- merging would produce two variables with the same name;
+- the declaration isn't a sole `const` declarator — multiple declarators
+  (`const a = useUnit($a), b = useUnit($b)`), `let`/`var`, or a type-annotated binding
+  (`const a: Foo = useUnit($a)`), all of which a merge would silently break.
 
 Renamed object keys are normalized to the local variable name on merge, so
-`const { a: store } = useUnit({ a: $store })` is treated as `(store, $store)`.
+`const { a: store } = useUnit({ a: $store })` is treated as `(store, $store)`. Type casts and
+non-null assertions on the unit (`useUnit($a as Store<number>)`, `useUnit($a!)`) are preserved.
 
 ### Examples
 
@@ -82,13 +88,19 @@ type Options = {
 
 Controls how the rule handles separation of stores, events and effects into different `useUnit` calls.
 
-| Value | Behavior |
-|---|---|
-| `"forbid"` | All `useUnit` calls must be combined into one (default) |
-| `"allow"` | Stores, events and effects may be in separate calls, but multiple calls of the same type must be combined |
-| `"enforce"` | A single `useUnit` call must not mix stores, events and effects |
+| Value | Result | Forbids |
+|---|---|---|
+| `"forbid"` | exactly **one** `useUnit` call per component | every extra call |
+| `"allow"` | one call **per unit type** at most; a mixed call is left as-is | only same-type duplicate calls |
+| `"enforce"` | exactly **one call per unit type** | same-type duplicates **and** mixed calls |
 
-Unit types are determined using TypeScript type information. The rule requires TypeScript to be configured in your project.
+The three modes differ only in code generation:
+
+- `forbid` merges everything into a single call.
+- `allow` merges calls that are entirely one type (two store-calls → one), but never touches a mixed call or splits across types — it only removes same-type duplication.
+- `enforce` does what `allow` does **and** splits a mixed call into one call per type. The end state is one call per type.
+
+Unit types are determined using TypeScript type information. The rule requires TypeScript to be configured in your project. A call whose unit type can't be determined is never merged or split (the rule won't guess at an unknown unit).
 
 #### `separation: "forbid"` (default)
 
@@ -142,7 +154,7 @@ const Component = () => {
 
 #### `separation: "enforce"`
 
-A single `useUnit` call must not contain a mix of stores, events and effects. Each call must contain only one unit type. Non-destructuring calls hold a single unit, so they are never flagged under this option.
+Each `useUnit` call must contain exactly one unit type. A mixed call is split by type, and — like `allow` — multiple calls of the same type are merged, so the component ends up with one call per type. Non-destructuring calls hold a single unit, so they are never split.
 
 ```tsx
 // 👎 incorrect - mixed stores and events
