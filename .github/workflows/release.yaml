@@ -21,7 +21,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           node-version: "26.x"
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           cache: true
 
