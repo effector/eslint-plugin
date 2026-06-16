@@ -1,6 +1,19 @@
 # Changelog
 
-## 0.18.0
+## v0.19.0
+
+### Minor Changes
+
+- 81cbfbc: Improve `enforce-effect-naming-convention` to enforce naming in binding contexts (destructuring & function parameters) by @kireevmp
+- babf94d: Improve `enforce-store-naming-convention` to enforce naming in binding contexts (destructuring & function parameters) by @kireevmp
+- 5d565c3: Add new rule `enforce-exhaustive-useUnit-destructuring` by @Olovyannikov
+
+### Patch Changes
+
+- e80dfee: `no-units-spawn-in-render` fixed to correctly flag `factory.createModel()` of `effector-factorio` inside render by @kireevmp
+- 3554284: Tighten `mandatory-scope-binding` to only flag potential unit invocations by @kireevmp
+
+## v0.18.0
 
 This release brings in ESLint v10 support, introduces a new rule `no-units-spawn-in-render` to catch spawning units during React render, and tightens `mandatory-scope-binding` when components are inferred from union return types.
 
