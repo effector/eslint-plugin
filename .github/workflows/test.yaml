@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["20.9", "21.x", "22.x", "24.x", "26.x"]
+        node-version: ["21.x", "22.x", "24.x", "26.x"]
 
     steps:
       - uses: actions/checkout@v6
