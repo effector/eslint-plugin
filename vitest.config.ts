@@ -5,6 +5,8 @@ const resolve = (segment: string) => path.resolve(__dirname, segment)
 
 export default defineConfig({
   test: {
+    isolate: false,
+
     setupFiles: ["src/setup.ts"],
     testTimeout: 10_000, // account for long first ast parse
   },
