@@ -1,18 +1,9 @@
-import { RuleTester } from "@typescript-eslint/rule-tester"
-import { parser } from "typescript-eslint"
-
 import { ts } from "@/shared/tag"
+import { createRuleTester } from "@/testing/rule-tester"
 
 import rule from "./no-duplicate-on"
 
-const ruleTester = new RuleTester({
-  languageOptions: {
-    parser,
-    parserOptions: {
-      projectService: { allowDefaultProject: ["*.ts"], defaultProject: "tsconfig.fixture.json" },
-    },
-  },
-})
+const ruleTester = createRuleTester()
 
 ruleTester.run("no-duplicate-on", rule, {
   valid: [

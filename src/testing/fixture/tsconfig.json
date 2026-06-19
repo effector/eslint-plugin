@@ -20,5 +20,8 @@
 
     "lib": ["ESNext"],
     "types": ["node"]
-  }
+  },
+
+  // stubs for RuleTester test files, which need to be on-disk for projectService to type-check them for some reason
+  "include": ["file.ts", "react.tsx"]
 }
