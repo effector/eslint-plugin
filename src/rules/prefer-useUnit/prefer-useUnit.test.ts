@@ -1,19 +1,9 @@
-import { RuleTester } from "@typescript-eslint/rule-tester"
-import { parser } from "typescript-eslint"
-
 import { tsx } from "@/shared/tag"
+import { createRuleTester } from "@/testing/rule-tester"
 
 import rule from "./prefer-useUnit"
 
-const ruleTester = new RuleTester({
-  languageOptions: {
-    parser,
-    parserOptions: {
-      projectService: { allowDefaultProject: ["*.tsx"], defaultProject: "tsconfig.fixture.json" },
-      ecmaFeatures: { jsx: true },
-    },
-  },
-})
+const ruleTester = createRuleTester({ jsx: true })
 
 ruleTester.run("prefer-useUnit", rule, {
   valid: [
