@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.16.1
+
+- Allow using package on Node.js 23 and newer
+
 ## v0.16.0
 
 - Support typescript-eslint@8 ([PR #180](https://github.com/effector/eslint-plugin/pull/170/files)) by @7rulnik

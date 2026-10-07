@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-effector",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "description": "Enforcing best practices for Effector",
   "keywords": [
     "eslint",
@@ -23,7 +23,7 @@
     "access": "public"
   },
   "engines": {
-    "node": "^16 || ^17 || ^18 || ^19 || ^20 || ^21 || ^22"
+    "node": ">=16"
   },
   "devDependencies": {
     "@types/react": "^17.0.37",
