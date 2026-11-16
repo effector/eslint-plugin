@@ -34,6 +34,7 @@ const react = {
 
 const future = {
   "effector/no-domain-unit-creators": "warn",
+  "effector/no-effect-use": "warn",
 } satisfies TSESLint.Linter.RulesRecord
 
 export const ruleset = { recommended, patronum, scope, react, future }
