@@ -4,7 +4,9 @@ import { defineConfig, Plugin } from "vitepress"
 const watch: Plugin = {
   name: "watch-source",
   configureServer(server) {
-    server.watcher.add(resolve(__dirname, "../../src"))
+    const src = resolve(import.meta.dirname, "../../src")
+
+    server.watcher.add(src)
   },
 }
 

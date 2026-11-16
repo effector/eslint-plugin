@@ -3,7 +3,7 @@ import fs from "node:fs/promises"
 import { defineRoutes } from "vitepress"
 
 const changelog = path.join(process.cwd(), "CHANGELOG.md")
-const watch = path.relative(path.dirname(__filename), changelog)
+const watch = path.relative(import.meta.dirname, changelog)
 
 const loader = defineRoutes({
   watch,

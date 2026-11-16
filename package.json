@@ -46,6 +46,7 @@
     "build": "tsdown",
     "docs:build": "vitepress build docs",
     "docs:dev": "vitepress dev docs",
+    "format": "prettier --write .",
     "lint": "eslint",
     "prepack": "pnpm build",
     "test": "vitest run"
@@ -56,36 +57,47 @@
     "esquery": "^1.7.0"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.31.0",
+    "@changesets/cli": "^3.0.3",
     "@eslint/js": "^10.0.1",
     "@types/esquery": "^1.5.4",
-    "@types/estree": "^1.0.9",
-    "@types/node": "^25.9.3",
-    "@types/react": "^19.2.17",
-    "@typescript-eslint/rule-tester": "^8.59.3",
-    "@vitest/coverage-v8": "^4.1.8",
+    "@types/estree": "^1.0.10",
+    "@types/node": "~22.13.17",
+    "@types/react": "^19.3.0",
+    "@typescript-eslint/rule-tester": "^8.72.2",
+    "@vitest/coverage-v8": "^5.1.0",
     "effector": "^23.4.4",
     "effector-factorio": "^1.3.0",
     "effector-react": "^23.3.0",
-    "eslint": "^10.5.0",
+    "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.5",
-    "eslint-plugin-import-x": "^4.16.2",
-    "eslint-plugin-prettier": "^5.5.6",
-    "prettier": "^3.8.4",
-    "prettier-plugin-embed": "^0.5.1",
-    "tsdown": "0.22.2",
+    "eslint-plugin-import-x": "^4.18.1",
+    "eslint-plugin-prettier": "^5.5.7",
+    "prettier": "^3.10.1",
+    "prettier-plugin-embed": "^0.8.2",
+    "tsdown": "0.23.7",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.3",
-    "vitepress": "2.0.0-alpha.17",
-    "vitest": "^4.1.8"
+    "typescript-eslint": "^8.72.2",
+    "vitepress": "2.0.0-alpha.21",
+    "vitest": "^5.1.0"
   },
   "peerDependencies": {
     "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
     "typescript": ">=5.0.0"
   },
-  "packageManager": "pnpm@10.34.3+sha512.f2c531b08829d7be7f03c90addc266615f9c5477463e4bf1d275cb263ce9ea57cf0d5599110d94649a9bb3fed9f0b5efcea74a7016b61532a24cb9ad87860c1d",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^26.0.0",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.21.0+sha512.66fd8278ee28935ce951792d34367ff3af5c432a2756445823029533835b8da529bbe0be5130afd56ed0713fb8789e47bad82d93bd5ae2fe54b15562d6276ef0",
+      "onFail": "error"
+    }
+  },
   "engines": {
-    "node": ">=21.1.0"
+    "node": ">=22.13.0"
   }
 }

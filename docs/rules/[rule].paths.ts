@@ -3,7 +3,7 @@ import fs from "node:fs/promises"
 import { defineRoutes } from "vitepress"
 
 const rules = path.join(process.cwd(), "src/rules")
-const watch = path.relative(path.dirname(__filename), rules)
+const watch = path.relative(import.meta.dirname, rules)
 
 const routes = defineRoutes({
   watch: path.join(watch, "*/*.md"),

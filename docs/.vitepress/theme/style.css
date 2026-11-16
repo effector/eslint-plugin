@@ -153,9 +153,11 @@
 
 :root {
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: -webkit-linear-gradient(100deg,
-      hsl(var(--color-primary-400)) 30%,
-      hsl(var(--color-primary-500)));
+  --vp-home-hero-name-background: -webkit-linear-gradient(
+    100deg,
+    hsl(var(--color-primary-400)) 30%,
+    hsl(var(--color-primary-500))
+  );
 
   --vp-home-hero-image-background-image: none;
   --vp-home-hero-image-filter: blur(44px);

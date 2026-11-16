@@ -6,14 +6,17 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
 
+    env:
+      pnpm_config_runtime_on_fail: ignore
+
     strategy:
       matrix:
-        node-version: ["21.x", "22.x", "24.x", "26.x"]
+        node-version: ["22.13", "22.x", "24.x", "26.x"]
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
 

@@ -24,7 +24,7 @@ TypeScript
 const { value, setValue } = useUnit({
   value: $store,
   setValue: event,
-});
+})
 ```
 
 ```ts
@@ -32,7 +32,7 @@ const { value, setValue } = useUnit({
 const { value } = useUnit({
   value: $store,
   setValue: event, // unused but subscribed!
-});
+})
 ```
 
 ```ts
@@ -40,11 +40,11 @@ const { value } = useUnit({
 const {
   value,
   setValue,
-  extra // extra is missing - will be undefined
+  extra, // extra is missing - will be undefined
 } = useUnit({
   value: $store,
   setValue: event,
-});
+})
 ```
 
 ### Array shape
@@ -55,18 +55,18 @@ TypeScript
 
 ```ts
 // 👍 correct - all elements are destructured
-const [value, setValue] = useUnit([$store, event]);
+const [value, setValue] = useUnit([$store, event])
 ```
 
 ```ts
 // 👎 incorrect - $store is not destructured but creates implicit subscription
-const [setValue] = useUnit([event, $store]);
+const [setValue] = useUnit([event, $store])
 // Component will re-render when $store changes, even though you don't use it!
 ```
 
 ```ts
 // 👎 incorrect - event and $anotherStore cause implicit subscriptions
-const [value] = useUnit([$store, event, $anotherStore]);
+const [value] = useUnit([$store, event, $anotherStore])
 // Component re-renders on $store, event, and $anotherStore changes
 ```
 
@@ -83,62 +83,62 @@ Implicit subscriptions can lead to:
 ### Real-world example
 
 ```tsx
-import React, { Fragment } from "react";
-import { createEvent, createStore } from "effector";
-import { useUnit } from "effector-react";
+import React, { Fragment } from "react"
+import { createEvent, createStore } from "effector"
+import { useUnit } from "effector-react"
 
-const $store = createStore("Hello World!");
-const event = createEvent();
+const $store = createStore("Hello World!")
+const event = createEvent()
 
 // 👎 incorrect
 const BadComponent = () => {
   const { value } = useUnit({
     value: $store,
     setValue: event, // ❌ not used but subscribed!
-  });
+  })
 
-  return <Fragment>{value}</Fragment>;
-};
+  return <Fragment>{value}</Fragment>
+}
 
 // 👍 correct
 const GoodComponent = () => {
   const { value, setValue } = useUnit({
     value: $store,
     setValue: event,
-  });
+  })
 
-  return <button onClick={() => setValue("New value")}>{value}</button>;
-};
-``` 
+  return <button onClick={() => setValue("New value")}>{value}</button>
+}
+```
 
 ```tsx
-import React, { Fragment } from "react";
-import { createEvent, createStore } from "effector";
-import { useUnit } from "effector-react";
+import React, { Fragment } from "react"
+import { createEvent, createStore } from "effector"
+import { useUnit } from "effector-react"
 
-const $store = createStore("Hello World!");
-const event = createEvent();
+const $store = createStore("Hello World!")
+const event = createEvent()
 
 // 👎 incorrect - implicit subscription to $store
 const BadComponent = () => {
-  const [setValue] = useUnit([event, $store]); // ❌ $store not used but subscribed!
+  const [setValue] = useUnit([event, $store]) // ❌ $store not used but subscribed!
 
-  return <button onClick={() => setValue("New value")}>Click</button>;
-};
+  return <button onClick={() => setValue("New value")}>Click</button>
+}
 
 // 👍 correct - explicit destructuring
 const GoodComponent = () => {
-  const [value, setValue] = useUnit([$store, event]);
+  const [value, setValue] = useUnit([$store, event])
 
-  return <button onClick={() => setValue("New value")}>{value}</button>;
-};
+  return <button onClick={() => setValue("New value")}>{value}</button>
+}
 
 // 👍 also correct - only pass what you need
 const AlsoGoodComponent = () => {
-  const [setValue] = useUnit([event]); // ✅ no implicit subscriptions
+  const [setValue] = useUnit([event]) // ✅ no implicit subscriptions
 
-  return <button onClick={() => setValue("New value")}>Click</button>;
-};
+  return <button onClick={() => setValue("New value")}>Click</button>
+}
 ```
 
 ### When Not To Use It
@@ -151,7 +151,7 @@ that line:
 const { value } = useUnit({
   value: $store,
   trigger: $triggerStore, // intentionally subscribing without using
-});
+})
 ```
 
 However, in most cases, you should refactor your code to avoid implicit subscriptions.

@@ -1,9 +1,9 @@
 import path from "node:path"
 import { ContentData, createContentLoader } from "vitepress"
-import { ruleset } from "../../src/ruleset"
+import { ruleset } from "../../src/ruleset.ts"
 
 const rules = path.join(process.cwd(), "src/rules")
-const watch = path.relative(path.dirname(__dirname), rules)
+const watch = path.relative(path.dirname(import.meta.dirname), rules)
 
 type RuleEntry = { key: string; description: string; category: string | undefined }
 

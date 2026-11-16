@@ -7,6 +7,7 @@ description: Forbid creating Effector units inside React components or hooks
 Forbids creating Effector units or calling operators inside React components or hooks.
 
 Creating units in render leads to:
+
 - New units created on every render, causing memory leaks
 - Subscriptions and relationships being recreated unnecessarily
 - Unpredictable application state
