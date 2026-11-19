@@ -12,6 +12,7 @@ import noAmbiguityTarget from "./rules/no-ambiguity-target/no-ambiguity-target"
 import noDomainUnitCreators from "./rules/no-domain-unit-creators/no-domain-unit-creators"
 import noDuplicateClockOrSourceArrayValues from "./rules/no-duplicate-clock-or-source-array-values/no-duplicate-clock-or-source-array-values"
 import noDuplicateOn from "./rules/no-duplicate-on/no-duplicate-on"
+import noEffectUse from "./rules/no-effect-use/no-effect-use"
 import noForward from "./rules/no-forward/no-forward"
 import noGetState from "./rules/no-getState/no-getState"
 import noGuard from "./rules/no-guard/no-guard"
@@ -39,6 +40,7 @@ const base = {
     "no-domain-unit-creators": noDomainUnitCreators,
     "no-duplicate-clock-or-source-array-values": noDuplicateClockOrSourceArrayValues,
     "no-duplicate-on": noDuplicateOn,
+    "no-effect-use": noEffectUse,
     "no-forward": noForward,
     "no-getState": noGetState,
     "no-guard": noGuard,
