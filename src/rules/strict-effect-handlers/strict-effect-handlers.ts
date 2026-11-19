@@ -23,13 +23,11 @@ export default createRule({
 
     const stack: FnContext[] = []
 
-    type TrackedAwait = Node.AwaitExpression & { argument: Node.CallExpression | Node.NewExpression }
-
-    const track = (node: TrackedAwait) => {
+    const track = (node: Node.CallExpression | Node.NewExpression) => {
       const current = stack.at(-1)
       if (!current) return
 
-      const callee = node.argument.callee
+      const callee = node.callee
       const type = services.getTypeAtLocation(callee)
 
       const isEffect = isType.effect(type, services.program)
@@ -58,7 +56,8 @@ export default createRule({
       "FunctionDeclaration": enter,
       "FunctionDeclaration:exit": exit,
 
-      "AwaitExpression:matches([argument.type='CallExpression'], [argument.type='NewExpression'])": track,
+      "AwaitExpression > :matches(CallExpression, NewExpression)": track,
+      "AwaitExpression > ChainExpression > CallExpression": track,
     }
   },
 })

@@ -106,6 +106,25 @@ ruleTester.run("strict-effect-handlers", rule, {
       errors: [{ messageId: "mixed", line: 6, column: 29 }],
     },
     {
+      name: "fx with optional calls",
+      code: ts`
+        import { createEffect } from "effector"
+
+        async function fun() {}
+        const oneFx = createEffect()
+
+        declare const maybeFun: typeof fun | undefined
+        declare const maybeOneFx: typeof oneFx | undefined
+
+        const effectFx = createEffect(async () => (await fun(), await maybeOneFx?.()))
+        const regularFx = createEffect(async () => (await oneFx(), await maybeFun?.()))
+      `,
+      errors: [
+        { messageId: "mixed", line: 9, column: 31 },
+        { messageId: "mixed", line: 10, column: 32 },
+      ],
+    },
+    {
       name: "fx with mixed expressions",
       code: ts`
         import { createEffect } from "effector"
