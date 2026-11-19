@@ -40,6 +40,12 @@ The `recommended` configuration is a preset that enforces best practices for usi
 This plugin requires TypeScript and type-aware linting to be enabled in your ESLint configuration. Refer to the official [`typescript-eslint` installation guide](https://typescript-eslint.io/getting-started/typed-linting/) for guidance on providing type information to ESLint.
 :::
 
+::: details TypeScript 7+
+TypeScript 7.0 ships without a compiler API, so type-aware linting needs TypeScript 6 installed as `typescript`.
+
+TypeScript 7.1 works through the [experimental tsgo backend](https://typescript-eslint.io/packages/parser#experimental-tsgo-backend) of `typescript-eslint`, which runs alongside TypeScript 6. The backend is experimental and its setup may change in any `typescript-eslint` release.
+:::
+
 ::: details Legacy Config (`.eslintrc`)
 If you're using the legacy `.eslintrc` configuration format in ESLint v8, you can still configure the plugin and presets using the following syntax:
 
