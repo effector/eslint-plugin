@@ -74,6 +74,33 @@ ruleTester.run("enforce-gate-naming-convention", rule, {
       ],
     },
     {
+      name: "nullable gate",
+      code: ts`
+        import { createGate } from "effector-react"
+
+        const value = 42
+        const someGate = value > 10 ? createGate() : null
+      `,
+      errors: [
+        {
+          messageId: "invalid",
+          line: 4,
+          suggestions: [
+            {
+              messageId: "rename",
+              data: { current: "someGate", fixed: "SomeGate" },
+              output: ts`
+                import { createGate } from "effector-react"
+
+                const value = 42
+                const SomeGate = value > 10 ? createGate() : null
+              `,
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: "from factory",
       code: ts`
         import { createGate } from "effector-react"

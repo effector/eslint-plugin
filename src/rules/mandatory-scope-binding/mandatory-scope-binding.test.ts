@@ -213,6 +213,21 @@ ruleTester.run("mandatory-scope-binding", rule, {
       `,
     },
     {
+      name: "event in optional unit prop",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+        import { mounted } from "${fixture("model")}"
+
+        type Props = { onPress?: EventCallable<void> }
+        const MyButton = (props: Props) => null
+
+        function Component() {
+          return <MyButton onPress={mounted} />
+        }
+      `,
+    },
+    {
       name: "event via custom effector hook (object shape)",
       code: tsx`
         import React from "react"
@@ -462,6 +477,17 @@ ruleTester.run("mandatory-scope-binding", rule, {
         }
       `,
       errors: [{ messageId: "useUnitNeeded", line: 5, column: 30, data: { name: "clicked" } }],
+    },
+    {
+      name: "optional event prop call",
+      code: tsx`
+        import React from "react"
+        import { type EventCallable } from "effector"
+
+        type Props = { onPress?: EventCallable<void> }
+        const Button = ({ onPress }: Props) => (onPress?.(), (<button>click</button>))
+      `,
+      errors: [{ messageId: "useUnitNeeded", line: 5, column: 41, data: { name: "onPress" } }],
     },
     {
       name: "event (member) in jsx plain component",

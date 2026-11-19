@@ -236,6 +236,15 @@ ruleTester.run("enforce-store-naming-convention", rule, {
       errors: [{ messageId: "invalid", line: 3, data: { current: "store", convention: "prefix", fixed: "$store" } }],
     },
     {
+      name: "variable with nullable type annotation",
+      code: ts`
+        import { createStore, type Store } from "effector"
+
+        const store: Store<unknown> | null = createStore(null)
+      `,
+      errors: [{ messageId: "invalid", line: 3, data: { current: "store", convention: "prefix", fixed: "$store" } }],
+    },
+    {
       name: "prefix when configured for postfix",
       code: ts`
         import { createStore } from "effector"

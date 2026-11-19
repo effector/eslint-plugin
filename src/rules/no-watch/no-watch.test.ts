@@ -99,6 +99,16 @@ ruleTester.run("no-watch", rule, {
       errors: [{ line: 6, column: 1, messageId: "restricted" }],
     },
     {
+      name: "nullable event optional chain",
+      code: ts`
+        import { type EventCallable } from "effector"
+        declare const event: EventCallable<void> | undefined
+
+        event?.watch(() => {})
+      `,
+      errors: [{ line: 4, column: 1, messageId: "restricted" }],
+    },
+    {
       name: "effect",
       code: ts`
         import { createEffect } from "effector"

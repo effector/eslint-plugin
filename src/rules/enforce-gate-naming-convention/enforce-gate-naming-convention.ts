@@ -27,7 +27,7 @@ export default createRule({
       [`VariableDeclarator[id.name=${GateRegex}]`]: (node: VariableDeclarator) => {
         const type = services.getTypeAtLocation(node)
 
-        const isGate = isType.gate(type)
+        const isGate = isType.gate(type, services.program)
         if (!isGate) return
 
         const current = node.id.name

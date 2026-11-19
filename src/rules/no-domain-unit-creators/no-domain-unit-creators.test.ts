@@ -48,6 +48,16 @@ ruleTester.run("no-domain-unit-creators", rule, {
       ],
     },
     {
+      name: "nullable domain optional chain",
+      code: ts`
+        import { type Domain } from "effector"
+        declare const domain: Domain | undefined
+
+        const event = domain?.createEvent()
+      `,
+      errors: [{ messageId: "avoid", line: 4, column: 15, data: { method: "createEvent", factory: "createEvent" } }],
+    },
+    {
       name: "store",
       code: ts`
         import { createDomain } from "effector"

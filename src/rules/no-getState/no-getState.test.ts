@@ -43,6 +43,16 @@ ruleTester.run("no-getState", rule, {
       errors: [{ line: 4, column: 15, messageId: "named", data: { name: "$store" } }],
     },
     {
+      name: "nullable store optional chain",
+      code: ts`
+        import { type Store } from "effector"
+        declare const $store: Store<number> | null
+
+        const value = $store?.getState()
+      `,
+      errors: [{ line: 4, column: 15, messageId: "named", data: { name: "$store" } }],
+    },
+    {
       name: "once nested object",
       code: ts`
         import { createStore } from "effector"

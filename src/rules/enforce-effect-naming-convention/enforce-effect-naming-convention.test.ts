@@ -243,6 +243,15 @@ ruleTester.run("enforce-effect-naming-convention", rule, {
       errors: [{ messageId: "invalid", line: 3, data: { current: "fetch", fixed: "fetchFx" } }],
     },
     {
+      name: "variable with nullable type annotation",
+      code: ts`
+        import { createEffect, type Effect } from "effector"
+
+        const fetch: Effect<void, void> | null = createEffect()
+      `,
+      errors: [{ messageId: "invalid", line: 3, data: { current: "fetch", fixed: "fetchFx" } }],
+    },
+    {
       name: "shape destructuring",
       code: ts`
         import { createEffect } from "effector"

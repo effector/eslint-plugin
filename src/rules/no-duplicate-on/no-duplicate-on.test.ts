@@ -167,6 +167,18 @@ ruleTester.run("no-duplicate-on", rule, {
       errors: [{ messageId: "duplicate", line: 6, column: 11, data: { store: "$store", unit: "first" } }],
     },
     {
+      name: "nullable store optional chain",
+      code: ts`
+        import { createEvent, type StoreWritable } from "effector"
+        declare const $store: StoreWritable<null> | undefined
+
+        const first = createEvent()
+
+        $store?.on(first, () => null).on(first, () => null)
+      `,
+      errors: [{ messageId: "duplicate", line: 6, column: 12, data: { store: "$store", unit: "first" } }],
+    },
+    {
       name: "multiple calls same unit",
       code: ts`
         import { createStore, createEvent } from "effector"
